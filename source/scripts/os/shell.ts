@@ -77,6 +77,17 @@ module TSOS {
 
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
+            
+            //Assignment 1 Requirement 2 (add date, whereami, and something fun)
+            //TODO: remove "something fun" with what I decide ...
+            
+            // this comment intentionally left blank (but it is not blank!)
+            
+            // date (following naming style from methods above - cause that is what you do)
+            sc = new ShellCommand(this.shellDate, 
+                                  "date", 
+                                  "- displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
 
             //
             // Display the initial prompt.
@@ -277,6 +288,11 @@ module TSOS {
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        }
+        
+        // date
+        public shellDate(args){
+            _StdOut.putText("quick test");
         }
 
     }
