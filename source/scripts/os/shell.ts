@@ -292,7 +292,7 @@ module TSOS {
         
         // date
         public shellDate(args){
-            _StdOut.putText("quick test");
+            _StdOut.putText(new Date().toLocaleDateString());
         }
 
     }
