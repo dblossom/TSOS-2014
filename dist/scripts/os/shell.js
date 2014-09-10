@@ -273,7 +273,7 @@ var TSOS;
 
         // date
         Shell.prototype.shellDate = function (args) {
-            _StdOut.putText(new Date().toLocaleDateString());
+            _StdOut.putText(new Date().toLocaleString());
         };
         return Shell;
     })();
