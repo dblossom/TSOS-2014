@@ -62,6 +62,12 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellDate, "date", "- displays the current date and time.");
             this.commandList[this.commandList.length] = sc;
 
+            // whereami - randomly displays a location out of 5 possible
+            //            that have to do with Shawshank Redemption.
+            sc = new TSOS.ShellCommand(this.shellWhere, "whereami", "- displays location relevent to Shawshank Redemption.");
+
+            this.commandList[this.commandList.length] = sc;
+
             //
             // Display the initial prompt.
             this.putPrompt();
@@ -274,6 +280,20 @@ var TSOS;
         // date
         Shell.prototype.shellDate = function (args) {
             _StdOut.putText(new Date().toLocaleString());
+        };
+
+        // whereami
+        Shell.prototype.shellWhere = function (args) {
+            var places = [
+                "Shawshank Prison Libray",
+                "Roof of the license-plate factory",
+                "Red's cell# 237",
+                "Zihuatanejo",
+                "A river of shit..."];
+
+            var i = Math.floor(Math.random() * 5);
+
+            _StdOut.putText(places[i]);
         };
         return Shell;
     })();

@@ -88,7 +88,15 @@ module TSOS {
                                   "date", 
                                   "- displays the current date and time.");
             this.commandList[this.commandList.length] = sc;
-
+            
+            // whereami - randomly displays a location out of 5 possible
+            //            that have to do with Shawshank Redemption.
+            sc = new ShellCommand(this.shellWhere,
+                                 "whereami",
+                                 "- displays location relevent to Shawshank Redemption.");
+            
+            this.commandList[this.commandList.length] = sc;
+            
             //
             // Display the initial prompt.
             this.putPrompt();
@@ -293,6 +301,21 @@ module TSOS {
         // date
         public shellDate(args){
             _StdOut.putText(new Date().toLocaleString());
+        }
+        
+        // whereami
+        public shellWhere(args){
+        
+            var places:string[] = ["Shawshank Prison Libray",
+                                   "Roof of the license-plate factory",
+                                   "Red's cell# 237",
+                                   "Zihuatanejo",
+                                   "A river of shit..."];
+                                   
+            var i:number = Math.floor(Math.random() * 5);
+            
+            _StdOut.putText(places[i]);
+        
         }
 
     }
