@@ -68,7 +68,11 @@ var TSOS;
 
             this.commandList[this.commandList.length] = sc;
 
-            //
+            // beammeup
+            sc = new TSOS.ShellCommand(this.shellBeam, "beam", "- beams you up ... ");
+
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -294,6 +298,16 @@ var TSOS;
             var i = Math.floor(Math.random() * 5);
 
             _StdOut.putText(places[i]);
+        };
+
+        // beam
+        Shell.prototype.shellBeam = function (args) {
+            _StdOut.putText("You are now being beamed up to the mothership please stand by...");
+            _StdOut.advanceLine();
+            _StdOut.putText("...");
+            _StdOut.advanceLine();
+            _StdOut.putText("...you're not getting beamed anywhere you fucking idiot.");
+            _StdOut.putText("asses like you are why people like that fucking fraud Theresa Caputo are rich.");
         };
         return Shell;
     })();

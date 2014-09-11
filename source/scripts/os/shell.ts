@@ -97,7 +97,14 @@ module TSOS {
             
             this.commandList[this.commandList.length] = sc;
             
-            //
+            // beammeup
+            sc = new ShellCommand(this.shellBeam,
+                                  "beam",
+                                  "- beams you up ... ");
+            
+            this.commandList[this.commandList.length] = sc;
+            
+            
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -316,6 +323,17 @@ module TSOS {
             
             _StdOut.putText(places[i]);
         
+        }
+        
+        // beam
+        public shellBeam(args){
+            _StdOut.putText("You are now being beamed up to the mothership please stand by...");
+            _StdOut.advanceLine();
+            _StdOut.putText("...");
+            _StdOut.advanceLine();
+            _StdOut.putText("...you're not getting beamed anywhere you fucking idiot.");
+            _StdOut.advanceLine();
+            _StdOut.putText("asses like you are why people like that fucking fraud Theresa Caputo are rich."); 
         }
 
     }
