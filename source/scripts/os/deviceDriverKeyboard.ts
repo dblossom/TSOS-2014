@@ -21,7 +21,7 @@ module TSOS {
         public krnKbdDriverEntry() {
             // Initialization routine for this, the kernel-mode Keyboard Device Driver.
             this.status = "loaded";
-            // More?
+            // More? <- trick question?
         }
 
         public krnKbdDispatchKeyPress(params) {
@@ -42,10 +42,26 @@ module TSOS {
                 }
                 // TODO: Check for caps-lock and handle as shifted if so.
                 _KernelInputQueue.enqueue(chr);
-            } else if (((keyCode >= 48) && (keyCode <= 57)) ||   // digits
+            } else if ( // leaving blank while adding symbol support
                         (keyCode == 32)                     ||   // space
                         (keyCode == 13)) {                       // enter
                 chr = String.fromCharCode(keyCode);
+                _KernelInputQueue.enqueue(chr);
+            } else if ((keyCode) >= 48 && (keyCode <= 57)){ // digits or symbol
+                if(!isShifted){
+                    chr = String.fromCharCode(keyCode); // all is normal, print digits
+                }
+                else{
+                    switch(keyCode){
+                        case 48:
+                            chr = String.fromCharCode(41);
+                            break;
+                        
+                        case 49:
+                            chr = String.fromCharCode(33);
+                            break;    
+                    }
+                }
                 _KernelInputQueue.enqueue(chr);
             }
         }

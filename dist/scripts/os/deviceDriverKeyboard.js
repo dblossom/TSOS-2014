@@ -22,7 +22,7 @@ var TSOS;
         DeviceDriverKeyboard.prototype.krnKbdDriverEntry = function () {
             // Initialization routine for this, the kernel-mode Keyboard Device Driver.
             this.status = "loaded";
-            // More?
+            // More? <- trick question?
         };
 
         DeviceDriverKeyboard.prototype.krnKbdDispatchKeyPress = function (params) {
@@ -45,8 +45,23 @@ var TSOS;
 
                 // TODO: Check for caps-lock and handle as shifted if so.
                 _KernelInputQueue.enqueue(chr);
-            } else if (((keyCode >= 48) && (keyCode <= 57)) || (keyCode == 32) || (keyCode == 13)) {
+            } else if ((keyCode == 32) || (keyCode == 13)) {
                 chr = String.fromCharCode(keyCode);
+                _KernelInputQueue.enqueue(chr);
+            } else if ((keyCode) >= 48 && (keyCode <= 57)) {
+                if (!isShifted) {
+                    chr = String.fromCharCode(keyCode); // all is normal, print digits
+                } else {
+                    switch (keyCode) {
+                        case 48:
+                            chr = String.fromCharCode(41);
+                            break;
+
+                        case 49:
+                            chr = String.fromCharCode(33);
+                            break;
+                    }
+                }
                 _KernelInputQueue.enqueue(chr);
             }
         };
