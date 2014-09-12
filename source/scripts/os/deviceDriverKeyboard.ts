@@ -53,13 +53,47 @@ module TSOS {
                 }
                 else{
                     switch(keyCode){
-                        case 48:
+                        
+                        case 48: // ")"
                             chr = String.fromCharCode(41);
                             break;
                         
-                        case 49:
+                        case 49: // "!"
                             chr = String.fromCharCode(33);
-                            break;    
+                            break;
+                        
+                        case 50: // "@"
+                            chr = String.fromCharCode(64);    
+                            break;
+                            
+                        case 51: // "#"
+                            chr = String.fromCharCode(35);    
+                            break;
+                            
+                        case 52: // "$"
+                            chr = String.fromCharCode(36);
+                            break;
+                        
+                        case 53: // "%"
+                            chr = String.fromCharCode(37);
+                            break;
+                        
+                        case 54: // "^"
+                            chr = String.fromCharCode(94);    
+                            break;
+                            
+                        case 55: // "&"
+                            chr = String.fromCharCode(38);
+                            break;
+                            
+                        case 56: // "*"
+                            chr = String.fromCharCode(42);    
+                            break;
+                            
+                        case 57: // "("
+                            chr = String.fromCharCode(40);
+                            break;
+                             
                     }
                 }
                 _KernelInputQueue.enqueue(chr);
