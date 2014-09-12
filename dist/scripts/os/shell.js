@@ -307,6 +307,7 @@ var TSOS;
             _StdOut.putText("...");
             _StdOut.advanceLine();
             _StdOut.putText("...you're not getting beamed anywhere you fucking idiot.");
+            _StdOut.advanceLine();
             _StdOut.putText("asses like you are why people like that fucking fraud Theresa Caputo are rich.");
         };
         return Shell;

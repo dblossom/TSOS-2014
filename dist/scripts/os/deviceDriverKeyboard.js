@@ -32,29 +32,31 @@ var TSOS;
             _Kernel.krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
             var chr = "";
 
-            // Check to see if we even want to deal with the key that was pressed.
-            if (((keyCode >= 65) && (keyCode <= 90)) || ((keyCode >= 97) && (keyCode <= 123))) {
-                // Determine the character we want to display.
-                // Assume it's lowercase...
-                chr = String.fromCharCode(keyCode + 32);
-
-                // ... then check the shift key and re-adjust if necessary.
-                if (isShifted) {
+            // just a regular char -- did not need the other range
+            // A and a == 65 regardless.
+            if ((keyCode >= 65) && (keyCode <= 90)) {
+                // is the shift key pressed?
+                // if not, we want the lower-case
+                // else leave alone for upper-case
+                //TODO: add caps-lock support (sounds easy, prob not).
+                if (!isShifted) {
+                    chr = String.fromCharCode(keyCode + 32);
+                } else {
                     chr = String.fromCharCode(keyCode);
                 }
 
-                // TODO: Check for caps-lock and handle as shifted if so.
+                //TODO: move this, so we set it one time at end of method.
                 _KernelInputQueue.enqueue(chr);
             } else if ((keyCode == 32) || (keyCode == 13)) {
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
-            } else if ((keyCode) >= 48 && (keyCode <= 57)) {
+            } else if (((keyCode) >= 48 && (keyCode <= 57))) {
                 if (!isShifted) {
                     chr = String.fromCharCode(keyCode); // all is normal, print digits
                 } else {
                     switch (keyCode) {
                         case 48:
-                            chr = String.fromCharCode(41);
+                            chr = String.fromCharCode(123);
                             break;
 
                         case 49:
