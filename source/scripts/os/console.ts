@@ -62,7 +62,10 @@ module TSOS {
                     _DrawingContext.clearRect(0, (this.currentYPosition - this.currentFontSize), this.currentXPosition, this.currentFontSize);
                     this.currentXPosition = 0;
                     _OsShell.putPrompt();
-                    this.putText(currBuff);            
+                    this.putText(currBuff);
+                    
+                    // reset the buffer dumbass
+                    this.buffer = currBuff;          
                     
                 }else {
                     // This is a "normal" character, so ...

@@ -63,6 +63,9 @@ var TSOS;
                     this.currentXPosition = 0;
                     _OsShell.putPrompt();
                     this.putText(currBuff);
+
+                    // reset the buffer dumbass
+                    this.buffer = currBuff;
                 } else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
