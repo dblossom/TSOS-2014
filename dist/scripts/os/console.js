@@ -47,6 +47,12 @@ var TSOS;
 
                     // ... and reset our buffer.
                     this.buffer = "";
+                } else if (chr === "up" || chr === "down") {
+                    //not sure what we are going to do with
+                    //these yet -- want to stop it from
+                    //displaying on the damn console though
+                } else if (chr === String.fromCharCode(8)) {
+                    alert("TEST");
                 } else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
