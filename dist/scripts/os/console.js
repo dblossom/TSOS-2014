@@ -59,6 +59,11 @@ var TSOS;
                     // substring it
                     currBuff = currBuff.substring(0, (currBuff.length - 1));
 
+                    //TODO: how about like "putText()" "we"(I) make a method
+                    //      called removeText() that given a string will remove
+                    //      text ... how do we want to make it? remove entire
+                    //      passed string ? or 1 char or ... ? -- maybe
+                    //      replaceText() would be better ?? or replace AND remove ?
                     _DrawingContext.clearRect(0, (this.currentYPosition - (this.currentFontSize + 1)), this.currentXPosition, this.currentFontSize + 6);
                     this.currentXPosition = 0;
                     _OsShell.putPrompt();
