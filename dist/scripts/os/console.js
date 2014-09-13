@@ -19,6 +19,11 @@ var TSOS;
             this.currentXPosition = currentXPosition;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
+            // to hold buffer commands after enter
+            // TODO: make it typescript like ...
+            // http://www.typescriptlang.org/Handbook#basic-types-array
+            // public commandHistory:Array<string>;
+            this.commandHistory = [];
         }
         Console.prototype.init = function () {
             this.clearScreen();
@@ -45,12 +50,17 @@ var TSOS;
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
 
+                    //put it in our command history
+                    this.commandHistory[this.commandHistory.length] = this.buffer;
+
                     // ... and reset our buffer.
                     this.buffer = "";
                 } else if (chr === "up" || chr === "down") {
-                    //not sure what we are going to do with
-                    //these yet -- want to stop it from
-                    //displaying on the damn console though
+                    // thinking outloud here ...
+                    // up goes backwards starting at length
+                    // down goes back TO length --
+                    // last down should be a reset ... no commands
+                    // last up should be first item in array
                     //backspace
                 } else if (chr === String.fromCharCode(8)) {
                     // grab the active buffer
