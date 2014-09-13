@@ -59,7 +59,7 @@ var TSOS;
                     // substring it
                     currBuff = currBuff.substring(0, (currBuff.length - 1));
 
-                    _DrawingContext.clearRect(0, (this.currentYPosition - this.currentFontSize), this.currentXPosition, this.currentFontSize);
+                    _DrawingContext.clearRect(0, (this.currentYPosition - (this.currentFontSize + 1)), this.currentXPosition, this.currentFontSize + 6);
                     this.currentXPosition = 0;
                     _OsShell.putPrompt();
                     this.putText(currBuff);
