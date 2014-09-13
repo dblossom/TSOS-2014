@@ -50,8 +50,20 @@ module TSOS {
                     //not sure what we are going to do with
                     //these yet -- want to stop it from 
                     //displaying on the damn console though
+                
+                //backspace
                 }else if(chr === String.fromCharCode(8)){
-                    alert("TEST");
+                    
+                    // grab the active buffer
+                    var currBuff: string = this.buffer;
+                    // substring it
+                    currBuff = currBuff.substring(0, (currBuff.length-1));
+
+                    _DrawingContext.clearRect(0, (this.currentYPosition - this.currentFontSize), this.currentXPosition, this.currentFontSize);
+                    this.currentXPosition = 0;
+                    _OsShell.putPrompt();
+                    this.putText(currBuff);            
+                    
                 }else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
