@@ -24,6 +24,7 @@ var TSOS;
             // http://www.typescriptlang.org/Handbook#basic-types-array
             // public commandHistory:Array<string>;
             this.commandHistory = [];
+            this.commandHistoryPointer = this.commandHistory.length;
         }
         Console.prototype.init = function () {
             this.clearScreen();
@@ -52,6 +53,7 @@ var TSOS;
 
                     //put it in our command history
                     this.commandHistory[this.commandHistory.length] = this.buffer;
+                    this.commandHistoryPointer = this.commandHistory.length - 1;
 
                     // ... and reset our buffer.
                     this.buffer = "";
@@ -61,6 +63,14 @@ var TSOS;
                     // down goes back TO length --
                     // last down should be a reset ... no commands
                     // last up should be first item in array
+                    if (chr === "up") {
+                        this.clearLine();
+                        this.putText(this.commandHistory[this.commandHistoryPointer]);
+                        this.commandHistoryPointer -= this.commandHistoryPointer;
+                        if (this.commandHistoryPointer < 0) {
+                            this.commandHistoryPointer = 0;
+                        }
+                    }
                     //backspace
                 } else if (chr === String.fromCharCode(8)) {
                     // grab the active buffer
@@ -69,14 +79,8 @@ var TSOS;
                     // substring it
                     currBuff = currBuff.substring(0, (currBuff.length - 1));
 
-                    //TODO: how about like "putText()" "we"(I) make a method
-                    //      called removeText() that given a string will remove
-                    //      text ... how do we want to make it? remove entire
-                    //      passed string ? or 1 char or ... ? -- maybe
-                    //      replaceText() would be better ?? or replace AND remove ?
-                    _DrawingContext.clearRect(0, (this.currentYPosition - (this.currentFontSize + 1)), this.currentXPosition, this.currentFontSize + 6);
-                    this.currentXPosition = 0;
-                    _OsShell.putPrompt();
+                    this.clearLine();
+
                     this.putText(currBuff);
 
                     // reset the buffer dumbass
@@ -114,6 +118,15 @@ var TSOS;
             this.currentXPosition = 0;
             this.currentYPosition += _DefaultFontSize + _FontHeightMargin;
             // TODO: Handle scrolling. (Project 1)
+        };
+
+        // clears a line
+        // resets x position
+        // replaces prompt
+        Console.prototype.clearLine = function () {
+            _DrawingContext.clearRect(0, (this.currentYPosition - (this.currentFontSize + 1)), this.currentXPosition, this.currentFontSize + 6);
+            this.currentXPosition = 0;
+            _OsShell.putPrompt();
         };
         return Console;
     })();
