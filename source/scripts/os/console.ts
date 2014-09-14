@@ -96,11 +96,29 @@ module TSOS {
                     
                 }else if(chr === String.fromCharCode(9)){
                 
-                    // umm idk -- 
-                	this.buffer = "";
-                    var s:string = _OsShell.commandList[1].command
-                    this.putText(s);
-                    this.buffer = s;
+                    // umm idk -- what the fuck is command completion ?
+                    // at least two chars ? three chars ? one char?
+                    // I am going to do two ... 
+                    // TODO: private method for searching command list
+                    var search:string = this.buffer;
+                    if(search.length < 2){
+                        // we do nothing ...
+                    }else{ // command list is small so just search 1 - n
+                    
+                        for(var i:number = 0; i < _OsShell.commandList.length; i++){
+                            
+                            var s = _OsShell.commandList[i].command.substring(0, search.length);
+                            
+                            if(s === search){
+                                this.buffer = "";
+                                this.clearLine();
+                                this.putText(_OsShell.commandList[i].command);
+                                this.buffer = _OsShell.commandList[i].command;
+                            }
+                            
+                        }
+                    
+                    }
                     
                 }else {
                     // This is a "normal" character, so ...
