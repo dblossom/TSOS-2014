@@ -144,9 +144,9 @@ module TSOS {
             }else if(command == "down"){
                 // clear anything just in case
                 this.clearLine();
-                returnString = this.commandHistory[this.commandHistoryPointer++];
+                returnString = this.commandHistory[++this.commandHistoryPointer];
                 if(this.commandHistoryPointer > this.commandHistory.length){
-                    this.commandHistoryPointer = (this.commandHistory.length - 1);
+                    this.commandHistoryPointer = this.commandHistory.length;
                     returnString = "";
                 }
             }
