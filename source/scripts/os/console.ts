@@ -61,16 +61,22 @@ module TSOS {
                     this.buffer = "";
                 }else if(chr === "up" || chr === "down"){
                 
-                    // this might be a damn hack but ..... 
+                    // so the 'buffer' is needed to push the
+                    // command to the shell - unless we do
+                    // some overhaul so -- 
                     
                     // first let us clear the buffer
                     this.buffer = "";
                 
-                    var s:string = this.commandRecall(chr);
-                    this.putText(s);
+                    // will we or will we not use this command?
+                    // either way ... I am calling it a command
+                    var tempCommand:string = this.commandRecall(chr);
+                    
+                    // show the "user" the command
+                    this.putText(tempCommand);
                     
                     // in case we use this command - put it in buffer
-                    this.buffer = s;
+                    this.buffer = tempCommand;
                 
                 //backspace
                 }else if(chr === String.fromCharCode(8)){
