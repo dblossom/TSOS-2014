@@ -99,26 +99,22 @@ module TSOS {
                     // umm idk -- what the fuck is command completion ?
                     // at least two chars ? three chars ? one char?
                     // I am going to do two ... 
-                    // TODO: private method for searching command list
+                    // TODO: do I want "search length 2 to be inside commandLookup?
+                    //       what if wrong on first guess ? do it again ? or return
+                    //       blank ? or the original search key ? sounds neat ... 
+
                     var search:string = this.buffer;
                     if(search.length < 2){
                         // we do nothing ...
-                    }else{ // command list is small so just search 1 - n
-                    
-                        for(var i:number = 0; i < _OsShell.commandList.length; i++){
-                            
-                            var s = _OsShell.commandList[i].command.substring(0, search.length);
-                            
-                            if(s === search){
-                                this.buffer = "";
-                                this.clearLine();
-                                this.putText(_OsShell.commandList[i].command);
-                                this.buffer = _OsShell.commandList[i].command;
-                            }
+                    }else{
+                        
+                        this.buffer = "";
+                        this.clearLine();
+                        var commandFound:string = this.commandLookup(search);
+                        this.putText(commandFound);
+                        this.buffer = commandFound;    
                             
                         }
-                    
-                    }
                     
                 }else {
                     // This is a "normal" character, so ...
@@ -193,6 +189,22 @@ module TSOS {
                 }
             }
             // finally return the string;    
+            return returnString;
+        }
+        
+        private commandLookup(wildcard): string{
+            
+            var returnString:string = "";
+            
+            for(var i:number = 0; i < _OsShell.commandList.length; i++){
+                            
+                var tempString:string = _OsShell.commandList[i].command.substring(0, wildcard.length);
+                            
+                    if(tempString === wildcard){
+                        returnString = _OsShell.commandList[i].command;
+                    }               
+            }
+            
             return returnString;
         }
     }

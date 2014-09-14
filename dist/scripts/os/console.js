@@ -93,21 +93,18 @@ var TSOS;
                     // umm idk -- what the fuck is command completion ?
                     // at least two chars ? three chars ? one char?
                     // I am going to do two ...
-                    // TODO: private method for searching command list
+                    // TODO: do I want "search length 2 to be inside commandLookup?
+                    //       what if wrong on first guess ? do it again ? or return
+                    //       blank ? or the original search key ? sounds neat ...
                     var search = this.buffer;
                     if (search.length < 2) {
                         // we do nothing ...
                     } else {
-                        for (var i = 0; i < _OsShell.commandList.length; i++) {
-                            var s = _OsShell.commandList[i].command.substring(0, search.length);
-
-                            if (s === search) {
-                                this.buffer = "";
-                                this.clearLine();
-                                this.putText(_OsShell.commandList[i].command);
-                                this.buffer = _OsShell.commandList[i].command;
-                            }
-                        }
+                        this.buffer = "";
+                        this.clearLine();
+                        var commandFound = this.commandLookup(search);
+                        this.putText(commandFound);
+                        this.buffer = commandFound;
                     }
                 } else {
                     // This is a "normal" character, so ...
@@ -186,6 +183,20 @@ var TSOS;
             }
 
             // finally return the string;
+            return returnString;
+        };
+
+        Console.prototype.commandLookup = function (wildcard) {
+            var returnString = "";
+
+            for (var i = 0; i < _OsShell.commandList.length; i++) {
+                var tempString = _OsShell.commandList[i].command.substring(0, wildcard.length);
+
+                if (tempString === wildcard) {
+                    returnString = _OsShell.commandList[i].command;
+                }
+            }
+
             return returnString;
         };
         return Console;
