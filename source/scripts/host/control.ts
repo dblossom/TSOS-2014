@@ -49,6 +49,7 @@ module TSOS {
             // underscore vars are not my style ... 
             // but like to follow the pattern of globals start with "_"
             _TimeDisplay = <HTMLLabelElement> document.getElementById('labelTime');
+            _DateDisplay = <HTMLLabelElement> document.getElementById('labelDate');
             _StatusDisplay = <HTMLLabelElement> document.getElementById('labelStatus');
 
             // Check for our testing and enrichment core.

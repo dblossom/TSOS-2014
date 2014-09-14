@@ -44,6 +44,7 @@ var TSOS;
             // underscore vars are not my style ...
             // but like to follow the pattern of globals start with "_"
             _TimeDisplay = document.getElementById('labelTime');
+            _DateDisplay = document.getElementById('labelDate');
             _StatusDisplay = document.getElementById('labelStatus');
 
             // Check for our testing and enrichment core.

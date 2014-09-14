@@ -27,9 +27,11 @@ var TSOS;
             _OSclock++;
 
             // with every pulse we can up date the date / time display
-            // not sure I like this -- might separate time
             var curDate = new Date();
-            _TimeDisplay.textContent = "Time Date: " + curDate.toLocaleDateString() + " " + curDate.toLocaleTimeString();
+
+            // TODO: consider moving date, no need to update the date every second
+            _DateDisplay.textContent = "Date: " + curDate.toLocaleDateString();
+            _TimeDisplay.textContent = "Time: " + curDate.toLocaleTimeString();
 
             // Call the kernel clock pulse event handler.
             _Kernel.krnOnCPUClockPulse();

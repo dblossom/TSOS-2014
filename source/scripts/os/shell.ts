@@ -104,6 +104,12 @@ module TSOS {
             
             this.commandList[this.commandList.length] = sc;
             
+            sc = new ShellCommand(this.shellStatus,
+                                  "status",
+                                  "- updates status message.");
+                                  
+            this.commandList[this.commandList.length] = sc;
+            
             
             // Display the initial prompt.
             this.putPrompt();
@@ -334,6 +340,12 @@ module TSOS {
             _StdOut.putText("...you're not getting beamed anywhere you fucking idiot.");
             _StdOut.advanceLine();
             _StdOut.putText("asses like you are why people like that fucking fraud Theresa Caputo are rich."); 
+        }
+        
+        public shellStatus(args){
+        
+            _StatusDisplay.textContent = "Status: " + "<TODO: INSERT STATUS>";
+        
         }
 
     }

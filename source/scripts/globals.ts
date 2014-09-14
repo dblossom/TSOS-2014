@@ -65,6 +65,7 @@ var _hardwareClockID: number = null;
 // Global variables for setting display
 // labels: H1Q3
 var _TimeDisplay: HTMLLabelElement = null;
+var _DateDisplay: HTMLLabelElement = null;
 var _StatusDisplay: HTMLLabelElement = null;
 
 // For testing...
