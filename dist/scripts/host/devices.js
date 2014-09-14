@@ -26,6 +26,11 @@ var TSOS;
             // Increment the hardware (host) clock.
             _OSclock++;
 
+            // with every pulse we can up date the date / time display
+            // not sure I like this -- might separate time
+            var curDate = new Date();
+            _TimeDisplay.textContent = "Time Date: " + curDate.toLocaleDateString() + " " + curDate.toLocaleTimeString();
+
             // Call the kernel clock pulse event handler.
             _Kernel.krnOnCPUClockPulse();
         };

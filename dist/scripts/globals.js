@@ -58,6 +58,11 @@ var _krnKeyboardDriver = null;
 
 var _hardwareClockID = null;
 
+// Global variables for setting display
+// labels: H1Q3
+var _TimeDisplay = null;
+var _StatusDisplay = null;
+
 // For testing...
 var _GLaDOS = null;
 var Glados = null;

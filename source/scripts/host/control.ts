@@ -44,6 +44,12 @@ module TSOS {
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
             (<HTMLInputElement> document.getElementById("btnStartOS")).focus();
+            
+            // Get labels for time/date and status ... 
+            // underscore vars are not my style ... 
+            // but like to follow the pattern of globals start with "_"
+            _TimeDisplay = <HTMLLabelElement> document.getElementById('labelTime');
+            _StatusDisplay = <HTMLLabelElement> document.getElementById('labelStatus');
 
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {
