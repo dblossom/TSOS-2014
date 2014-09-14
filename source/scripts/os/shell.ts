@@ -106,7 +106,7 @@ module TSOS {
             
             sc = new ShellCommand(this.shellStatus,
                                   "status",
-                                  "- updates status message.");
+                                  "<string> - updates status message.");
                                   
             this.commandList[this.commandList.length] = sc;
             
@@ -323,7 +323,8 @@ module TSOS {
                                    "Roof of the license-plate factory",
                                    "Red's cell# 237",
                                    "Zihuatanejo",
-                                   "A river of shit..."];
+                                   "A river of shit...",
+                                   "The yard"];
                                    
             var i:number = Math.floor(Math.random() * 5);
             
@@ -344,9 +345,12 @@ module TSOS {
         
         public shellStatus(args){
         
-            _StatusDisplay.textContent = "Status: " + "<TODO: INSERT STATUS>";
-        
+            if(args.length > 0){
+                // TODO: add to log ? seems like a log action ?
+                _StatusDisplay.textContent = "Status: " + args[0];
+            }else{
+                _StdOut.putText("Usage: status <string>  Please supply a string.");
+            }
         }
-
     }
 }
