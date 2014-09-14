@@ -60,8 +60,17 @@ module TSOS {
                     // ... and reset our buffer.
                     this.buffer = "";
                 }else if(chr === "up" || chr === "down"){
+                
+                    // this might be a damn hack but ..... 
                     
-                    this.putText(this.commandRecall(chr));
+                    // first let us clear the buffer
+                    this.buffer = "";
+                
+                    var s:string = this.commandRecall(chr);
+                    this.putText(s);
+                    
+                    // in case we use this command - put it in buffer
+                    this.buffer = s;
                 
                 //backspace
                 }else if(chr === String.fromCharCode(8)){
