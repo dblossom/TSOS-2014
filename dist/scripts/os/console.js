@@ -139,6 +139,15 @@ var TSOS;
                 if (this.commandHistoryPointer < 0) {
                     this.commandHistoryPointer = 0;
                 }
+                // incoming command is down
+            } else if (command == "down") {
+                // clear anything just in case
+                this.clearLine();
+                returnString = this.commandHistory[this.commandHistoryPointer++];
+                if (this.commandHistoryPointer > this.commandHistory.length) {
+                    this.commandHistoryPointer = (this.commandHistory.length - 1);
+                    returnString = "";
+                }
             }
 
             // finally return the string;
