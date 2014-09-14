@@ -51,26 +51,15 @@ var TSOS;
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
 
-                    //put it in our command history
+                    // put it in our command history
+                    // increase our pointer to last element
                     this.commandHistory[this.commandHistory.length] = this.buffer;
                     this.commandHistoryPointer = this.commandHistory.length - 1;
 
                     // ... and reset our buffer.
                     this.buffer = "";
                 } else if (chr === "up" || chr === "down") {
-                    // thinking outloud here ...
-                    // up goes backwards starting at length
-                    // down goes back TO length --
-                    // last down should be a reset ... no commands
-                    // last up should be first item in array
-                    if (chr === "up") {
-                        this.clearLine();
-                        this.putText(this.commandHistory[this.commandHistoryPointer]);
-                        this.commandHistoryPointer -= this.commandHistoryPointer;
-                        if (this.commandHistoryPointer < 0) {
-                            this.commandHistoryPointer = 0;
-                        }
-                    }
+                    this.putText(this.commandRecall(chr));
                     //backspace
                 } else if (chr === String.fromCharCode(8)) {
                     // grab the active buffer
@@ -127,6 +116,33 @@ var TSOS;
             _DrawingContext.clearRect(0, (this.currentYPosition - (this.currentFontSize + 1)), this.currentXPosition, this.currentFontSize + 6);
             this.currentXPosition = 0;
             _OsShell.putPrompt();
+        };
+
+        // recalls a command if provided with the proper
+        // arguments - the only valid ones are "up" or "down"
+        // returns a string of that command.
+        Console.prototype.commandRecall = function (command) {
+            // string to return - cannot be slick because we need
+            // to ensure the pointer stays at zero once at first element
+            var returnString = "";
+
+            // if the incoming command is up
+            if (command === "up") {
+                // if there already is something let us just clear it
+                this.clearLine();
+
+                // set our return string with something
+                // TODO: how to handle no commands?
+                returnString = this.commandHistory[this.commandHistoryPointer--];
+
+                //if we just returned the first element, stay there (how linux term works)
+                if (this.commandHistoryPointer < 0) {
+                    this.commandHistoryPointer = 0;
+                }
+            }
+
+            // finally return the string;
+            return returnString;
         };
         return Console;
     })();
