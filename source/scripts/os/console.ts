@@ -97,9 +97,9 @@ module TSOS {
                 }else if(chr === String.fromCharCode(9)){
                 
                     // umm idk -- what the fuck is command completion ?
-                    // at least two chars ? three chars ? one char?
-                    // I am going to do two ... 
-                    // TODO: do I want "search length 2 to be inside commandLookup?
+
+                    // TODO: do I want "search length 2" to be inside commandLookup?
+                    //       do I want length to be < 2, > 2, users picks ? wtf idk.
                     //       what if wrong on first guess ? do it again ? or return
                     //       blank ? or the original search key ? sounds neat ... 
 
