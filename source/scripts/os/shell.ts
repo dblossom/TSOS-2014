@@ -345,11 +345,13 @@ module TSOS {
         
         public shellStatus(args){
         
-            if(args.length > 0){
-                // TODO: add to log ? seems like a log action ?
-                _StatusDisplay.textContent = "Status: " + args[0];
-            }else{
+            if(args.length <= 0){
                 _StdOut.putText("Usage: status <string>  Please supply a string.");
+
+            }else{
+                // TODO: add to log ? seems like a log action ?
+                //       add support for spaces.
+                _StatusDisplay.textContent = "Status: " + args[0];
             }
         }
     }
