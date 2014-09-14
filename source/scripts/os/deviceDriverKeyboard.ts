@@ -63,10 +63,13 @@ module TSOS {
                 // fwiw: not a fan of switch either
                 switch(keyCode){
                     
-                    case 8: // backspace not playing nice already
+                    case 8: // backspace 
                         chr = String.fromCharCode(keyCode);
                         break;      
-                    // later in life, my OCD will re-order these.
+                        
+                    case 9: // tab
+                        chr = String.fromCharCode(keyCode);
+
                     case 32: // space
                         chr = String.fromCharCode(keyCode);
                         break;

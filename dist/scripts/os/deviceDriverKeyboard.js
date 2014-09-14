@@ -62,6 +62,9 @@ var TSOS;
                         chr = String.fromCharCode(keyCode);
                         break;
 
+                    case 9:
+                        chr = String.fromCharCode(keyCode);
+
                     case 32:
                         chr = String.fromCharCode(keyCode);
                         break;

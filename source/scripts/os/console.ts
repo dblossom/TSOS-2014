@@ -42,6 +42,7 @@ module TSOS {
             this.currentYPosition = this.currentFontSize;
         }
 
+        // TODO: with all these "else if" might be time to consider something else?
         public handleInput(): void {
             while (_KernelInputQueue.getSize() > 0) {
                 // Get the next character from the kernel input queue.
@@ -92,6 +93,14 @@ module TSOS {
                     
                     // reset the buffer dumbass
                     this.buffer = currBuff;          
+                    
+                }else if(chr === String.fromCharCode(9)){
+                
+                    // umm idk -- 
+                	this.buffer = "";
+                    var s:string = _OsShell.commandList[1].command
+                    this.putText(s);
+                    this.buffer = s;
                     
                 }else {
                     // This is a "normal" character, so ...
