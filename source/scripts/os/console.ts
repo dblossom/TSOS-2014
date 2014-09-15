@@ -154,11 +154,12 @@ module TSOS {
             if(this.currentYPosition > _Canvas.height){
                 
                 // do not want Y to be larger than canvas height
-                this.currentYPosition = _Canvas.height;
+                this.currentYPosition = _Canvas.height - 6;
                 
                 // TODO: make ts like.
-                var x = _DrawingContext.getImageData(0, this.currentFontSize, _Canvas.width, _Canvas.height);
+                var x = _DrawingContext.getImageData(0, (_DefaultFontSize + _FontHeightMargin), _Canvas.width, _Canvas.height);
                 
+                // clear what is in the canvas
                 this.clearScreen();
                 
                 _DrawingContext.putImageData(x,0,0);
