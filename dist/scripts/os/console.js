@@ -138,6 +138,7 @@ var TSOS;
             this.currentYPosition += _DefaultFontSize + _FontHeightMargin;
 
             // TODO: Handle scrolling. (Project 1)
+            // comment
             alert(_Canvas.height);
 
             _Canvas.height += this.currentYPosition;
