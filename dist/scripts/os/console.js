@@ -142,13 +142,10 @@ var TSOS;
 
             // TODO: Handle scrolling. (Project 1)
             if (this.currentYPosition > _Canvas.height) {
-                _Canvas.height = (this.currentYPosition + 10);
-                //       _DrawingContext.clearRect(0, 0, this.currentXPosition, this.currentYPosition);
-                // grow the canvas height.
-                //       var y = (_Canvas.height + this.currentYPosition);
-                //       _Canvas.height = y;
-                //       alert(this.s);
-                //       _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, this.s);
+                this.currentYPosition = _Canvas.height;
+
+                // clear the first line...
+                _DrawingContext.clearRect(0, 0, _Canvas.width, this.currentFontSize + 6);
             }
         };
 
