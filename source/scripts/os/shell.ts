@@ -118,6 +118,12 @@ module TSOS {
                                   
             this.commandList[this.commandList.length] = sc;
             
+            sc = new ShellCommand(this.shellTempConvert,
+                                 "temp",
+                                 "<F | C> - the unit to convert to.");
+            
+            this.commandList[this.commandList.length] = sc;
+            
             
             // Display the initial prompt.
             this.putPrompt();
@@ -413,6 +419,25 @@ module TSOS {
             
             alert(isValid);
             
+        }
+        
+        // will convert from F to C or C to F.
+        public shellTempConvert(args){
+            
+            if( args.length < 2 ||
+               (args[1].toLowerCase() != "f" &&
+                args[1].toLowerCase() != "c")){
+               
+                _StdOut.putText("Usage: temp <temp number> <F | C>.");
+            }else if(args[1].toLowerCase() === "f"){
+                var temp: number = args[0];
+                temp = (temp * 1.8) + 32;
+                _StdOut.putText(args[0] + "C" + " = " + temp.toString() + "F");
+            }else if(args[1].toLowerCase() === "c"){
+                var temp: number = args[0];
+                temp = (temp - 32) / 1.8;
+                _StdOut.putText(args[0] + "F" + " = " + temp.toString() + "C");
+            }
         }
     }
 }
