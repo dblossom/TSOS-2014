@@ -19,6 +19,7 @@ module TSOS {
         // public commandHistory:Array<string>;
         public commandHistory = [];
         public commandHistoryPointer:number = this.commandHistory.length;
+        public s: string = "";
 
         constructor(public currentFont = _DefaultFontFamily,
                     public currentFontSize = _DefaultFontSize,
@@ -138,17 +139,34 @@ module TSOS {
                 // Move the current X position.
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
+                
+                this.s += text;
             }
          }
 
         public advanceLine(): void {
             this.currentXPosition = 0;
             this.currentYPosition += _DefaultFontSize + _FontHeightMargin;
-            // TODO: Handle scrolling. (Project 1)
-            // comment
-            alert(_Canvas.height);
             
-            _Canvas.height += this.currentYPosition;
+            
+            // TODO: Handle scrolling. (Project 1)
+
+            if(this.currentYPosition > _Canvas.height){
+                
+                _Canvas.height = (this.currentYPosition + 10);
+                
+                
+         //       _DrawingContext.clearRect(0, 0, this.currentXPosition, this.currentYPosition);
+                // grow the canvas height.
+         //       var y = (_Canvas.height + this.currentYPosition);
+         //       _Canvas.height = y;
+         //       alert(this.s);
+         //       _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, this.s);
+            
+            }
+           
+            
+            
             
         }
         
