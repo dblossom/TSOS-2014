@@ -136,7 +136,11 @@ var TSOS;
         Console.prototype.advanceLine = function () {
             this.currentXPosition = 0;
             this.currentYPosition += _DefaultFontSize + _FontHeightMargin;
+
             // TODO: Handle scrolling. (Project 1)
+            alert(_Canvas.height);
+
+            _Canvas.height += this.currentYPosition;
         };
 
         // clears a line
