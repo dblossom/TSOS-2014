@@ -145,12 +145,12 @@ var TSOS;
                 // do not want Y to be larger than canvas height
                 this.currentYPosition = _Canvas.height;
 
-                _DrawingContext.save();
+                // TODO: make ts like.
+                var x = _DrawingContext.getImageData(0, this.currentFontSize, _Canvas.width, _Canvas.height);
 
-                // clear the first line...
-                _DrawingContext.clearRect(0, 0, _Canvas.width, this.currentFontSize + 6);
-                //move each line up one, FML.
-                // we can
+                this.clearScreen();
+
+                _DrawingContext.putImageData(x, 0, 0);
             }
         };
 
