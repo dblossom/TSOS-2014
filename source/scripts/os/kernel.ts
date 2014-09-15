@@ -174,12 +174,17 @@ module TSOS {
             // just testing, hard coding stuff --
             // hope to make something better later
             var a = _Canvas.getContext("2d");
+            a.clearRect(0,0,500,500);
             a.fillStyle = "blue";
             a.fillRect(0, 0, 500, 500);
-            // a.font = "30px";
-            a.fillText("You're FUCKED!", 250, 250);
+            a.font = "30px";
+            a.fillStyle = "white";
+            a.fillText("You're FUCKED!", 150, 150);
+            a.fillText("Toss the PC in the Trash!", 150, 170);
             
             this.krnShutdown();
+            
+            clearInterval(_hardwareClockID);
         }
     }
 }
