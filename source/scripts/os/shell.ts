@@ -104,9 +104,17 @@ module TSOS {
             
             this.commandList[this.commandList.length] = sc;
             
+            // status
             sc = new ShellCommand(this.shellStatus,
                                   "status",
                                   "<string> - updates status message.");
+                                  
+            this.commandList[this.commandList.length] = sc;
+            
+            // load
+            sc = new ShellCommand(this.shellLoad,
+                                  "load",
+                                  "- load program from text area.");
                                   
             this.commandList[this.commandList.length] = sc;
             
@@ -350,9 +358,61 @@ module TSOS {
 
             }else{
                 // TODO: add to log ? seems like a log action ?
-                //       add support for spaces.
-                _StatusDisplay.textContent = "Status: " + args[0];
+                var argsString:string = "";
+                for(var i:number = 0; i < args.length; i++){
+                    argsString = argsString + " " + args[i];
+                }
+                    _StatusDisplay.textContent = "Status:" + argsString;
             }
+        }
+        
+        public shellLoad(args){
+        
+            // start with a valid input ?
+            var isValid: boolean = true;
+            
+            var textInput: string = "";
+            textInput = _ProgramTextArea.value;
+            
+            // loop over the entire input ... fun
+            // must be a better way ( probably with some
+            // built in javascript functions ;) )
+            var pointer: number = 0;
+            while(pointer < textInput.length && isValid == true){
+                var tempCharInt:number = textInput.toUpperCase().charCodeAt(pointer++);
+                
+                //can we switch on a char ... 
+                switch(tempCharInt){
+                    
+                    case 32:
+                    case 48:
+                    case 49:
+                    case 50:
+                    case 51:
+                    case 52:
+                    case 53:
+                    case 54:
+                    case 55:
+                    case 56:
+                    case 57:
+                    case 65:
+                    case 66:
+                    case 67:
+                    case 68:
+                    case 69:
+                    case 70:
+                        isValid = true;
+                        break;
+                    default:
+                        isValid = false;
+                        break;
+                
+                } 
+            
+            }
+            
+            alert(isValid);
+            
         }
     }
 }

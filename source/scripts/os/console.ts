@@ -61,10 +61,6 @@ module TSOS {
                     // ... and reset our buffer.
                     this.buffer = "";
                 }else if(chr === "up" || chr === "down"){
-                
-                    // so the 'buffer' is needed to push the
-                    // command to the shell - unless we do
-                    // some overhaul so -- 
                     
                     // first let us clear the buffer
                     this.buffer = "";
@@ -87,8 +83,10 @@ module TSOS {
                     // substring it
                     currBuff = currBuff.substring(0, (currBuff.length-1));
 					
+					// erase the entire line
                     this.clearLine();
                     
+                    // put the text back minus one char
                     this.putText(currBuff);
                     
                     // reset the buffer dumbass

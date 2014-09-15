@@ -45,6 +45,9 @@ module TSOS {
             // Use the TypeScript cast to HTMLInputElement
             (<HTMLInputElement> document.getElementById("btnStartOS")).focus();
             
+            // get a reference to the program text area.
+            _ProgramTextArea = <HTMLTextAreaElement> document.getElementById('taProgramInput');
+            
             // Get labels for time/date and status ... 
             // underscore vars are not my style ... 
             // but like to follow the pattern of globals start with "_"

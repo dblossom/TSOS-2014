@@ -68,6 +68,9 @@ var _TimeDisplay: HTMLLabelElement = null;
 var _DateDisplay: HTMLLabelElement = null;
 var _StatusDisplay: HTMLLabelElement = null;
 
+// Global for program text area
+var _ProgramTextArea: HTMLTextAreaElement = null;
+
 // For testing...
 var _GLaDOS: any = null;
 var Glados: any = null;

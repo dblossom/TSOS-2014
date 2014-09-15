@@ -64,6 +64,9 @@ var _TimeDisplay = null;
 var _DateDisplay = null;
 var _StatusDisplay = null;
 
+// Global for program text area
+var _ProgramTextArea = null;
+
 // For testing...
 var _GLaDOS = null;
 var Glados = null;
