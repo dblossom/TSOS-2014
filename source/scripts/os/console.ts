@@ -153,10 +153,16 @@ module TSOS {
 
             if(this.currentYPosition > _Canvas.height){
                 
+                // do not want Y to be larger than canvas height
                 this.currentYPosition = _Canvas.height;
+                
+                _DrawingContext.save();
                 
                 // clear the first line...
                 _DrawingContext.clearRect(0, 0, _Canvas.width, this.currentFontSize + 6);
+                
+                //move each line up one, FML.
+                // we can 
                 
             }
            
