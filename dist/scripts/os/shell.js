@@ -87,6 +87,10 @@ var TSOS;
 
             this.commandList[this.commandList.length] = sc;
 
+            sc = new TSOS.ShellCommand(this.shellTestBSOD, "bsod", "- simulates a bsod");
+
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -395,6 +399,10 @@ var TSOS;
                 temp = (temp - 32) / 1.8;
                 _StdOut.putText(args[0] + "F" + " = " + temp.toString() + "C");
             }
+        };
+
+        Shell.prototype.shellTestBSOD = function (args) {
+            _Kernel.krnTrapError("shit");
         };
         return Shell;
     })();

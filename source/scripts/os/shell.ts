@@ -124,6 +124,12 @@ module TSOS {
             
             this.commandList[this.commandList.length] = sc;
             
+            sc = new ShellCommand(this.shellTestBSOD,
+                                  "bsod",
+                                  "- simulates a bsod");
+            
+            this.commandList[this.commandList.length] = sc;
+            
             
             // Display the initial prompt.
             this.putPrompt();
@@ -438,6 +444,10 @@ module TSOS {
                 temp = (temp - 32) / 1.8;
                 _StdOut.putText(args[0] + "F" + " = " + temp.toString() + "C");
             }
+        }
+        
+        public shellTestBSOD(args){
+            _Kernel.krnTrapError("shit");
         }
     }
 }
