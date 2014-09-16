@@ -134,6 +134,8 @@ var TSOS;
                 this.currentXPosition = this.currentXPosition + offset;
             }
             if (this.currentXPosition > _Canvas.width) {
+                // this only works for 1 char at a time...
+                // TODO: add code to make it wrap no matter what the length.
                 this.advanceLine();
             }
         };
