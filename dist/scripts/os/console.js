@@ -133,6 +133,9 @@ var TSOS;
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
             }
+            if (this.currentXPosition > _Canvas.width) {
+                this.advanceLine();
+            }
         };
 
         // simply put the function advances a line - we added rollover support which we are calling scroll
