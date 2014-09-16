@@ -163,21 +163,29 @@ var TSOS;
         Kernel.prototype.krnTrapError = function (msg) {
             TSOS.Control.hostLog("OS ERROR - TRAP: " + msg);
 
-            // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
+            // display a BSOD - right now msg is not used and we are hard coding fake error messages
+            // TODO: maybe allow msg to be passed through ? like what the error is ?
+            this.bsod(msg);
+
+            this.krnShutdown();
+
+            clearInterval(_hardwareClockID);
+        };
+
+        //
+        Kernel.prototype.bsod = function (msg) {
             // just testing, hard coding stuff --
             // hope to make something better later
             var a = _Canvas.getContext("2d");
             a.clearRect(0, 0, 500, 500);
             a.fillStyle = "blue";
-            a.fillRect(0, 0, 500, 500);
-            a.font = "30px";
+            a.fillRect(0, 0, _Canvas.width, _Canvas.height);
+            a.font = "bold 25px Arial";
             a.fillStyle = "white";
-            a.fillText("You're FUCKED!", 150, 150);
-            a.fillText("Toss the PC in the Trash!", 150, 170);
-
-            this.krnShutdown();
-
-            clearInterval(_hardwareClockID);
+            a.fillText("You're FUCKED!", 0, 150);
+            a.fillText("Toss the PC in the Trash!", 0, 180);
+            a.fillText("What are we going to do ?", 0, 210);
+            a.fillText("Have you tried turning it off and on again?", 0, 240);
         };
         return Kernel;
     })();
