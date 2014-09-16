@@ -106,6 +106,7 @@ module TSOS {
                         // we do nothing ...
                     }else{
                         
+                        // erase buffer, erarse line, find command, put command on console and in buffer.
                         this.buffer = "";
                         this.clearLine();
                         var commandFound:string = this.commandLookup(search);
@@ -122,6 +123,7 @@ module TSOS {
                     this.buffer += chr;
                 }
                 // TODO: Write a case for Ctrl-C.
+                //       What do we want ctrl-c to do?
             }
         }
 
@@ -140,7 +142,8 @@ module TSOS {
                 this.currentXPosition = this.currentXPosition + offset;
             }
          }
-
+        
+        // simply put the function advances a line - we added rollover support which we are calling scroll
         public advanceLine(): void {
             this.currentXPosition = 0;
             this.currentYPosition += _DefaultFontSize + _FontHeightMargin;
@@ -156,6 +159,8 @@ module TSOS {
         // resets x position
         // replaces prompt
         private clearLine(): void {
+            // so - x is always 0, starting Y is the Y minus the font size so we are at the top of a letter
+            // go to where the X currently is and font size (FWIW: +1 and +6 just sorta help it clear better :))
             _DrawingContext.clearRect(0, (this.currentYPosition - (this.currentFontSize + 1)), this.currentXPosition, this.currentFontSize + 6);
             this.currentXPosition = 0;
             _OsShell.putPrompt();
@@ -186,6 +191,7 @@ module TSOS {
                 // clear anything just in case
                 this.clearLine();
                 returnString = this.commandHistory[++this.commandHistoryPointer];
+                // if we are at the last, return blank
                 if(this.commandHistoryPointer > this.commandHistory.length){
                     this.commandHistoryPointer = this.commandHistory.length;
                     returnString = "";
@@ -195,19 +201,25 @@ module TSOS {
             return returnString;
         }
         
+        // looks up a command in the shells command list
         private commandLookup(wildcard): string{
             
             var returnString:string = "";
             
+            // so not too many commands so just loop through looking
+            // for the "wildcard" lol 
             for(var i:number = 0; i < _OsShell.commandList.length; i++){
-                            
+                
+                // this creates a substring from the length of the wildcard, this will allow
+                // somone to search and length -- 1,2,3,4,5 does not matter
+                // then we trim and match. NOTE: we only match left to right, nothing fancy.
                 var tempString:string = _OsShell.commandList[i].command.substring(0, wildcard.length);
-                            
+                    
+                    // if we match, set the return string        
                     if(tempString === wildcard){
                         returnString = _OsShell.commandList[i].command;
                     }               
             }
-            
             return returnString;
         }
         
