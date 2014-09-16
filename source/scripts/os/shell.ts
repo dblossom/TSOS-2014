@@ -385,11 +385,17 @@ module TSOS {
             // built in javascript functions ;) )
             var pointer: number = 0;
             while(pointer < textInput.length && isValid == true){
+                // what is the char code of the char in the current position of the string
+                // note "toUpperCase()" so we are only checking one range of letters
                 var tempCharInt:number = textInput.toUpperCase().charCodeAt(pointer++);
                 
-                //can we switch on a char ... 
+                
                 switch(tempCharInt){
-                    
+                
+                    // is the char A-F or 0-9? (or space)
+                    // if so set to true ... 
+                    // really we could do nothing since we start at true and set to false
+                    // if any other char comes our way -- BUT -- we will still "set" to true.
                     case 32:
                     case 48:
                     case 49:
@@ -412,11 +418,12 @@ module TSOS {
                     default:
                         isValid = false;
                         break;
-                
                 } 
-            
             }
-            
+            // NO Fucking idea what to do with the boolean state? I suppose we could print
+            // text to the scrren rather than this stupid alert? even that is fucking stupid
+            // Hi you entered valid code -- Hi you did not enter valid code... so whatever
+            // I know this is for future projects so just glad it is started.
             alert(isValid);
             
         }
