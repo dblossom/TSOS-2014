@@ -30,6 +30,7 @@ var TSOS;
             var curDate = new Date();
 
             // TODO: consider moving date, no need to update the date every second
+            //       however, if it was running for days at a time ...
             _DateDisplay.textContent = "Date: " + curDate.toLocaleDateString();
             _TimeDisplay.textContent = "Time: " + curDate.toLocaleTimeString();
 

@@ -78,58 +78,52 @@ module TSOS {
             // processes - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             
-            //Assignment 1 Requirement 2 (add date, whereami, and something fun)
-            //TODO: remove "something fun" with what I decide ...
-            
-            // this comment intentionally left blank (but it is not blank!)
-            
             // date (following naming style from methods above - cause that is what you do)
             sc = new ShellCommand(this.shellDate, 
                                   "date", 
                                   "- displays the current date and time.");
             this.commandList[this.commandList.length] = sc;
             
-            // whereami - randomly displays a location out of 5 possible
-            //            that have to do with Shawshank Redemption.
+            // whereami - randomly displays a location out an array to which
+            //            I will add too as time allows ... all will reference
+            //            locations in The Shawshank Redemption. 
+            //            (http://www.imdb.com/title/tt0111161/)
             sc = new ShellCommand(this.shellWhere,
                                  "whereami",
                                  "- displays location relevent to Shawshank Redemption.");
-            
             this.commandList[this.commandList.length] = sc;
             
-            // beammeup
+            // beammeup - allows the user to be beamed up some place - or does it?
             sc = new ShellCommand(this.shellBeam,
                                   "beam",
                                   "- beams you up ... ");
-            
             this.commandList[this.commandList.length] = sc;
             
-            // status
+            // status - allows the user to change the default status message
             sc = new ShellCommand(this.shellStatus,
                                   "status",
-                                  "<string> - updates status message.");
-                                  
+                                  "<string> - updates status message.");           
             this.commandList[this.commandList.length] = sc;
             
-            // load
+            // load - loads a program from the "program areas"
             sc = new ShellCommand(this.shellLoad,
                                   "load",
                                   "- load program from text area.");
-                                  
             this.commandList[this.commandList.length] = sc;
             
+            // temp - converts F to C and C to F. If you provide a C it
+            //        will convert from F to C and if you provide an F
+            //        it will provide C to F. Confusing, maybe make two ?
             sc = new ShellCommand(this.shellTempConvert,
                                  "temp",
                                  "<F | C> - the unit to convert to.");
-            
             this.commandList[this.commandList.length] = sc;
             
+            // bsod - Blue Screen Test!! 
             sc = new ShellCommand(this.shellTestBSOD,
                                   "bsod",
                                   "- simulates a bsod");
-            
-            this.commandList[this.commandList.length] = sc;
-            
+            this.commandList[this.commandList.length] = sc;         
             
             // Display the initial prompt.
             this.putPrompt();

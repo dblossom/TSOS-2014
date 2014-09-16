@@ -32,15 +32,18 @@ var TSOS;
             _Kernel.krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
             var chr = "";
 
+            // need to grab caps first or all hell would break loose.
+            if (keyCode == 20) {
+                this.caps = !this.caps;
+            }
+
             // just a regular char -- did not need the other range
             // A and a == 65 regardless.
             if ((keyCode >= 65) && (keyCode <= 90)) {
                 // is the shift key pressed?
                 // if not, we want the lower-case
                 // else leave alone for upper-case
-                //TODO: add caps-lock support (sounds easy, prob not).
-                //      idea: global flag that turns on and off with each keyCode 20.
-                if (!isShifted) {
+                if (!isShifted && !this.caps) {
                     chr = String.fromCharCode(keyCode + 32);
                 } else {
                     chr = String.fromCharCode(keyCode);

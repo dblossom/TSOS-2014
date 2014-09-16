@@ -19,7 +19,6 @@ module TSOS {
         // public commandHistory:Array<string>;
         public commandHistory = [];
         public commandHistoryPointer:number = this.commandHistory.length;
-        public s: string = "";
 
         constructor(public currentFont = _DefaultFontFamily,
                     public currentFontSize = _DefaultFontSize,
@@ -139,36 +138,18 @@ module TSOS {
                 // Move the current X position.
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
-                
-                this.s += text;
             }
          }
 
         public advanceLine(): void {
             this.currentXPosition = 0;
             this.currentYPosition += _DefaultFontSize + _FontHeightMargin;
-            
-            
-            // TODO: Handle scrolling. (Project 1)
 
             if(this.currentYPosition > _Canvas.height){
-                
-                // do not want Y to be larger than canvas height
-                this.currentYPosition = _Canvas.height - 6;
-                
-                // TODO: make ts like.
-                var x = _DrawingContext.getImageData(0, (_DefaultFontSize + _FontHeightMargin), _Canvas.width, _Canvas.height);
-                
-                // clear what is in the canvas
-                this.clearScreen();
-                
-                _DrawingContext.putImageData(x,0,0);
-                
+                // past max canvas height, bump a line "scroll"
+                // see function for details.
+                this.scrollLine();
             }
-           
-            
-            
-            
         }
         
         // clears a line
@@ -228,6 +209,28 @@ module TSOS {
             }
             
             return returnString;
+        }
+        
+        // This function will "scroll" one line at a time
+        // not sure how it would react if a scroll was not needed
+        // TODO: maybe make it so you can scroll multiple lines?
+        private scrollLine(): void{
+            // do not want Y to be larger than canvas height
+            this.currentYPosition = _Canvas.height - 6;
+                
+            // save the state of the console
+            // getImageData(startX, startY, width, height) 
+            // 0 - start at the top left corner
+            // _DefaultFontSize _ FontHeightMargin - make up a default Y and we only want from line 2 on
+            // width & height -- duh, we want the entire canvas (we do not need all but whatever now we can
+            //                   resize without breaking scroll
+            var save = _DrawingContext.getImageData(0, (_DefaultFontSize + _FontHeightMargin), _Canvas.width, _Canvas.height);
+                
+            // clear what is in the canvas
+            this.clearScreen();
+                
+            // now starting at the top left corner (0,0) put the "clipped" saved stated from above back.
+            _DrawingContext.putImageData(save, 0, 0);
         }
     }
  }

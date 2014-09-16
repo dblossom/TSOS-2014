@@ -49,6 +49,9 @@ module TSOS {
             this.krnTrace("Creating and Launching the shell.");
             _OsShell = new Shell();
             _OsShell.init();
+            
+            // set a default for "status" (this a good place for this??)
+            _OsShell.shellStatus("running...");
 
             // Finally, initiate testing.
             if (_GLaDOS) {
