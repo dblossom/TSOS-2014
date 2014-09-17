@@ -126,17 +126,33 @@ var TSOS;
             // decided to write one function and use the term "text" to connote string or char.
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
             if (text !== "") {
-                // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
-
-                // Move the current X position.
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
-            }
-            if (this.currentXPosition > _Canvas.width) {
-                // this only works for 1 char at a time...
-                // TODO: add code to make it wrap no matter what the length.
-                this.advanceLine();
+
+                if ((this.currentXPosition + offset) > _Canvas.width) {
+                    var wordList = text.split(" ");
+
+                    for (var i = 0; i < wordList.length; i++) {
+                        // So, by spliting on space we lose the breaks between words...
+                        // I tried to add a space at the end of ever for-loop with
+                        // .drawText() - that did not seem to work no fucking idea why
+                        // so - for every word just add a space -- this is fucking dumb
+                        wordList[i] += " ";
+
+                        var len = _DrawingContext.measureText(this.currentFont, this.currentFontSize, wordList[i]);
+                        if ((len + this.currentXPosition) > _Canvas.width) {
+                            // next line
+                            this.advanceLine();
+                        }
+                        _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, wordList[i]);
+                        this.currentXPosition += len;
+                    }
+                } else {
+                    // Draw the text at the current X and Y coordinates.
+                    _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
+
+                    // Move the current X position.
+                    this.currentXPosition = this.currentXPosition + offset;
+                }
             }
         };
 

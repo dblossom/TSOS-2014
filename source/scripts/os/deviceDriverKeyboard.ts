@@ -40,11 +40,11 @@ module TSOS {
             
             // just a regular char -- did not need the other range
             // A and a == 65 regardless. 
-            if ((keyCode >= 65) && (keyCode <= 90)){
+            if ((keyCode >= 65)&& (keyCode <= 90)){
                 
                 // is the shift key pressed?
                 // if not, we want the lower-case
-                // else leave alone for upper-case
+                // else leave alone for upper-case 
                 if(!isShifted && !this.caps){
                     chr = String.fromCharCode(keyCode + 32);
                 }else{
