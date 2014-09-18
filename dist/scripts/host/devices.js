@@ -37,7 +37,8 @@ var TSOS;
             _DateTimeContext.clearRect(0, 0, _DateTime.width, _DateTime.height);
 
             // set it
-            _DateTimeContext.fillText(curDateString, 0, 10);
+            _DateTimeContext.font = '20pt';
+            _DateTimeContext.fillText(curDateString, 0, _DefaultFontSize);
 
             // Call the kernel clock pulse event handler.
             _Kernel.krnOnCPUClockPulse();
