@@ -365,10 +365,15 @@ module TSOS {
             }else{
                 // TODO: add to log ? seems like a log action ?
                 var argsString:string = "";
+                
+                // silly I know - but what if more than one word is passed.
                 for(var i:number = 0; i < args.length; i++){
                     argsString = argsString + " " + args[i];
                 }
-                   // _Status.textContent = "Status:" + argsString;
+                _StatusContext.clearRect(0,0,_Status.width, _Status.height);
+                var statusString:String = "";
+                statusString = "System status: " + argsString;
+                _StatusContext.fillText(statusString, 0, 10);
             }
         }
         

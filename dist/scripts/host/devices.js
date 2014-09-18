@@ -26,13 +26,18 @@ var TSOS;
             // Increment the hardware (host) clock.
             _OSclock++;
 
-            // with every pulse we can up date the date / time display
-            // looks like a function call to me ?????
-            _StatusContext.clearRect(0, 0, _Status.width, _Status.height);
+            // update the date/time canvas
+            // grab a date object
             var curDate = new Date();
-            var statusString = "";
-            statusString = "Running...." + curDate.toLocaleDateString() + " " + curDate.toLocaleTimeString();
-            _StatusContext.fillText(statusString, 0, 10);
+
+            // set a string to be a date / time object
+            var curDateString = curDate.toLocaleDateString() + " " + curDate.toLocaleTimeString();
+
+            // clear the canvas
+            _DateTimeContext.clearRect(0, 0, _DateTime.width, _DateTime.height);
+
+            // set it
+            _DateTimeContext.fillText(curDateString, 0, 10);
 
             // Call the kernel clock pulse event handler.
             _Kernel.krnOnCPUClockPulse();

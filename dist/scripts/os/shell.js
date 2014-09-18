@@ -333,10 +333,14 @@ var TSOS;
             } else {
                 // TODO: add to log ? seems like a log action ?
                 var argsString = "";
+
                 for (var i = 0; i < args.length; i++) {
                     argsString = argsString + " " + args[i];
                 }
-                // _Status.textContent = "Status:" + argsString;
+                _StatusContext.clearRect(0, 0, _Status.width, _Status.height);
+                var statusString = "";
+                statusString = "System status: " + argsString;
+                _StatusContext.fillText(statusString, 0, 10);
             }
         };
 

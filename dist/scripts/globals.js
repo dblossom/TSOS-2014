@@ -62,6 +62,10 @@ var _hardwareClockID = null;
 var _Status = null;
 var _StatusContext = null;
 
+// Global variables for date/time canvas
+var _DateTime = null;
+var _DateTimeContext = null;
+
 // Global for program text area
 var _ProgramTextArea = null;
 

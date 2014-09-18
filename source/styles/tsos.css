@@ -38,6 +38,12 @@ h3 {
 
 #status {
   background-color:#DFDBC3;
+  border: 2px solid black;
+  cursor: default;
+}
+
+#datetime {
+  background-color:#DFDBC3;
   border: 2px solid red;
   cursor: default;
 }

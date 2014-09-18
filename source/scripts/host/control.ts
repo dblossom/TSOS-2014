@@ -48,10 +48,13 @@ module TSOS {
             // get a reference to the program text area.
             _ProgramTextArea = <HTMLTextAreaElement> document.getElementById('taProgramInput');
             
-            // small canavas for status message, date and time
-            // TODO: consider a few canvas tags ... 
+            // small canvas for status message
             _Status = <HTMLCanvasElement> document.getElementById('status');
             _StatusContext = _Status.getContext('2d');
+            
+            // small canvas for date/time
+            _DateTime = <HTMLCanvasElement> document.getElementById('datetime');
+            _DateTimeContext = _DateTime.getContext('2d');
 
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {

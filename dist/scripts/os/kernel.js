@@ -48,7 +48,8 @@ var TSOS;
             _OsShell.init();
 
             // set a default for "status" (this a good place for this??)
-            //_OsShell.shellStatus("running...");
+            _OsShell.shellStatus("running...");
+
             // Finally, initiate testing.
             if (_GLaDOS) {
                 _GLaDOS.afterStartup();

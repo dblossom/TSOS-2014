@@ -66,6 +66,10 @@ var _hardwareClockID: number = null;
 var _Status: HTMLCanvasElement = null;
 var _StatusContext = null;
 
+// Global variables for date/time canvas
+var _DateTime: HTMLCanvasElement = null;
+var _DateTimeContext = null;
+
 
 // Global for program text area
 var _ProgramTextArea: HTMLTextAreaElement = null;
