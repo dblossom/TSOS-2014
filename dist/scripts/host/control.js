@@ -43,12 +43,10 @@ var TSOS;
             // get a reference to the program text area.
             _ProgramTextArea = document.getElementById('taProgramInput');
 
-            // Get labels for time/date and status ...
-            // underscore vars are not my style ...
-            // but like to follow the pattern of globals start with "_"
-            _TimeDisplay = document.getElementById('labelTime');
-            _DateDisplay = document.getElementById('labelDate');
-            _StatusDisplay = document.getElementById('labelStatus');
+            // small canavas for status message, date and time
+            // TODO: consider a few canvas tags ...
+            _Status = document.getElementById('status');
+            _StatusContext = _Status.getContext('2d');
 
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {

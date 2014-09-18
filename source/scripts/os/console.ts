@@ -163,7 +163,6 @@ module TSOS {
                     this.currentXPosition = this.currentXPosition + offset;
                 }
             }
-
          }
         
         // simply put the function advances a line - we added rollover support which we are calling scroll

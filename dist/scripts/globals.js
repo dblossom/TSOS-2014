@@ -58,11 +58,9 @@ var _krnKeyboardDriver = null;
 
 var _hardwareClockID = null;
 
-// Global variables for setting display
-// labels: H1Q3
-var _TimeDisplay = null;
-var _DateDisplay = null;
-var _StatusDisplay = null;
+// Global variables for status canvas
+var _Status = null;
+var _StatusContext = null;
 
 // Global for program text area
 var _ProgramTextArea = null;

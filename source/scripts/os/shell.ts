@@ -368,7 +368,7 @@ module TSOS {
                 for(var i:number = 0; i < args.length; i++){
                     argsString = argsString + " " + args[i];
                 }
-                    _StatusDisplay.textContent = "Status:" + argsString;
+                   // _Status.textContent = "Status:" + argsString;
             }
         }
         
@@ -379,6 +379,11 @@ module TSOS {
             
             var textInput: string = "";
             textInput = _ProgramTextArea.value;
+            
+            // little hack to make sure no blank text is passed.
+            if(textInput === ""){
+                isValid = false;
+            }
             
             // loop over the entire input ... fun
             // must be a better way ( probably with some

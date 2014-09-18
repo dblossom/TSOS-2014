@@ -27,12 +27,12 @@ var TSOS;
             _OSclock++;
 
             // with every pulse we can up date the date / time display
+            // looks like a function call to me ?????
+            _StatusContext.clearRect(0, 0, _Status.width, _Status.height);
             var curDate = new Date();
-
-            // TODO: consider moving date, no need to update the date every second
-            //       however, if it was running for days at a time ...
-            _DateDisplay.textContent = "Date: " + curDate.toLocaleDateString();
-            _TimeDisplay.textContent = "Time: " + curDate.toLocaleTimeString();
+            var statusString = "";
+            statusString = "Running...." + curDate.toLocaleDateString() + " " + curDate.toLocaleTimeString();
+            _StatusContext.fillText(statusString, 0, 10);
 
             // Call the kernel clock pulse event handler.
             _Kernel.krnOnCPUClockPulse();
