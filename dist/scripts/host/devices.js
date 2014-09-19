@@ -26,19 +26,9 @@ var TSOS;
             // Increment the hardware (host) clock.
             _OSclock++;
 
-            // update the date/time canvas
-            // grab a date object
-            var curDate = new Date();
-
-            // set a string to be a date / time object
-            var curDateString = curDate.toLocaleDateString() + " " + curDate.toLocaleTimeString();
-
-            // clear the canvas
-            _DateTimeContext.clearRect(0, 0, _DateTime.width, _DateTime.height);
-
-            // set it
-            _DateTimeContext.font = '20pt';
-            _DateTimeContext.fillText(curDateString, 0, _DefaultFontSize);
+            // we need a reference to "this" object
+            // "this" did not work, which makes sense.
+            new Devices().setDateTime();
 
             // Call the kernel clock pulse event handler.
             _Kernel.krnOnCPUClockPulse();
@@ -70,6 +60,32 @@ var TSOS;
                 // Enqueue this interrupt on the kernel interrupt queue so that it gets to the Interrupt handler.
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(KEYBOARD_IRQ, params));
             }
+        };
+
+        // A private method that uses the DateTime Canavs to display ... well ...
+        // the date and time. I have not fully decided if here in the hardware
+        // section is the place for this -- but, for now it stays.
+        Devices.prototype.setDateTime = function () {
+            // grab a date object -- how else do we date / time
+            var curDate = new Date();
+
+            // set a string to be a date / time object
+            // this will be like the "return" string so to speak
+            var curDateString = curDate.toLocaleDateString() + " " + curDate.toLocaleTimeString();
+
+            // clear the canvas - do not want overlap the text
+            _DateTimeContext.clearRect(0, 0, _DateTime.width, _DateTime.height);
+
+            // set font to make it a bit larger and all that
+            _DateTimeContext.font = '12pt Arial';
+
+            // I want the text to right justify in the canvas so we need to calculate
+            // the lenth of the text - the width to get a starting point for X
+            var offset = _DateTimeContext.measureText(curDateString).width;
+            offset = (_DateTime.width - offset);
+
+            // finally place it on the canvas - pushing Y down just a little further ;)
+            _DateTimeContext.fillText(curDateString, offset, (_DefaultFontSize + 5));
         };
         return Devices;
     })();

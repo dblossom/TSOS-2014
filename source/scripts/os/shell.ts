@@ -338,9 +338,13 @@ module TSOS {
                                    "Red's cell# 237",
                                    "Zihuatanejo",
                                    "A river of shit...",
-                                   "The yard"];
+                                   "The yard",
+                                   "Foodway",
+                                   "The Brewer",
+                                   "In front of the parole board",
+                                   "Buxton"];
                                    
-            var i:number = Math.floor(Math.random() * 5);
+            var i:number = Math.floor(Math.random() * 10);
             
             _StdOut.putText(places[i]);
         
@@ -349,8 +353,6 @@ module TSOS {
         // beam
         public shellBeam(args){
             _StdOut.putText("You are now being beamed up to the mothership please stand by...");
-            _StdOut.advanceLine();
-            _StdOut.putText("...");
             _StdOut.advanceLine();
             _StdOut.putText("...you're not getting beamed anywhere you fucking idiot.");
             _StdOut.advanceLine();
