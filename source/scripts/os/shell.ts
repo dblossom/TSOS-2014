@@ -368,14 +368,26 @@ module TSOS {
                 // TODO: add to log ? seems like a log action ?
                 var argsString:string = "";
                 
-                // silly I know - but what if more than one word is passed.
-                for(var i:number = 0; i < args.length; i++){
-                    argsString = argsString + " " + args[i];
-                }
+                // first are there more than one argument
+                // will be an arry if it is, so we need to
+                // add to a string - with spaces
+                if(args instanceof Array){
+                    for(var i:number = 0; i < args.length; i++){
+                        argsString += args[i] + " ";
+                    }
+                }else{
+                    // not an array - so just set it 
+                    argsString = args;
+                }    
+                
+                // clear the canvas so we do not overlap
                 _StatusContext.clearRect(0,0,_Status.width, _Status.height);
-                var statusString:String = "";
-                statusString = "System status: " + argsString;
-                _StatusContext.fillText(statusString, 0, 10);
+                // set the font
+                _StatusContext.font = '12pt Arial';
+                // append System Status to the front of the string
+                argsString = "System status: " + argsString;
+                //FINALLY put the test on the canvas.
+                _StatusContext.fillText(argsString, 0, (_DefaultFontSize + 5));
             }
         }
         
