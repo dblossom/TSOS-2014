@@ -187,16 +187,16 @@ module TSOS {
             
             // just testing, hard coding stuff --
             // hope to make something better later
-            var a = _Canvas.getContext("2d");
-            a.clearRect(0,0,500,500);
-            a.fillStyle = "blue";
-            a.fillRect(0, 0, _Canvas.width, _Canvas.height);
-            a.font = "bold 25px Arial";
-            a.fillStyle = "white";
-            a.fillText("You're FUCKED!", 0, 150);
-            a.fillText("Toss the PC in the Trash!", 0, 180);
-            a.fillText("What are we going to do ?", 0, 210);
-            a.fillText("Have you tried turning it off and on again?", 0, 240);
+            _DrawingContext.clearRect(0,0,500,500);
+            _DrawingContext.fillStyle = "blue";
+            _DrawingContext.fillRect(0, 0, _Canvas.width, _Canvas.height);
+            _DrawingContext.font = "bold 25px Arial";
+            _DrawingContext.fillStyle = "white";
+            _DrawingContext.fillText(" :( ", 0, 120);
+            _DrawingContext.fillText("You're FUCKED!", 0, 150);
+            _DrawingContext.fillText("Toss the PC in the Trash!", 0, 180);
+            _DrawingContext.fillText("What are we going to do ?", 0, 210);
+            _DrawingContext.fillText("Have you tried turning it off and on again?", 0, 240);
         }
     }
 }

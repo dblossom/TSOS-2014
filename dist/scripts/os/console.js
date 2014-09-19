@@ -19,10 +19,7 @@ var TSOS;
             this.currentXPosition = currentXPosition;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
-            // to hold buffer commands after enter
-            // TODO: make it typescript like ...
-            // http://www.typescriptlang.org/Handbook#basic-types-array
-            // public commandHistory:Array<string>;
+            // to hold buffer commands after enter is pressed
             this.commandHistory = [];
             this.commandHistoryPointer = this.commandHistory.length;
         }
@@ -95,9 +92,7 @@ var TSOS;
                     //       what if wrong on first guess ? do it again ? or return
                     //       blank ? or the original search key ? sounds neat ...
                     var search = this.buffer;
-                    if (search.length < 2) {
-                        // we do nothing ...
-                    } else {
+                    if (search.length > 1) {
                         // erase buffer, erarse line, find command, put command on console and in buffer.
                         this.buffer = "";
                         this.clearLine();
@@ -240,6 +235,7 @@ var TSOS;
         // TODO: maybe make it so you can scroll multiple lines?
         Console.prototype.scrollLine = function () {
             // do not want Y to be larger than canvas height
+            // 6 seems to be a "magic" number.
             this.currentYPosition = _Canvas.height - 6;
 
             // save the state of the console

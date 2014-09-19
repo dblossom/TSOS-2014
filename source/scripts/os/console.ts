@@ -13,11 +13,8 @@ module TSOS {
 
     export class Console {
     
-        // to hold buffer commands after enter
-        // TODO: make it typescript like ...
-        // http://www.typescriptlang.org/Handbook#basic-types-array
-        // public commandHistory:Array<string>;
-        public commandHistory = [];
+        // to hold buffer commands after enter is pressed
+        public commandHistory:string[] = [];
         public commandHistoryPointer:number = this.commandHistory.length;
 
         constructor(public currentFont = _DefaultFontFamily,
@@ -102,18 +99,14 @@ module TSOS {
                     //       blank ? or the original search key ? sounds neat ... 
 
                     var search:string = this.buffer;
-                    if(search.length < 2){
-                        // we do nothing ...
-                    }else{
-                        
+                    if(search.length > 1){
                         // erase buffer, erarse line, find command, put command on console and in buffer.
                         this.buffer = "";
                         this.clearLine();
                         var commandFound:string = this.commandLookup(search);
                         this.putText(commandFound);
-                        this.buffer = commandFound;    
-                            
-                        }
+                        this.buffer = commandFound;        
+                    }
                     
                 }else {
                     // This is a "normal" character, so ...
@@ -250,6 +243,7 @@ module TSOS {
         // TODO: maybe make it so you can scroll multiple lines?
         private scrollLine(): void{
             // do not want Y to be larger than canvas height
+            // 6 seems to be a "magic" number.
             this.currentYPosition = _Canvas.height - 6;
                 
             // save the state of the console

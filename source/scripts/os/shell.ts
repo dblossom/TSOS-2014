@@ -369,7 +369,7 @@ module TSOS {
                 var argsString:string = "";
                 
                 // first are there more than one argument
-                // will be an arry if it is, so we need to
+                // will be an array if it is, so we need to
                 // add to a string - with spaces
                 if(args instanceof Array){
                     for(var i:number = 0; i < args.length; i++){
@@ -394,7 +394,7 @@ module TSOS {
         public shellLoad(args){
         
             // start with a valid input ?
-            var isValid: boolean = true;
+            var isValid: boolean;
             
             var textInput: string = "";
             textInput = _ProgramTextArea.value;
@@ -448,8 +448,8 @@ module TSOS {
             // text to the scrren rather than this stupid alert? even that is fucking stupid
             // Hi you entered valid code -- Hi you did not enter valid code... so whatever
             // I know this is for future projects so just glad it is started.
-            alert(isValid);
-            
+          //  alert(isValid); <-- the popup started to aggravate me, so how about this...
+            _StdOut.putText("The input program is: " + isValid);
         }
         
         // will convert from F to C or C to F.
