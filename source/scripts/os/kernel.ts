@@ -188,7 +188,7 @@ module TSOS {
             // just testing, hard coding stuff --
             // hope to make something better later
             _DrawingContext.clearRect(0,0,500,500);
-            _DrawingContext.fillStyle = "blue";
+            _DrawingContext.fillStyle = "blue"; 
             _DrawingContext.fillRect(0, 0, _Canvas.width, _Canvas.height);
             _DrawingContext.font = "bold 25px Arial";
             _DrawingContext.fillStyle = "white";
