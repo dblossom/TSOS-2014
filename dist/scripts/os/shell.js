@@ -1,6 +1,7 @@
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
 ///<reference path="../utils.ts" />
+///<reference path="../host/memory.ts" />
 /* ------------
 Shell.ts
 The OS Shell - The "command line interface" (CLI) for the console.
@@ -364,7 +365,7 @@ var TSOS;
 
         Shell.prototype.shellLoad = function (args) {
             // start with a valid input ?
-            var isValid;
+            var isValid = true;
 
             var textInput = "";
             textInput = _ProgramTextArea.value;
@@ -374,6 +375,13 @@ var TSOS;
                 isValid = false;
             }
 
+            // first we need to trim <-- actually probably not
+            textInput.trim();
+
+            // remove all whitespace?
+            // replace(" ", "") only removes first
+            textInput = textInput.replace(/ /g, "");
+
             // loop over the entire input ... fun
             // must be a better way ( probably with some
             // built in javascript functions ;) )
@@ -381,6 +389,7 @@ var TSOS;
             while (pointer < textInput.length && isValid == true) {
                 // what is the char code of the char in the current position of the string
                 // note "toUpperCase()" so we are only checking one range of letters
+                // So we need every 2 bytes to be
                 var tempCharInt = textInput.toUpperCase().charCodeAt(pointer++);
 
                 switch (tempCharInt) {
@@ -402,6 +411,7 @@ var TSOS;
                     case 69:
                     case 70:
                         isValid = true;
+
                         break;
                     default:
                         isValid = false;
