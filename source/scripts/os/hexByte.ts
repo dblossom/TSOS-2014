@@ -1,4 +1,5 @@
 ///<reference path="../globals.ts" /> // might not need
+///<reference path="hex.ts" />
 
 // --------------------------------
 //    hexByte.ts
@@ -24,10 +25,18 @@ module TSOS{
     
         // so we take a string and check if it is of length 2
         // if not we disgard it -- otherwise we set our string
-        constructor(hex:string){
-            if(hex.length === 2){
-                this.hexByte = hex;
-            }  
+      //  constructor(hex:string){
+      //      if(hex.length === 2){
+      //          this.hexByte = hex;
+      //      }  
+      //  }
+        
+        constructor(hexLeft:Hex, hexRight:Hex){
+        
+            //TODO: implement an error ?
+            if(hexLeft.isValid() && hexRight.isValid()){
+                this.hexByte = hexLeft.toString() + hexRight.toString();
+            }    
         }
         
         /*

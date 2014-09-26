@@ -24,6 +24,11 @@ module TSOS{
         // our "memory"
         public memoryArray:Array<HexByte>;
         
+        constructor(){
+            this.memoryArray = new Array<HexByte>();
+            this.init();
+        }
+        
         // not sure if we will reall need these, and if we do, need them here ...
         public zeroPointer:number;
         public onePointer:number;
@@ -56,7 +61,7 @@ module TSOS{
                 end_address !== 768)){
                 
                 for(; start_address < end_address; start_address++){
-                    this.memoryArray[start_address] = new HexByte("00");
+                    this.memoryArray[start_address] = new HexByte(new Hex("0"), new Hex("0"));
                 }
                 
             }

@@ -1,4 +1,5 @@
 ///<reference path="../globals.ts" /> // might not need
+///<reference path="hex.ts" />
 // --------------------------------
 //    hexByte.ts
 //
@@ -18,11 +19,17 @@ var TSOS;
     var HexByte = (function () {
         // so we take a string and check if it is of length 2
         // if not we disgard it -- otherwise we set our string
-        function HexByte(hex) {
+        //  constructor(hex:string){
+        //      if(hex.length === 2){
+        //          this.hexByte = hex;
+        //      }
+        //  }
+        function HexByte(hexLeft, hexRight) {
             // what we set the "hex string"
             this.hexByte = "";
-            if (hex.length === 2) {
-                this.hexByte = hex;
+            //TODO: implement an error ?
+            if (hexLeft.isValid() && hexRight.isValid()) {
+                this.hexByte = hexLeft.toString() + hexRight.toString();
             }
         }
         /*

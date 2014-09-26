@@ -387,43 +387,9 @@ var TSOS;
             // built in javascript functions ;) )
             var pointer = 0;
             while (pointer < textInput.length && isValid == true) {
-                // what is the char code of the char in the current position of the string
-                // note "toUpperCase()" so we are only checking one range of letters
-                // So we need every 2 bytes to be
-                var tempCharInt = textInput.toUpperCase().charCodeAt(pointer++);
-
-                switch (tempCharInt) {
-                    case 32:
-                    case 48:
-                    case 49:
-                    case 50:
-                    case 51:
-                    case 52:
-                    case 53:
-                    case 54:
-                    case 55:
-                    case 56:
-                    case 57:
-                    case 65:
-                    case 66:
-                    case 67:
-                    case 68:
-                    case 69:
-                    case 70:
-                        isValid = true;
-
-                        break;
-                    default:
-                        isValid = false;
-                        break;
-                }
+                var tempHexByte = new TSOS.HexByte(new TSOS.Hex(textInput[pointer]), new TSOS.Hex(textInput[++pointer]));
+                pointer++;
             }
-
-            // NO Fucking idea what to do with the boolean state? I suppose we could print
-            // text to the scrren rather than this stupid alert? even that is fucking stupid
-            // Hi you entered valid code -- Hi you did not enter valid code... so whatever
-            // I know this is for future projects so just glad it is started.
-            //  alert(isValid); <-- the popup started to aggravate me, so how about this...
             _StdOut.putText("The input program is: " + isValid);
         };
 

@@ -42,7 +42,7 @@ var TSOS;
             // are we even within a valid memory range ?
             if ((start_address !== 0 || start_address !== 256 || start_address !== 512) && (end_address !== 255 || end_address !== 511 || end_address !== 768)) {
                 for (; start_address < end_address; start_address++) {
-                    this.memoryArray[start_address] = new TSOS.HexByte("00");
+                    this.memoryArray[start_address] = new TSOS.HexByte(new TSOS.Hex("0"), new TSOS.Hex("0"));
                 }
             }
         };
