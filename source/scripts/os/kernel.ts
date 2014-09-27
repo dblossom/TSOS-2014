@@ -38,7 +38,7 @@ module TSOS {
             this.krnTrace(_krnKeyboardDriver.status);
 
             //
-            // ... more?
+            // ... more? <-- sure ? initalize memory here?
             //
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)

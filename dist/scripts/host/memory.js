@@ -18,9 +18,15 @@ var TSOS;
     * read, write, clearall, and clear a block of managed memory
     */
     var Memory = (function () {
-        function Memory() {
-            this.memoryArray = new Array();
-            this.init();
+        function Memory(memoryArray) {
+            this.memoryArray = memoryArray;
+            // our "memory"
+            //public memoryArray:Array<HexByte>;
+            // not sure if we will reall need these ... yet?
+            // starting locations fo memory
+            this.zeroPointer = 0;
+            this.onePointer = 256;
+            this.twoPointer = 512;
         }
         Memory.prototype.write = function (address, hexbyte) {
             // so this at its very basic form will put a "hex byte" in a memory location
@@ -62,6 +68,7 @@ var TSOS;
         * TODO: remove clear all and hope people are smart enough to "init" for clearning memory
         */
         Memory.prototype.init = function () {
+            //this.memoryArray = new Array<HexByte>();
             this.clearBlock(0, 768); // <-- call clearBlock() because we might deprecate clear()
             //     but we would not deprecate clearBlock as that seems  useful
         };

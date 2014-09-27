@@ -69,6 +69,9 @@ var _DateTimeContext = null;
 // Global for program text area
 var _ProgramTextArea = null;
 
+// Memory
+var _Memory;
+
 // For testing...
 var _GLaDOS = null;
 var Glados = null;

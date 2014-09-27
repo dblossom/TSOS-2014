@@ -22,17 +22,17 @@ module TSOS{
     export class Memory{
         
         // our "memory"
-        public memoryArray:Array<HexByte>;
+        //public memoryArray:Array<HexByte>;
         
-        constructor(){
-            this.memoryArray = new Array<HexByte>();
-            this.init();
+        // not sure if we will reall need these ... yet?
+        // starting locations fo memory
+        public zeroPointer:number = 0;
+        public onePointer:number = 256;
+        public twoPointer:number = 512;
+        
+        constructor(public memoryArray:Array<HexByte>){
+            
         }
-        
-        // not sure if we will reall need these, and if we do, need them here ...
-        public zeroPointer:number;
-        public onePointer:number;
-        public twoPointer:number;
         
         public write(address:number, hexbyte:HexByte):void{
             // so this at its very basic form will put a "hex byte" in a memory location
@@ -82,6 +82,7 @@ module TSOS{
          * TODO: remove clear all and hope people are smart enough to "init" for clearning memory
          */
         public init():void{
+            //this.memoryArray = new Array<HexByte>();
             this.clearBlock(0,768); // <-- call clearBlock() because we might deprecate clear()
                                     //     but we would not deprecate clearBlock as that seems  useful
         }

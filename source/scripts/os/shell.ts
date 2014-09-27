@@ -421,6 +421,7 @@ module TSOS {
                 var tempHexByte: HexByte = new HexByte(new Hex(textInput[pointer]), new Hex(textInput[++pointer]));
                 pointer++;
                 
+                
 
             }
             _StdOut.putText("The input program is: " + isValid);
