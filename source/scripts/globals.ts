@@ -73,8 +73,9 @@ var _DateTimeContext = null;
 // Global for program text area
 var _ProgramTextArea: HTMLTextAreaElement = null;
 
-// Memory
+// for memory -- program loading stuff
 var _Memory: TSOS.Memory;
+var _MemManager: TSOS.MemoryManager;
 
 // For testing...
 var _GLaDOS: any = null;

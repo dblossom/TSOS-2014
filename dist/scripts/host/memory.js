@@ -1,4 +1,3 @@
-///<reference path="../globals.ts" />
 ///<reference path="../os/hexByte.ts" />
 //
 //    ----------------------------------------------
@@ -20,13 +19,6 @@ var TSOS;
     var Memory = (function () {
         function Memory(memoryArray) {
             this.memoryArray = memoryArray;
-            // our "memory"
-            //public memoryArray:Array<HexByte>;
-            // not sure if we will reall need these ... yet?
-            // starting locations fo memory
-            this.zeroPointer = 0;
-            this.onePointer = 256;
-            this.twoPointer = 512;
         }
         Memory.prototype.write = function (address, hexbyte) {
             // so this at its very basic form will put a "hex byte" in a memory location

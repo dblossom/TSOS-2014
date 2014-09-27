@@ -69,8 +69,9 @@ var _DateTimeContext = null;
 // Global for program text area
 var _ProgramTextArea = null;
 
-// Memory
+// for memory -- program loading stuff
 var _Memory;
+var _MemManager;
 
 // For testing...
 var _GLaDOS = null;

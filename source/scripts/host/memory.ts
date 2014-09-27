@@ -1,4 +1,3 @@
-///<reference path="../globals.ts" />
 ///<reference path="../os/hexByte.ts" />
 //
 //    ----------------------------------------------
@@ -20,15 +19,6 @@ module TSOS{
      */
     
     export class Memory{
-        
-        // our "memory"
-        //public memoryArray:Array<HexByte>;
-        
-        // not sure if we will reall need these ... yet?
-        // starting locations fo memory
-        public zeroPointer:number = 0;
-        public onePointer:number = 256;
-        public twoPointer:number = 512;
         
         constructor(public memoryArray:Array<HexByte>){
             
