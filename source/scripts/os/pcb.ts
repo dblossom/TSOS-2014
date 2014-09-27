@@ -16,24 +16,26 @@ module TSOS{
         
         // CPU State information
         // kept var names similar to CPU with slight difference for sanity.
-        public progCount: number;
-        public ACC: number;
-        public X_reg: number;
-        public Y_reg: number;
-        public Z_flag: number;
+        public progCount: number = 0;
+        public ACC: number = 0;
+        public X_reg: number = 0;
+        public Y_reg: number = 0;
+        public Z_flag: number = 0;
         
-        constructor(){
+        // base and limit information
+        public base: number;
+        public limit: number;
+        
+        constructor(base:number, limit:number){
             // increment the pid everytime we create a PCB
             // so we do not want to start at zero but rather
             // whatever the next number will be.
             PCB.pid++;
             
-            // init the cpu state info to zero
-            this.progCount = 0;
-            this.ACC = 0;
-            this.X_reg = 0;
-            this.Y_reg = 0;
-            this.Z_flag = 0;
+            // mark the base and limit
+            this.base = base;
+            this.limit = limit;
+
         }
     
     
