@@ -1,4 +1,3 @@
-///<reference path="../os/hexByte.ts" />
 //
 //    ----------------------------------------------
 //    Memory.ts
@@ -22,7 +21,7 @@ var TSOS;
         }
         Memory.prototype.write = function (address, hexbyte) {
             // so this at its very basic form will put a "hex byte" in a memory location
-            this.memoryArray[address] = hexbyte;
+            this.memoryArray[address] = parseInt(hexbyte, 16);
         };
 
         /**
@@ -30,7 +29,7 @@ var TSOS;
         */
         Memory.prototype.read = function (address) {
             // so this will read an item from memory
-            return this.memoryArray[address];
+            return this.memoryArray[address].toString(16);
         };
 
         /**
@@ -40,7 +39,7 @@ var TSOS;
             // are we even within a valid memory range ?
             if ((start_address !== 0 || start_address !== 256 || start_address !== 512) && (end_address !== 255 || end_address !== 511 || end_address !== 768)) {
                 for (; start_address < end_address; start_address++) {
-                    this.memoryArray[start_address] = new TSOS.HexByte(new TSOS.Hex("0"), new TSOS.Hex("0"));
+                    this.memoryArray[start_address] = parseInt("00", 16);
                 }
             }
         };

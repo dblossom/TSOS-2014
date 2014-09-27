@@ -1,4 +1,3 @@
-///<reference path="../os/hexByte.ts" />
 //
 //    ----------------------------------------------
 //    Memory.ts
@@ -20,21 +19,21 @@ module TSOS{
     
     export class Memory{
         
-        constructor(public memoryArray:Array<HexByte>){
+        constructor(public memoryArray:Array<number>){
             
         }
         
-        public write(address:number, hexbyte:HexByte):void{
+        public write(address:number, hexbyte:string):void{
             // so this at its very basic form will put a "hex byte" in a memory location
-            this.memoryArray[address] = hexbyte; 
+            this.memoryArray[address] = parseInt(hexbyte,16); 
         }
         
         /**
          * This will read contents from memory
          */
-        public read(address:number):HexByte{
+        public read(address:number):string{
             // so this will read an item from memory
-            return this.memoryArray[address]; 
+            return this.memoryArray[address].toString(16); 
         }
         
         /**
@@ -51,7 +50,7 @@ module TSOS{
                 end_address !== 768)){
                 
                 for(; start_address < end_address; start_address++){
-                    this.memoryArray[start_address] = new HexByte(new Hex("0"), new Hex("0"));
+                    this.memoryArray[start_address] = parseInt("00", 16);
                 }
                 
             }

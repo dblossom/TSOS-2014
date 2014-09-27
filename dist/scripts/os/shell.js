@@ -385,12 +385,21 @@ var TSOS;
             // loop over the entire input ... fun
             // must be a better way ( probably with some
             // built in javascript functions ;) )
+            // make sure each char is a valid hex
             var pointer = 0;
             while (pointer < textInput.length && isValid == true) {
-                var tempHexByte = new TSOS.HexByte(new TSOS.Hex(textInput[pointer]), new TSOS.Hex(textInput[++pointer]));
-                pointer++;
             }
-            _StdOut.putText("The input program is: " + isValid);
+
+            if (isValid) {
+                alert("quick test valid code " + textInput);
+                // TODO: created PCB
+                //      load into memory
+                //      display on "gui"
+                //      return pid number to term
+            } else {
+                // let the user know his/her program is shitty and does not work
+                _StdOut.putText("Invalid Program...IDK, try again?");
+            }
         };
 
         // will convert from F to C or C to F.
