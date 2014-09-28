@@ -1,3 +1,4 @@
+///<reference path="memoryManager.ts" />
 /* ------------
 Kernel.ts
 Requires globals.ts
@@ -38,6 +39,8 @@ var TSOS;
             //
             // ... more? <-- sure ? initalize memory here?
             //
+            _MemManager = new TSOS.MemoryManager();
+
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
             this.krnEnableInterrupts();

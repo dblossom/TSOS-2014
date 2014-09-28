@@ -1,7 +1,6 @@
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
 ///<reference path="../utils.ts" />
-///<reference path="../host/memory.ts" />
 /* ------------
 Shell.ts
 The OS Shell - The "command line interface" (CLI) for the console.
@@ -380,18 +379,21 @@ var TSOS;
 
             // remove all whitespace?
             // replace(" ", "") only removes first
+            // The plan here is simple.. We want A 9 00, A9 00 to be treated as the same
+            // SO - we remove ALL spaces, and process every "2 nibbles" -- if we end 1 short
+            // we will just pad a zero -- which is honestly a bad practice and I will probably
+            // remove it later...
             textInput = textInput.replace(/ /g, "");
 
-            // loop over the entire input ... fun
-            // must be a better way ( probably with some
-            // built in javascript functions ;) )
-            // make sure each char is a valid hex
+            // loop over the entire input grabbing every 2 chars and loading them into memory.
             var pointer = 0;
             while (pointer < textInput.length && isValid == true) {
+                if (!textInput.charAt(pointer++).match(/[A-F0-9]/i)) {
+                    isValid = false;
+                }
             }
 
             if (isValid) {
-                alert("quick test valid code " + textInput);
                 // TODO: created PCB
                 //      load into memory
                 //      display on "gui"

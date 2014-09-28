@@ -1,13 +1,8 @@
-//
-//    ----------------------------------------------
-//    Memory.ts
-//    Requires globals.ts < actually not sure yet >
-//
-//    Routines for memory hardware simulation
-//
-//
-//    Author: Dan Blossom
-//    ----------------------------------------------
+///<reference path="../globals.ts" />
+/* ------------
+Memory.ts
+Requires globals.ts
+------------ */
 var TSOS;
 (function (TSOS) {
     /*
