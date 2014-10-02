@@ -425,7 +425,27 @@ module TSOS {
 
             }
             
+            // since we remove all spaces and we want to load byte size chunks we need to ensure
+            // an even number or we could run into an error - just catch that now.
+            if(textInput.length % 2 !== 0){
+                isValid = false;
+            }
+            
             if(isValid){ 
+            
+                _StdOut.putText("Valid putting in memory, please wait... (bitch)");
+                
+                // clearing memory
+                _MemManager.clearRange(0, 255); 
+                
+                // point incs by 2 ever go, i incs by 1. what, what what ?
+                // point keeps track of the hex bytes (aka 2 nibbles, aka every 2 chars)
+                // i keeps track of where we are in the string
+                var point:number = 0;
+                for(var i:number = 0; i < (textInput.length / 2); i++){
+                    _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)));
+                }
+                
                 // TODO: created PCB
                 //      load into memory
                 //      display on "gui"
