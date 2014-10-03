@@ -412,8 +412,10 @@ var TSOS;
                 for (var i = 0; i < (textInput.length / 2); i++) {
                     _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)));
                 }
+
+                _MemManager.displayMemoryContents();
                 // TODO: created PCB
-                //      load into memory
+                //      load into memory (check)
                 //      display on "gui"
                 //      return pid number to term
             } else {

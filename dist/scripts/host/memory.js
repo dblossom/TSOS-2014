@@ -58,6 +58,10 @@ var TSOS;
             this.clearBlock(0, 768); // <-- call clearBlock() because we might deprecate clear()
             //     but we would not deprecate clearBlock as that seems  useful
         };
+
+        Memory.prototype.size = function () {
+            return this.memoryArray.length;
+        };
         return Memory;
     })();
     TSOS.Memory = Memory;

@@ -23,6 +23,26 @@ var TSOS;
 
         MemoryManager.prototype.clearRange = function (start, end) {
             this.memoryModule.clearBlock(start, end);
+            new TSOS.Control().initMemoryDisplay(_MemoryDisplay);
+        };
+
+        MemoryManager.prototype.displayMemoryContents = function () {
+            var row = null;
+            var rowcount = 0;
+            for (var i = 0; i < this.memoryModule.size(); i++) {
+                if (i % 8 === 0) {
+                    row = _MemoryDisplay.insertRow(rowcount++);
+                    row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
+                }
+                row.insertCell((i % 8) + 1).innerHTML = this.memoryModule.read(i);
+            }
+            //  for(var i=0; i < 768; i++){
+            // if(i%8 === 0){
+            //   row = TableElement.insertRow(rowcount++);
+            //     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
+            //   }
+            //     row.insertCell((i%8) + 1).innerHTML = "00";
+            //  }
         };
         return MemoryManager;
     })();

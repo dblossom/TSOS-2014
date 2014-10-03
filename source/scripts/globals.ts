@@ -77,6 +77,9 @@ var _ProgramTextArea: HTMLTextAreaElement = null;
 var _Memory: TSOS.Memory; // do I need this ?
 var _MemManager: TSOS.MemoryManager;
 
+// for display memory
+var _MemoryDisplay: HTMLTableElement = null;
+
 // For testing...
 var _GLaDOS: any = null;
 var Glados: any = null;

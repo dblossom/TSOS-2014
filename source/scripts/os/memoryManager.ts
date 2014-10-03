@@ -36,6 +36,30 @@ module TSOS{
         
         public clearRange(start:number, end:number):void{
             this.memoryModule.clearBlock(start, end);
+            new Control().initMemoryDisplay(_MemoryDisplay);
+        }
+        
+        public displayMemoryContents():void{
+        
+            var row = null;
+            var rowcount = 0;
+            for (var i:number = 0; i < this.memoryModule.size(); i++){
+                if(i%8 === 0){
+                    row = _MemoryDisplay.insertRow(rowcount++);
+                    row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
+                }
+                row.insertCell((i%8) + 1).innerHTML = this.memoryModule.read(i);
+            }
+            
+            
+          //  for(var i=0; i < 768; i++){
+               // if(i%8 === 0){
+                 //   row = TableElement.insertRow(rowcount++);
+               //     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
+             //   } 
+           //     row.insertCell((i%8) + 1).innerHTML = "00";
+          //  }
+        
         }
     
     

@@ -73,5 +73,9 @@ module TSOS{
             this.clearBlock(0,768); // <-- call clearBlock() because we might deprecate clear()
                                     //     but we would not deprecate clearBlock as that seems  useful
         }
+        
+        public size():number{
+            return this.memoryArray.length;
+        }
     }
 }

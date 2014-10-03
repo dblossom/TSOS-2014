@@ -43,6 +43,7 @@ module TSOS {
             // ... more? <-- sure ? initalize memory here?
             //
             
+            // initalize a memory manager
             _MemManager = new MemoryManager();
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
@@ -56,8 +57,6 @@ module TSOS {
             
             // set a default for "status" (this a good place for this??)
             _OsShell.shellStatus("running...");
-
-
 
             // Finally, initiate testing.
            if (_GLaDOS) {
