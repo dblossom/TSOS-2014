@@ -124,23 +124,6 @@
     
     <div id="divMemoryTable" style="width:400px; height:300px; border: 1px solid; overflow:scroll; ">
     <table id="memoryTable" style="width:10%; border:2px solid">
-    
-        <script type="text/javascript">
-            //document.writeln("<table border='1px;'>");
-
-            var tbl = document.getElementById("memoryTable");
-            var row = null;
-            var rowcount = 0;
-            for(var i=0; i < 768; i++){
-                if(i%8 === 0){
-                    row = tbl.insertRow(rowcount++);
-                    row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
-                    row.
-            	}
-                row.insertCell((i%8) + 1).innerHTML = "00";
-            }
-
-        </script>
     </table>
     </div>
    

@@ -36,13 +36,6 @@ var TSOS;
                 }
                 row.insertCell((i % 8) + 1).innerHTML = (("00" + this.memoryModule.read(i)).slice(-2)).toUpperCase();
             }
-            //  for(var i=0; i < 768; i++){
-            // if(i%8 === 0){
-            //   row = TableElement.insertRow(rowcount++);
-            //     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
-            //   }
-            //     row.insertCell((i%8) + 1).innerHTML = "00";
-            //  }
         };
         return MemoryManager;
     })();
