@@ -34,7 +34,7 @@ var TSOS;
                     row = _MemoryDisplay.insertRow(rowcount++);
                     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
                 }
-                row.insertCell((i % 8) + 1).innerHTML = this.memoryModule.read(i);
+                row.insertCell((i % 8) + 1).innerHTML = (("00" + this.memoryModule.read(i)).slice(-2)).toUpperCase();
             }
             //  for(var i=0; i < 768; i++){
             // if(i%8 === 0){
