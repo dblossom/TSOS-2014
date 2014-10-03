@@ -434,6 +434,7 @@ module TSOS {
             if(isValid){ 
             
                 _StdOut.putText("Valid putting in memory, please wait... (bitch)");
+                _StdOut.advanceLine();
                 
                 // clearing memory
                 _MemManager.clearRange(0, 255); 
@@ -446,12 +447,12 @@ module TSOS {
                     _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)));
                 }
                 
+                // Clear memory, write current pid counter to term and add pcb to list @ current pid.
                 _MemManager.displayMemoryContents();
+                _StdOut.putText("PID: " + PCB.pid);
+                _ProgramList[PCB.pid] = new PCB(0,255);
                 
-                // TODO: created PCB
-                //      load into memory (check)
-                //      display on "gui"
-                //      return pid number to term
+                
             }else{
                // let the user know his/her program is shitty and does not work
                _StdOut.putText("Invalid Program...IDK, try again?");

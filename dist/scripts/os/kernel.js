@@ -41,6 +41,7 @@ var TSOS;
             //
             // initalize a memory manager
             _MemManager = new TSOS.MemoryManager();
+            _ProgramList = new Array();
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");

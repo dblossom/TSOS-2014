@@ -45,6 +45,7 @@ module TSOS {
             
             // initalize a memory manager
             _MemManager = new MemoryManager();
+            _ProgramList = new Array<PCB>();
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");

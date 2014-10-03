@@ -80,6 +80,9 @@ var _MemManager: TSOS.MemoryManager;
 // for display memory
 var _MemoryDisplay: HTMLTableElement = null;
 
+// list for the programs, will hold programs
+var _ProgramList = null;
+
 // For testing...
 var _GLaDOS: any = null;
 var Glados: any = null;

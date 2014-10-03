@@ -401,6 +401,7 @@ var TSOS;
 
             if (isValid) {
                 _StdOut.putText("Valid putting in memory, please wait... (bitch)");
+                _StdOut.advanceLine();
 
                 // clearing memory
                 _MemManager.clearRange(0, 255);
@@ -413,11 +414,10 @@ var TSOS;
                     _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)));
                 }
 
+                // Clear memory, write current pid counter to term and add pcb to list @ current pid.
                 _MemManager.displayMemoryContents();
-                // TODO: created PCB
-                //      load into memory (check)
-                //      display on "gui"
-                //      return pid number to term
+                _StdOut.putText("PID: " + TSOS.PCB.pid);
+                _ProgramList[TSOS.PCB.pid] = new TSOS.PCB(0, 255);
             } else {
                 // let the user know his/her program is shitty and does not work
                 _StdOut.putText("Invalid Program...IDK, try again?");
