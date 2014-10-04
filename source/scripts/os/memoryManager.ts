@@ -34,6 +34,18 @@ module TSOS{
             this.memoryModule.write(address, byte);
         }
         
+        /**
+         * Will read contents (if any) from a location in memory given an address
+         *
+         * TODO: consider returning a NUMBER vs STRING since we are storing NUMBER.
+         *
+         * @param address - the address of the content of memory
+         * @return string - a string representation of what is in memory
+         */
+        public read(address:number):string{
+            return this.memoryModule.read(address);
+        }
+        
         public clearRange(start:number, end:number):void{
             this.memoryModule.clearBlock(start, end);
             new Control().initMemoryDisplay(_MemoryDisplay);

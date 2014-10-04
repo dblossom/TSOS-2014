@@ -21,6 +21,18 @@ var TSOS;
             this.memoryModule.write(address, byte);
         };
 
+        /**
+        * Will read contents (if any) from a location in memory given an address
+        *
+        * TODO: consider returning a NUMBER vs STRING since we are storing NUMBER.
+        *
+        * @param address - the address of the content of memory
+        * @return string - a string representation of what is in memory
+        */
+        MemoryManager.prototype.read = function (address) {
+            return this.memoryModule.read(address);
+        };
+
         MemoryManager.prototype.clearRange = function (start, end) {
             this.memoryModule.clearBlock(start, end);
             new TSOS.Control().initMemoryDisplay(_MemoryDisplay);

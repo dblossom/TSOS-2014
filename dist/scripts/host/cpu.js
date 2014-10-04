@@ -41,6 +41,24 @@ var TSOS;
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
         };
+
+        /**
+        * The instruction set we are using for this CPU mirrored from the 6502
+        * It would seem logical to return a function, but for simplicity it will
+        * just execute the command.
+        *
+        * Assume this will handle moving memory pointers around as we read memory.
+        *
+        * TODO: does this need to be public? / rename too since it will execute?
+        */
+        Cpu.prototype.instructionSet = function (anyOpcode) {
+            // convert the opcode to a number ...
+            // here is where I am questioning if we should really be returning a string from memory!
+            var opcode = parseInt(anyOpcode, 16);
+
+            switch (opcode) {
+            }
+        };
         return Cpu;
     })();
     TSOS.Cpu = Cpu;
