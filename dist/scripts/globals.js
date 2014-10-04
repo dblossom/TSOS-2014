@@ -76,6 +76,9 @@ var _MemManager;
 // for display memory
 var _MemoryDisplay = null;
 
+// for CPU display
+var _CPUdisplay = null;
+
 // list for the programs, will hold programs
 var _ProgramList = null;
 

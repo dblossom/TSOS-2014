@@ -99,6 +99,8 @@ var TSOS;
             _CPU = new TSOS.Cpu();
             _CPU.init();
 
+            new Control().initCPUDisplay();
+
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
 
@@ -128,16 +130,29 @@ var TSOS;
         };
 
         // method for the memory display
-        Control.prototype.initMemoryDisplay = function (TableElement) {
+        Control.prototype.initMemoryDisplay = function (tblElement) {
             var row = null;
             var rowcount = 0;
             for (var i = 0; i < 768; i++) {
                 if (i % 8 === 0) {
-                    row = TableElement.insertRow(rowcount++);
+                    row = tblElement.insertRow(rowcount++);
                     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
                 }
                 row.insertCell((i % 8) + 1).innerHTML = "00";
             }
+        };
+
+        /**
+        * Method to initalize CPU display to all zeros
+        * This ASSUMES CPU variables have been set!
+        */
+        Control.prototype.initCPUDisplay = function () {
+            document.getElementById('PC').innerHTML = _CPU.PC.toString();
+            document.getElementById('ACC').innerHTML = _CPU.Acc.toString();
+            document.getElementById('X').innerHTML = _CPU.Xreg.toString();
+            document.getElementById('Y').innerHTML = _CPU.Yreg.toString();
+            document.getElementById('Z').innerHTML = _CPU.Zflag.toString();
+            document.getElementById('Status').innerHTML = _CPU.isExecuting.toString();
         };
         return Control;
     })();

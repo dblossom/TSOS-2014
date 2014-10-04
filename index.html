@@ -121,15 +121,46 @@
             ></textarea>
          </label>
       </div>
-   
+      
+      <div id="divCPUDisplay">
+    
+         <label>CPU Display</label>
+    
+         <div id="divCPUTable" style="width:400px; height:60px;">
+         <table id="CPUTable" style="width:10%; ">
+
+            <tr>
+               <th>PC</th>
+               <th>ACC</th>
+               <th>X-Reg</th>
+               <th>Y-Reg</th>
+               <th>Z-Flag</th>
+               <th>Status</th>
+            </tr>
+            
+            <tr>
+               <td id="PC"></td>
+               <td id="ACC"></td>
+               <td id="X"></td>
+               <td id="Y"></td>
+               <td id="Z"></td>
+               <td id="Status"></td>
+            </tr>
+
+         </table>
+         </div>
+         
+      </div>
+      
       <div id="divMemoryDisplay">
     
          <label>Memory Display</label>
     
-         <div id="divMemoryTable" style="width:400px; height:300px; border: 1px solid; overflow:scroll; ">
-         <table id="memoryTable" style="width:10%; border:2px solid"></table>
+         <div id="divMemoryTable" style="width:350px; height:300px; overflow:scroll; ">
+         <table id="memoryTable" style="width:10%;"></table>
          </div>
       </div>
+     
    </div> <!-- Close right wrapper -->
 </div> <!-- Close outer -->
 
