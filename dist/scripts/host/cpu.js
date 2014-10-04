@@ -48,6 +48,7 @@ var TSOS;
         * just execute the command.
         *
         * Assume this will handle moving memory pointers around as we read memory.
+        * ^ by "pointers" I am really saying -- inc the PC in the _CPU.
         *
         * TODO: does this need to be public? / rename too since it will execute?
         */
@@ -57,6 +58,26 @@ var TSOS;
             var opcode = parseInt(anyOpcode, 16);
 
             switch (opcode) {
+                case 169:
+                    // here is the exact point I am making! We already stored as number
+                    // but since we are returning a string, we are converting again... STUPID!
+                    _CPU.Acc = parseInt(_MemManager.read(++_CPU.PC), 16); // load ACC & inc PC
+                    break;
+
+                case 178:
+                    // so, it is the next 2 locations, we are little endian here...
+                    // load low number then high number then add together
+                    // I suppose A+B = B+A however for illistration ...
+                    var low = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    var high = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    _CPU.Acc = (low + high); // store in ACC.
+                    break;
+
+                case 141:
+                    // this is the second time I am doing this ... time for a function ... ?
+                    var low = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    var high = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    _MemManager.write((low + high), _CPU.Acc.toString(16));
             }
         };
         return Cpu;

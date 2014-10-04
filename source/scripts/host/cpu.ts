@@ -49,6 +49,7 @@ module TSOS {
          * just execute the command.
          *
          * Assume this will handle moving memory pointers around as we read memory.
+         * ^ by "pointers" I am really saying -- inc the PC in the _CPU.
          *
          * TODO: does this need to be public? / rename too since it will execute?
          */
@@ -59,9 +60,29 @@ module TSOS {
              var opcode:number = parseInt(anyOpcode, 16);
              
              // what to do with the opcode
+             // these will be laid out in the same order as the documentation
              switch(opcode){
                  
-                 //scase
+                 case 169: // load the accumulator with a constant
+                                // here is the exact point I am making! We already stored as number
+                                // but since we are returning a string, we are converting again... STUPID!
+                     _CPU.Acc = parseInt(_MemManager.read(++_CPU.PC),16); // load ACC & inc PC
+                     break;
+                     
+                 case 178: // load the accumulator from memory
+                     // so, it is the next 2 locations, we are little endian here...
+                     // load low number then high number then add together
+                     // I suppose A+B = B+A however for illistration ...  
+                     var low:number = parseInt(_MemManager.read(++_CPU.PC),16); // load byte 1, inc PC
+                     var high:number = parseInt(_MemManager.read(++_CPU.PC),16); // load byte 2, inc PC
+                     _CPU.Acc = (low + high); // store in ACC.
+                     break;
+                     
+                 case 141: // store the accumulator in memory (OH BOY)
+                     // this is the second time I am doing this ... time for a function ... ?
+                     var low:number = parseInt(_MemManager.read(++_CPU.PC),16); // load byte 1, inc PC
+                     var high:number = parseInt(_MemManager.read(++_CPU.PC),16); // load byte 1, inc PC
+                     _MemManager.write((low+high), _CPU.Acc.toString(16));
                  
              }
          
