@@ -26,6 +26,7 @@ var TSOS;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
             this.isExecuting = isExecuting;
+            this.initCPUDisplay(); // initalize the display ... bad?
         }
         Cpu.prototype.init = function () {
             this.PC = 0;
@@ -38,8 +39,11 @@ var TSOS;
 
         Cpu.prototype.cycle = function () {
             _Kernel.krnTrace('CPU cycle');
+
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            this.instructionSet(_MemManager.read(_CPU.PC));
+            this.initCPUDisplay();
         };
 
         /**
@@ -79,6 +83,20 @@ var TSOS;
                     var high = parseInt(_MemManager.read(++_CPU.PC), 16);
                     _MemManager.write((low + high), _CPU.Acc.toString(16));
             }
+        };
+
+        /**
+        * Method to initalize CPU display to all zeros
+        * This ASSUMES CPU variables have been set!
+        * TODO: rename to setCPUDisplay()
+        */
+        Cpu.prototype.initCPUDisplay = function () {
+            document.getElementById('PC').innerHTML = _CPU.PC.toString();
+            document.getElementById('ACC').innerHTML = _CPU.Acc.toString();
+            document.getElementById('X').innerHTML = _CPU.Xreg.toString();
+            document.getElementById('Y').innerHTML = _CPU.Yreg.toString();
+            document.getElementById('Z').innerHTML = _CPU.Zflag.toString();
+            document.getElementById('Status').innerHTML = _CPU.isExecuting.toString();
         };
         return Cpu;
     })();

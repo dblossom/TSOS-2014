@@ -25,6 +25,8 @@ module TSOS {
                     public Yreg: number = 0,
                     public Zflag: number = 0,
                     public isExecuting: boolean = false) {
+                    
+            this.initCPUDisplay(); // initalize the display ... bad?
 
         }
 
@@ -41,6 +43,10 @@ module TSOS {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            
+            this.instructionSet(_MemManager.read(_CPU.PC));
+            this.initCPUDisplay();
+            
         }
         
         /**
@@ -86,6 +92,19 @@ module TSOS {
                  
              }
          
+         }
+        /**
+         * Method to initalize CPU display to all zeros
+         * This ASSUMES CPU variables have been set!
+         * TODO: rename to setCPUDisplay()
+         */
+         public initCPUDisplay():void{
+             document.getElementById('PC').innerHTML = _CPU.PC.toString();
+             document.getElementById('ACC').innerHTML = _CPU.Acc.toString();
+             document.getElementById('X').innerHTML = _CPU.Xreg.toString();
+             document.getElementById('Y').innerHTML = _CPU.Yreg.toString();
+             document.getElementById('Z').innerHTML = _CPU.Zflag.toString();
+             document.getElementById('Status').innerHTML = _CPU.isExecuting.toString();
          }
     }
 }
