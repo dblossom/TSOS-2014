@@ -45,6 +45,7 @@ var _Kernel: TSOS.Kernel;
 var _KernelInterruptQueue = null;
 var _KernelBuffers: any[] = null;
 var _KernelInputQueue = null;
+var _KernelReadyQueue = null;
 
 // Standard input and output
 var _StdIn  = null;

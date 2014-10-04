@@ -26,7 +26,6 @@ var TSOS;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
             this.isExecuting = isExecuting;
-            this.initCPUDisplay(); // initalize the display ... bad?
         }
         Cpu.prototype.init = function () {
             this.PC = 0;

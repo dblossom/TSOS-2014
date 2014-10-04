@@ -123,6 +123,12 @@ module TSOS {
             sc = new ShellCommand(this.shellTestBSOD,
                                   "bsod",
                                   "- simulates a bsod");
+            this.commandList[this.commandList.length] = sc;
+            
+            // run command
+            sc = new ShellCommand(this.shellRun,
+                                  "run",
+                                  "<pid> - executes a program in memory from given pid");
             this.commandList[this.commandList.length] = sc;         
             
             // Display the initial prompt.
@@ -452,7 +458,6 @@ module TSOS {
                 _StdOut.putText("PID: " + PCB.pid);
                 _ProgramList[PCB.pid] = new PCB(0,255);
                 
-                
             }else{
                // let the user know his/her program is shitty and does not work
                _StdOut.putText("Invalid Program...IDK, try again?");
@@ -480,6 +485,12 @@ module TSOS {
         
         public shellTestBSOD(args){
             _Kernel.krnTrapError("shit");
+        }
+        
+        public shellRun(args){
+            //TODO: ERROR CHECKING!!!
+        
+            _KernelReadyQueue(_ProgramList[args[0]]);
         }
     }
 }

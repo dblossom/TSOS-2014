@@ -41,6 +41,7 @@ var _Kernel;
 var _KernelInterruptQueue = null;
 var _KernelBuffers = null;
 var _KernelInputQueue = null;
+var _KernelReadyQueue = null;
 
 // Standard input and output
 var _StdIn = null;

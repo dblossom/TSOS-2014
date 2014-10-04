@@ -88,6 +88,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellTestBSOD, "bsod", "- simulates a bsod");
             this.commandList[this.commandList.length] = sc;
 
+            // run command
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - executes a program in memory from given pid");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -441,6 +445,11 @@ var TSOS;
 
         Shell.prototype.shellTestBSOD = function (args) {
             _Kernel.krnTrapError("shit");
+        };
+
+        Shell.prototype.shellRun = function (args) {
+            //TODO: ERROR CHECKING!!!
+            _KernelReadyQueue(_ProgramList[args[0]]);
         };
         return Shell;
     })();

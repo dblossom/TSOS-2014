@@ -21,6 +21,9 @@ var TSOS;
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
             _KernelBuffers = new Array(); // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.
+
+            _KernelReadyQueue = new TSOS.Queue();
+
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
 
             // Initialize the console.
@@ -41,6 +44,8 @@ var TSOS;
             //
             // initalize a memory manager
             _MemManager = new TSOS.MemoryManager();
+
+            // initalize a list of programs -- err processes really
             _ProgramList = new Array();
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
@@ -175,6 +180,13 @@ var TSOS;
             this.krnShutdown();
 
             clearInterval(_hardwareClockID);
+        };
+
+        /**
+        * Execute a process
+        * TODO: Understand and modularize some of this shit.
+        */
+        Kernel.prototype.krnProcess = function () {
         };
 
         //
