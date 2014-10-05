@@ -81,7 +81,13 @@ var TSOS;
                     var low = parseInt(_MemManager.read(++_CPU.PC), 16);
                     var high = parseInt(_MemManager.read(++_CPU.PC), 16);
                     _MemManager.write((low + high), _CPU.Acc.toString(16));
+                    break;
+
+                case 0:
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PCB_END_IRQ, 0));
+                    break;
             }
+            _CPU.PC++;
         };
 
         /**

@@ -87,8 +87,14 @@ module TSOS {
                      var low:number = parseInt(_MemManager.read(++_CPU.PC),16); // load byte 1, inc PC
                      var high:number = parseInt(_MemManager.read(++_CPU.PC),16); // load byte 1, inc PC
                      _MemManager.write((low+high), _CPU.Acc.toString(16));
+                     break;
+                     
+                 case 0: // parseInt("00",16) returns 0. -> Break (system call)
+                     _KernelInterruptQueue.enqueue(new Interrupt(PCB_END_IRQ, 0));
+                     break; // ha ha a break for a break ... 
                  
              }
+             _CPU.PC++;
          
          }
         /**
