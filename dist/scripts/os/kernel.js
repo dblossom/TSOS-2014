@@ -94,6 +94,8 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
+            } else if (_KernelReadyQueue.getSize() > 0) {
+                this.krnProcess(_KernelReadyQueue.dequeue()); // Give it to Kernel to execute!
             } else {
                 this.krnTrace("Idle");
             }
@@ -186,10 +188,19 @@ var TSOS;
         * Execute a process
         * TODO: Understand and modularize some of this shit.
         */
-        Kernel.prototype.krnProcess = function () {
+        Kernel.prototype.krnProcess = function (pcb) {
+            this.krnTrace("Executing PID: " + pcb.progCount);
+            _CPU.PC = pcb.base;
+            _CPU.isExecuting = true;
+            _CPU.initCPUDisplay();
+            //TODO: we need a process running status
+            //      do we want to add some sorta way to know what the process is ? idk.
         };
 
-        //
+        /**
+        * Generates a BSOD
+        * TODO: remove some of the hard coded values (?) <-- maybe
+        */
         Kernel.prototype.bsod = function (msg) {
             // just testing, hard coding stuff --
             // hope to make something better later

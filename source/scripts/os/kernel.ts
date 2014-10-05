@@ -99,6 +99,8 @@ module TSOS {
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
                 _CPU.cycle();
+            } else if(_KernelReadyQueue.getSize() > 0){ // someone typed run ..!!
+                this.krnProcess(_KernelReadyQueue.dequeue()); // Give it to Kernel to execute!
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
             }
@@ -198,12 +200,21 @@ module TSOS {
          * Execute a process
          * TODO: Understand and modularize some of this shit.
          */
-         public krnProcess(){
-           
+         public krnProcess(pcb:PCB){
+             this.krnTrace("Executing PID: " + pcb.progCount);
+             _CPU.PC = pcb.base;
+             _CPU.isExecuting = true;
+             _CPU.initCPUDisplay();
+             
+             //TODO: we need a process running status
+             //      do we want to add some sorta way to know what the process is ? idk.  
          
          }
         
-        //
+        /**
+         * Generates a BSOD
+         * TODO: remove some of the hard coded values (?) <-- maybe 
+         */
         private bsod(msg){
             
             // just testing, hard coding stuff --

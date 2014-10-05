@@ -421,7 +421,7 @@ var TSOS;
                 // Clear memory, write current pid counter to term and add pcb to list @ current pid.
                 _MemManager.displayMemoryContents();
                 _StdOut.putText("PID: " + TSOS.PCB.pid);
-                _ProgramList[TSOS.PCB.pid] = new TSOS.PCB(0, 255);
+                _ProgramList[TSOS.PCB.pid] = new TSOS.PCB(0, 255); // TODO: this always overwrites memory at 0!!!
             } else {
                 // let the user know his/her program is shitty and does not work
                 _StdOut.putText("Invalid Program...IDK, try again?");
@@ -449,7 +449,7 @@ var TSOS;
 
         Shell.prototype.shellRun = function (args) {
             //TODO: ERROR CHECKING!!!
-            _KernelReadyQueue(_ProgramList[args[0]]);
+            _KernelReadyQueue.enqueue(_ProgramList[args[0]]);
         };
         return Shell;
     })();
