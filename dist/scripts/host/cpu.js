@@ -43,6 +43,7 @@ var TSOS;
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             this.instructionSet(_MemManager.read(_CPU.PC));
             this.initCPUDisplay();
+            _MemManager.displayMemoryContents();
         };
 
         /**
@@ -67,24 +68,75 @@ var TSOS;
                     _CPU.Acc = parseInt(_MemManager.read(++_CPU.PC), 16); // load ACC & inc PC
                     break;
 
-                case 178:
-                    // so, it is the next 2 locations, we are little endian here...
-                    // load low number then high number then add together
-                    // I suppose A+B = B+A however for illistration ...
-                    var low = parseInt(_MemManager.read(++_CPU.PC), 16);
-                    var high = parseInt(_MemManager.read(++_CPU.PC), 16);
-                    _CPU.Acc = (low + high); // store in ACC.
+                case 173:
+                    var address = this.loadTwoBytes();
+                    _CPU.Acc = (parseInt(_MemManager.read(address), 16)); // store in ACC.
                     break;
 
                 case 141:
-                    // this is the second time I am doing this ... time for a function ... ?
-                    var low = parseInt(_MemManager.read(++_CPU.PC), 16);
-                    var high = parseInt(_MemManager.read(++_CPU.PC), 16);
-                    _MemManager.write((low + high), _CPU.Acc.toString(16));
+                    var address = this.loadTwoBytes();
+                    _MemManager.write(address, _CPU.Acc.toString(16));
+                    break;
+
+                case 109:
+                    var address = this.loadTwoBytes();
+                    var num = parseInt(_MemManager.read(address), 16);
+                    _CPU.Acc += num;
+                    break;
+
+                case 162:
+                    _CPU.Xreg = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    break;
+
+                case 174:
+                    var address = this.loadTwoBytes();
+                    _CPU.Xreg = parseInt(_MemManager.read(address), 16);
+                    break;
+
+                case 160:
+                    _CPU.Yreg = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    break;
+
+                case 172:
+                    var address = this.loadTwoBytes();
+                    _CPU.Yreg = parseInt(_MemManager.read(address), 16);
+                    break;
+
+                case 234:
                     break;
 
                 case 0:
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PCB_END_IRQ, 0));
+                    break;
+
+                case 236:
+                    var address = this.loadTwoBytes();
+                    var data = parseInt(_MemManager.read(address), 16);
+                    if (data === _CPU.Xreg) {
+                        _CPU.Zflag = 1;
+                    } else {
+                        _CPU.Zflag = 0; // what if it used to be true?
+                    }
+                    break;
+
+                case 208:
+                    if (_CPU.Zflag === 0) {
+                        var branch = parseInt(_MemManager.read(++_CPU.PC), 16);
+                        _CPU.PC += branch;
+                        break;
+                    } else {
+                        break;
+                    }
+
+                case 238:
+                    var address = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    var tempValue = parseInt(_MemManager.read(address), 16);
+                    tempValue++;
+                    _MemManager.write(address, tempValue.toString(16));
+                    break;
+
+                case 255:
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(SYS_CALL_IRQ, _CPU.Xreg));
                     break;
             }
             _CPU.PC++;
@@ -102,6 +154,18 @@ var TSOS;
             document.getElementById('Y').innerHTML = _CPU.Yreg.toString();
             document.getElementById('Z').innerHTML = _CPU.Zflag.toString();
             document.getElementById('Status').innerHTML = _CPU.isExecuting.toString();
+        };
+
+        /**
+        * Loads two bytes from memory little endian
+        */
+        Cpu.prototype.loadTwoBytes = function () {
+            // so, it is the next 2 locations, we are little endian here...
+            // load low number then high number then add together
+            //I suppose A+B = B+A however for illistration ...
+            var low = parseInt(_MemManager.read(++_CPU.PC), 16);
+            var high = parseInt(_MemManager.read(++_CPU.PC), 16);
+            return (low + high);
         };
         return Cpu;
     })();

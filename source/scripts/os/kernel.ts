@@ -142,8 +142,11 @@ module TSOS {
                 case PCB_END_IRQ:
                     //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
+                    //_CPU.initCPUDisplay(); <-- cannot test progs with this
                     _StdOut.advanceLine();
-                    _StdOut.putText(">");
+                    break;
+                case SYS_CALL_IRQ:
+                    this.krnSysCall(params);
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
@@ -206,16 +209,42 @@ module TSOS {
          * Execute a process
          * TODO: Understand and modularize some of this shit.
          */
-         public krnProcess(pcb:PCB){
-             this.krnTrace("Executing PID: " + pcb.progCount);
-             _CPU.PC = pcb.base;
-             _CPU.isExecuting = true;
-             _CPU.initCPUDisplay();
+        public krnProcess(pcb:PCB){
+            this.krnTrace("Executing PID: " + pcb.progCount);
+            _CPU.PC = pcb.base;
+            _CPU.isExecuting = true;
+            _CPU.initCPUDisplay();
              
-             //TODO: we need a process running status
-             //      do we want to add some sorta way to know what the process is ? idk.  
+            //TODO: we need a process running status
+            //      do we want to add some sorta way to know what the process is ? idk.  
+        
+        }
          
-         }
+       /**
+        * A system call
+        * @params - params, passed by the interupt handler 
+        */
+        public krnSysCall(params){
+            if(params === 1){ // x-reg contains a 1 print int stored in Y
+                _StdOut.putText(_CPU.Yreg.toString());
+            }else if(params === 2){
+                var address:number = _CPU.Yreg;
+                var offset:number = 0;
+                var charValue = parseInt(_MemManager.read(address + offset), 16);
+                
+                // So, to prevent any null issues we set charValue above before entering loop.
+                // I could have done a do while loop to always execute atlest once but for now
+                // I am not going too... 2 reasons
+                // 1) hate do while loops
+                // 2) what if the first value is a 0 <IE: ""> garbage could be passed ... ?
+                while(charValue !== 0){
+                    _StdOut.putText(String.fromCharCode(charValue));
+                    offset++;
+                    charValue = parseInt(_MemManager.read(address+offset), 16);
+                }
+                
+            }
+        } 
         
         /**
          * Generates a BSOD

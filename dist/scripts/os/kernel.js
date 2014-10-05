@@ -132,8 +132,12 @@ var TSOS;
                 case PCB_END_IRQ:
                     //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
+
+                    //_CPU.initCPUDisplay(); <-- cannot test progs with this
                     _StdOut.advanceLine();
-                    _StdOut.putText(">");
+                    break;
+                case SYS_CALL_IRQ:
+                    this.krnSysCall(params);
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
@@ -201,6 +205,26 @@ var TSOS;
             _CPU.initCPUDisplay();
             //TODO: we need a process running status
             //      do we want to add some sorta way to know what the process is ? idk.
+        };
+
+        /**
+        * A system call
+        * @params - params, passed by the interupt handler
+        */
+        Kernel.prototype.krnSysCall = function (params) {
+            if (params === 1) {
+                _StdOut.putText(_CPU.Yreg.toString());
+            } else if (params === 2) {
+                var address = _CPU.Yreg;
+                var offset = 0;
+                var charValue = parseInt(_MemManager.read(address + offset), 16);
+
+                while (charValue !== 0) {
+                    _StdOut.putText(String.fromCharCode(charValue));
+                    offset++;
+                    charValue = parseInt(_MemManager.read(address + offset), 16);
+                }
+            }
         };
 
         /**

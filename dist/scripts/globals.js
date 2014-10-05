@@ -21,6 +21,7 @@ var KEYBOARD_IRQ = 1;
 
 // ADDED Interupts for assignment 2: Assume these constants to change!!!
 var PCB_END_IRQ = 2;
+var SYS_CALL_IRQ = 3;
 
 //
 // Global Variables
