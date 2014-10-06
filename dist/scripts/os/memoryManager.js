@@ -19,6 +19,7 @@ var TSOS;
         }
         MemoryManager.prototype.write = function (address, byte) {
             this.memoryModule.write(address, byte);
+            this.updateMemoryCell(address, byte);
         };
 
         /**
@@ -35,18 +36,42 @@ var TSOS;
 
         MemoryManager.prototype.clearRange = function (start, end) {
             this.memoryModule.clearBlock(start, end);
-            new TSOS.Control().initMemoryDisplay(_MemoryDisplay);
         };
 
-        MemoryManager.prototype.displayMemoryContents = function () {
+        /**
+        * This updates the memory after it has been loaded
+        * @params -- both are meaning less right now.
+        */
+        MemoryManager.prototype.updateMemoryCell = function (address, data) {
+            for (var i = 0; i < 32; i++) {
+                _MemoryDisplay.deleteRow(0);
+            }
+
             var row = null;
             var rowcount = 0;
+
             for (var i = 0; i < this.memoryModule.size(); i++) {
                 if (i % 8 === 0) {
                     row = _MemoryDisplay.insertRow(rowcount++);
                     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
                 }
                 row.insertCell((i % 8) + 1).innerHTML = (("00" + this.memoryModule.read(i)).slice(-2)).toUpperCase();
+            }
+        };
+
+        /**
+        * This initalizes memory to all zeros -> hmm sure looks like the guy abvoe
+        * next release will have 1 method that works for both
+        */
+        MemoryManager.prototype.initMemoryDisplay = function (tblElement) {
+            var row = null;
+            var rowcount = 0;
+            for (var i = 0; i < 256; i++) {
+                if (i % 8 === 0) {
+                    row = tblElement.insertRow(rowcount++);
+                    row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
+                }
+                row.insertCell((i % 8) + 1).innerHTML = "00";
             }
         };
         return MemoryManager;
