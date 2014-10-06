@@ -1,7 +1,9 @@
 ///<reference path="../globals.ts" />
 /* ------------
 Memory.ts
+This is a memory representation of hardware.
 Requires globals.ts
+Author: D. Blossom
 ------------ */
 var TSOS;
 (function (TSOS) {
@@ -16,7 +18,7 @@ var TSOS;
         }
         Memory.prototype.write = function (address, hexbyte) {
             // so this at its very basic form will put a "hex byte" in a memory location
-            this.memoryArray[address] = parseInt(hexbyte, 16);
+            this.memoryArray[address] = parseInt(hexbyte, 16); //store as int.
         };
 
         /**
@@ -59,6 +61,9 @@ var TSOS;
             //     but we would not deprecate clearBlock as that seems  useful
         };
 
+        /**
+        * returns the size of length of memory
+        */
         Memory.prototype.size = function () {
             return this.memoryArray.length;
         };

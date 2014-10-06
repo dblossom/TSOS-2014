@@ -1,35 +1,37 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../host/memory.ts" />
-
-
 /* ------------
      MemoryManager.ts
+     
+     This has all the routines (methods) required for the MMU
+     It communicates between the OS and hardware
 
      Requires globals.ts
-
+     
+     Author: D. Blossom
      ------------ */
     
 module TSOS{
     export class MemoryManager {
     
-        public memoryModule:Memory; // our memory
-        public BLOCK_SIZE:number = 256; // our max block size - global?
-        public AVAIL_LOCATIONS:number = 3; // number of locations for programs - global?
-        public MAX: number = (this.BLOCK_SIZE * this.AVAIL_LOCATIONS); // max mem location - global?
+        // Our memory, which will be an array.
+        public memoryModule:Memory;
+        // TODO: add a way to keep track of the 3 different address spaces
+        //       need to know when one will be in use as to not overwrite
+        //       a program that has not run yet -- not needed for project 1
+        //       but will be a key part for project 2!!
 
         constructor() {
-        
+            // initialize our memory object.
             this.memoryModule = new Memory(new Array<number>());
-            
-            // this should give us our address ranges starting with zero
-            //  so - if all goes to plan, we will have 3 elements with
-            // (0, 255) (256, 511) (512, 768) ... only time will tell.
-            for(var i:number = 0; i < this.MAX; i = (i + this.BLOCK_SIZE)){
-              //  this.avail_mem.push(i, (i + (this.BLOCK_SIZE - 1)));
-            } 
-        
         }
         
+        /**
+         * writes a "byte string" to a memory address then updates the display
+         *
+         * @ params - address: where to write
+         * @ params - byte: what to write 
+         */
         public write(address:number, byte:string):void{
             this.memoryModule.write(address, byte);
             this.updateMemoryCell(address,byte);
@@ -47,12 +49,23 @@ module TSOS{
             return this.memoryModule.read(address);
         }
         
+        /**
+         * Will clear a section of memory given a starting address and "offset" or end address
+         * @ param start: where to start
+         * @ param end: where to ... well ... wait for it ... END
+         */
         public clearRange(start:number, end:number):void{
             this.memoryModule.clearBlock(start, end);
         }
         
         /**
          * This updates the memory after it has been loaded
+         * 
+         * I had a lot of issues with typescript and updating a table
+         * feel free to read the angry comments but the really do not outline
+         * the issues I was having. Simply put, the typechecking was not allowing
+         * what would have been valid javascript to run. Gave various compile errors
+         *
          * @params -- both are meaning less right now.
          */
         public updateMemoryCell(address:number, data:string):void{
@@ -84,12 +97,12 @@ module TSOS{
                 _MemoryDisplay.deleteRow(0);
             }
             
-           var row = null;
+            var row = null;
             var rowcount = 0;
             
             // now let us loop through, re-inserting all the rows and cells
             // lucky for us, all memory will be inialized to 00 so there will always
-            // be something in every slow, so this works with minimal garbage fucking code
+            // be something in every slot, so this works with minimal garbage fucking code
             for (var i:number = 0; i < this.memoryModule.size(); i++){
                 if(i%8 === 0){
                     row = _MemoryDisplay.insertRow(rowcount++);
@@ -97,16 +110,10 @@ module TSOS{
                 }
                row.insertCell((i%8) + 1).innerHTML = (("00" + this.memoryModule.read(i)).slice(-2)).toUpperCase();
             }
-
-            
-
-           
-        
         }
         
         /**
-         * This initalizes memory to all zeros -> hmm sure looks like the guy abvoe
-         * next release will have 1 method that works for both
+         * This initalizes memory to all zeros
          */
         public initMemoryDisplay(tblElement: HTMLTableElement):void{
             

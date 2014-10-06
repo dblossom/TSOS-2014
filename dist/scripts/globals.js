@@ -23,6 +23,11 @@ var KEYBOARD_IRQ = 1;
 var PCB_END_IRQ = 2;
 var SYS_CALL_IRQ = 3;
 
+// MEMORY STUFF
+var MAX_MEM_SPACE = 256;
+var MAX_MEM_LOCATIONS = 3;
+var MAX_ADDRESS_SPACE = MAX_MEM_SPACE * MAX_MEM_LOCATIONS;
+
 //
 // Global Variables
 //

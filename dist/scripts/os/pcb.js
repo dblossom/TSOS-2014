@@ -1,10 +1,20 @@
 /* -------------------------
 pcb.ts
 A process control block
+Keeps track of a processes current state.
 Author: D. Blossom
 ------------------------ */
 var TSOS;
 (function (TSOS) {
+    (function (State) {
+        State[State["NEW"] = 0] = "NEW";
+        State[State["RUNNING"] = 1] = "RUNNING";
+        State[State["TERMINATED"] = 2] = "TERMINATED";
+        State[State["WAIT"] = 3] = "WAIT";
+        State[State["READY"] = 4] = "READY";
+    })(TSOS.State || (TSOS.State = {}));
+    var State = TSOS.State;
+
     var PCB = (function () {
         function PCB(base, limit) {
             // CPU State information
@@ -22,6 +32,7 @@ var TSOS;
             // mark the base and limit
             this.base = base;
             this.limit = limit;
+            this.currentState = 0 /* NEW */;
         }
         PCB.pid = 0;
         return PCB;

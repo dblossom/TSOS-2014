@@ -454,9 +454,9 @@ module TSOS {
                 }
                 
                 // Clear memory, write current pid counter to term and add pcb to list @ current pid.
-                _MemManager.displayMemoryContents();
+               // _MemManager.displayMemoryContents();
                 _StdOut.putText("PID: " + PCB.pid);
-                _ProgramList[PCB.pid] = new PCB(0,255); // TODO: this always overwrites memory at 0!!!
+                _ProgramList[PCB.pid] = new PCB(0, (MAX_MEM_SPACE - 1)); // TODO: this always overwrites memory at 0!!!
                 
             }else{
                // let the user know his/her program is shitty and does not work

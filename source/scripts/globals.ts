@@ -25,6 +25,11 @@ var KEYBOARD_IRQ: number = 1;
 var PCB_END_IRQ: number = 2; // a process completed normally.
 var SYS_CALL_IRQ: number = 3; // a system call was made
 
+// MEMORY STUFF
+var MAX_MEM_SPACE = 256;
+var MAX_MEM_LOCATIONS = 3;
+var MAX_ADDRESS_SPACE = MAX_MEM_SPACE * MAX_MEM_LOCATIONS;
+
 
 //
 // Global Variables

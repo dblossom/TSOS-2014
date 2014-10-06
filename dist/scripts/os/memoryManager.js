@@ -2,21 +2,28 @@
 ///<reference path="../host/memory.ts" />
 /* ------------
 MemoryManager.ts
+This has all the routines (methods) required for the MMU
+It communicates between the OS and hardware
 Requires globals.ts
+Author: D. Blossom
 ------------ */
 var TSOS;
 (function (TSOS) {
     var MemoryManager = (function () {
+        // TODO: add a way to keep track of the 3 different address spaces
+        //       need to know when one will be in use as to not overwrite
+        //       a program that has not run yet -- not needed for project 1
+        //       but will be a key part for project 2!!
         function MemoryManager() {
-            this.BLOCK_SIZE = 256;
-            this.AVAIL_LOCATIONS = 3;
-            this.MAX = (this.BLOCK_SIZE * this.AVAIL_LOCATIONS);
+            // initialize our memory object.
             this.memoryModule = new TSOS.Memory(new Array());
-
-            for (var i = 0; i < this.MAX; i = (i + this.BLOCK_SIZE)) {
-                //  this.avail_mem.push(i, (i + (this.BLOCK_SIZE - 1)));
-            }
         }
+        /**
+        * writes a "byte string" to a memory address then updates the display
+        *
+        * @ params - address: where to write
+        * @ params - byte: what to write
+        */
         MemoryManager.prototype.write = function (address, byte) {
             this.memoryModule.write(address, byte);
             this.updateMemoryCell(address, byte);
@@ -34,12 +41,23 @@ var TSOS;
             return this.memoryModule.read(address);
         };
 
+        /**
+        * Will clear a section of memory given a starting address and "offset" or end address
+        * @ param start: where to start
+        * @ param end: where to ... well ... wait for it ... END
+        */
         MemoryManager.prototype.clearRange = function (start, end) {
             this.memoryModule.clearBlock(start, end);
         };
 
         /**
         * This updates the memory after it has been loaded
+        *
+        * I had a lot of issues with typescript and updating a table
+        * feel free to read the angry comments but the really do not outline
+        * the issues I was having. Simply put, the typechecking was not allowing
+        * what would have been valid javascript to run. Gave various compile errors
+        *
         * @params -- both are meaning less right now.
         */
         MemoryManager.prototype.updateMemoryCell = function (address, data) {
@@ -60,8 +78,7 @@ var TSOS;
         };
 
         /**
-        * This initalizes memory to all zeros -> hmm sure looks like the guy abvoe
-        * next release will have 1 method that works for both
+        * This initalizes memory to all zeros
         */
         MemoryManager.prototype.initMemoryDisplay = function (tblElement) {
             var row = null;

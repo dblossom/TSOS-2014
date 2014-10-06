@@ -1,13 +1,22 @@
 /* -------------------------
-       pcb.ts
+    pcb.ts
        
     A process control block
     
-    Author: D. Blossom
+    Keeps track of a processes current state.
     
+    Author: D. Blossom
     ------------------------ */
     
 module TSOS{
+
+    export enum State{ 
+            NEW, // new = 0
+            RUNNING, // running = 1
+            TERMINATED, // terminated = 2
+            WAIT, // waiting = 3
+            READY // ready = 4
+    }
 
     export class PCB{
     
@@ -21,6 +30,7 @@ module TSOS{
         public X_reg: number = 0;
         public Y_reg: number = 0;
         public Z_flag: number = 0;
+        public currentState: State; 
         
         // base and limit information
         public base: number;
@@ -35,10 +45,7 @@ module TSOS{
             // mark the base and limit
             this.base = base;
             this.limit = limit;
-
+            this.currentState = State.NEW;
         }
-    
-    
     }
-
 }

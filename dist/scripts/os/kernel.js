@@ -45,6 +45,9 @@ var TSOS;
             // initalize a memory manager
             _MemManager = new TSOS.MemoryManager();
 
+            // initalize the memory display
+            _MemManager.initMemoryDisplay(_MemoryDisplay);
+
             // initalize a list of programs -- err processes really
             _ProgramList = new Array();
 
@@ -133,11 +136,11 @@ var TSOS;
                     //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
 
-                    //_CPU.initCPUDisplay(); <-- cannot test progs with this
-                    _StdOut.advanceLine();
                     break;
                 case SYS_CALL_IRQ:
                     this.krnSysCall(params);
+                    _StdOut.advanceLine(); // advance a line
+                    _OsShell.putPrompt(); // put the active prompt back
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
@@ -205,6 +208,7 @@ var TSOS;
             _CPU.initCPUDisplay();
             //TODO: we need a process running status
             //      do we want to add some sorta way to know what the process is ? idk.
+            //      sounds like something for the pcb file ... and ... the ready queue display
         };
 
         /**

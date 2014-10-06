@@ -2,8 +2,12 @@
 
 /* ------------
      Memory.ts
+     
+     This is a memory representation of hardware.
 
      Requires globals.ts
+     
+     Author: D. Blossom
 
      ------------ */
 
@@ -23,7 +27,7 @@ module TSOS{
         
         public write(address:number, hexbyte:string):void{
             // so this at its very basic form will put a "hex byte" in a memory location
-            this.memoryArray[address] = parseInt(hexbyte,16); 
+            this.memoryArray[address] = parseInt(hexbyte,16); //store as int.
         }
         
         /**
@@ -31,7 +35,7 @@ module TSOS{
          */
         public read(address:number):string{
             // so this will read an item from memory
-            return this.memoryArray[address].toString(16); 
+            return this.memoryArray[address].toString(16); //bring it back as string
         }
         
         /**
@@ -74,6 +78,9 @@ module TSOS{
                                     //     but we would not deprecate clearBlock as that seems  useful
         }
         
+        /**
+         * returns the size of length of memory
+         */
         public size():number{
             return this.memoryArray.length;
         }

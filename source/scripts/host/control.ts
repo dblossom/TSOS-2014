@@ -58,8 +58,6 @@ module TSOS {
             
             // memory display
             _MemoryDisplay = <HTMLTableElement> document.getElementById('memoryTable');
-            // initalize the memory display
-            new Control().initMemoryDisplay(_MemoryDisplay);
 
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {
@@ -102,6 +100,7 @@ module TSOS {
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new Cpu();
             _CPU.init();
+            // ... initalize the CPU display
             _CPU.initCPUDisplay();
 
             // ... then set the host clock pulse ...
@@ -127,20 +126,6 @@ module TSOS {
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
-        }
-        
-        // method for the memory display
-        public initMemoryDisplay(tblElement: HTMLTableElement):void{
-            
-            var row = null;
-            var rowcount = 0;
-            for(var i=0; i < 768; i++){
-                if(i%8 === 0){
-                    row = tblElement.insertRow(rowcount++);
-                    row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
-                } 
-                row.insertCell((i%8) + 1).innerHTML = "00";
-            }
         }
     }
 }

@@ -41,9 +41,11 @@ var TSOS;
 
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            // So, let us read the next spot in memory at the current PC and execute it
             this.instructionSet(_MemManager.read(_CPU.PC));
+
+            // let us update the CPU display
             this.initCPUDisplay();
-            //  _MemManager.displayMemoryContents();
         };
 
         /**
@@ -123,8 +125,10 @@ var TSOS;
                     if (_CPU.Zflag === 0) {
                         var branch = parseInt(_MemManager.read(++_CPU.PC), 16);
                         _CPU.PC += branch;
-                        if (_CPU.PC > 255) {
-                            _CPU.PC = _CPU.PC - 256;
+
+                        // Are we branching past valid address space?
+                        if (_CPU.PC > (MAX_MEM_SPACE - 1)) {
+                            _CPU.PC = _CPU.PC - MAX_MEM_SPACE; // start over from begining
                         }
                         break;
                     } else {
@@ -134,15 +138,16 @@ var TSOS;
                 case 238:
                     var address = this.loadTwoBytes();
                     var tempValue = parseInt(_MemManager.read(address), 16);
-                    tempValue++;
-                    _MemManager.write(address, tempValue.toString(16));
+                    tempValue++; // add one to current value
+                    _MemManager.write(address, tempValue.toString(16)); // store it back
                     break;
 
                 case 255:
+                    // put the sys call on the interrupt queue and pass the xreg as param.
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(SYS_CALL_IRQ, _CPU.Xreg));
                     break;
             }
-            _CPU.PC++;
+            _CPU.PC++; // inc past current location in memory to next to process.
         };
 
         /**
