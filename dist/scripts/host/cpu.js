@@ -43,7 +43,7 @@ var TSOS;
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             this.instructionSet(_MemManager.read(_CPU.PC));
             this.initCPUDisplay();
-            _MemManager.displayMemoryContents();
+            //  _MemManager.displayMemoryContents();
         };
 
         /**
@@ -123,13 +123,16 @@ var TSOS;
                     if (_CPU.Zflag === 0) {
                         var branch = parseInt(_MemManager.read(++_CPU.PC), 16);
                         _CPU.PC += branch;
+                        if (_CPU.PC > 255) {
+                            _CPU.PC = _CPU.PC - 256;
+                        }
                         break;
                     } else {
                         break;
                     }
 
                 case 238:
-                    var address = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    var address = this.loadTwoBytes();
                     var tempValue = parseInt(_MemManager.read(address), 16);
                     tempValue++;
                     _MemManager.write(address, tempValue.toString(16));
