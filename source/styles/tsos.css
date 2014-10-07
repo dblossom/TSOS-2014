@@ -1,7 +1,7 @@
 /* TSOS.css */
 
 body {
-  background: #FF6600;
+  background: #F0F0F0;
   font-family: Helvetica, Verdana, Arial, sans-serif;
   font-size: 12pt;
   font-weight: normal;
@@ -36,15 +36,17 @@ table{
 }
 
 table td{
+	background-color:#FFFFFF;
 	border:1px solid #000000;
 }
 
 table th{
+	background-color:#FFFFFF;
 	border:1px solid #000000;
 }
 
 #display {
-  background-color:#006600;
+  background-color:#FFFFFF;
   border: 1px solid black;
   cursor: default;
 }
