@@ -30,7 +30,7 @@ module TSOS{
         public X_reg: number = 0;
         public Y_reg: number = 0;
         public Z_flag: number = 0;
-        public currentState: State; 
+        public currentState: State = State.READY; 
         
         // base and limit information
         public base: number;
@@ -47,5 +47,21 @@ module TSOS{
             this.limit = limit;
             this.currentState = State.NEW;
         }
+        
+        /**
+         * Method to initalize PCB display to all zeros
+         * This ASSUMES PCB variables have been set!
+         */
+         public setPCBDisplay():void{
+             document.getElementById('PID').innerHTML = PCB.pid.toString();
+             document.getElementById('Base').innerHTML = this.base.toString();
+             document.getElementById('Limit').innerHTML = this.limit.toString();
+             document.getElementById('State').innerHTML = this.currentState.toString();
+             document.getElementById('pcb_PC').innerHTML = this.progCount.toString();
+             document.getElementById('pcb_ACC').innerHTML = this.ACC.toString();
+             document.getElementById('pcb_X').innerHTML = this.X_reg.toString();
+             document.getElementById('pcb_Y').innerHTML = this.Y_reg.toString();
+             document.getElementById('pcb_Z').innerHTML = this.Z_flag.toString();
+         }
     }
 }

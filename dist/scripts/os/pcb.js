@@ -24,6 +24,7 @@ var TSOS;
             this.X_reg = 0;
             this.Y_reg = 0;
             this.Z_flag = 0;
+            this.currentState = 4 /* READY */;
             // increment the pid everytime we create a PCB
             // so we do not want to start at zero but rather
             // whatever the next number will be.
@@ -34,6 +35,21 @@ var TSOS;
             this.limit = limit;
             this.currentState = 0 /* NEW */;
         }
+        /**
+        * Method to initalize PCB display to all zeros
+        * This ASSUMES PCB variables have been set!
+        */
+        PCB.prototype.setPCBDisplay = function () {
+            document.getElementById('PID').innerHTML = PCB.pid.toString();
+            document.getElementById('Base').innerHTML = this.base.toString();
+            document.getElementById('Limit').innerHTML = this.limit.toString();
+            document.getElementById('State').innerHTML = this.currentState.toString();
+            document.getElementById('pcb_PC').innerHTML = this.progCount.toString();
+            document.getElementById('pcb_ACC').innerHTML = this.ACC.toString();
+            document.getElementById('pcb_X').innerHTML = this.X_reg.toString();
+            document.getElementById('pcb_Y').innerHTML = this.Y_reg.toString();
+            document.getElementById('pcb_Z').innerHTML = this.Z_flag.toString();
+        };
         PCB.pid = 0;
         return PCB;
     })();

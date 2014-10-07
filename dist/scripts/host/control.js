@@ -54,6 +54,9 @@ var TSOS;
             // memory display
             _MemoryDisplay = document.getElementById('memoryTable');
 
+            // pcb display
+            _PCBdisplay = document.getElementById('PCBTable');
+
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {
                 _GLaDOS = new Glados();

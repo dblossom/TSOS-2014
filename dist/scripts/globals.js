@@ -92,6 +92,9 @@ var _CPUdisplay = null;
 // list for the programs, will hold programs
 var _ProgramList = null;
 
+// for pcb display
+var _PCBdisplay = null;
+
 // For testing...
 var _GLaDOS = null;
 var Glados = null;

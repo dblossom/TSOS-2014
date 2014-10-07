@@ -96,6 +96,9 @@ var _CPUdisplay: HTMLTableElement = null;
 // list for the programs, will hold programs
 var _ProgramList = null;
 
+// for pcb display
+var _PCBdisplay: HTMLTableElement = null;
+
 // For testing...
 var _GLaDOS: any = null;
 var Glados: any = null;

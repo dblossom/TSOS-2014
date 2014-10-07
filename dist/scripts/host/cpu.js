@@ -46,6 +46,12 @@ var TSOS;
 
             // let us update the CPU display
             this.initCPUDisplay();
+
+            // update the current PCB with CPU's registers and such
+            this.updatePCB(_ProgramList[TSOS.PCB.pid - 1]);
+
+            // update the current PCB display <this is kinda a bug> but want to see it work
+            _ProgramList[TSOS.PCB.pid - 1].setPCBDisplay();
         };
 
         /**
@@ -174,6 +180,14 @@ var TSOS;
             var low = parseInt(_MemManager.read(++_CPU.PC), 16);
             var high = parseInt(_MemManager.read(++_CPU.PC), 16);
             return (low + high);
+        };
+
+        Cpu.prototype.updatePCB = function (pcb) {
+            pcb.progCount = this.PC;
+            pcb.ACC = this.Acc;
+            pcb.X_reg = this.Xreg;
+            pcb.Y_reg = this.Yreg;
+            pcb.Z_flag = this.Zflag;
         };
         return Cpu;
     })();
