@@ -22,6 +22,8 @@ var TSOS;
             // to hold buffer commands after enter is pressed
             this.commandHistory = [];
             this.commandHistoryPointer = this.commandHistory.length;
+            this.tabSearchResults = [];
+            this.tabSearchPointer = 0;
         }
         Console.prototype.init = function () {
             this.clearScreen();
@@ -53,6 +55,10 @@ var TSOS;
                     // increase our pointer to last element
                     this.commandHistory[this.commandHistory.length] = this.buffer;
                     this.commandHistoryPointer = this.commandHistory.length - 1;
+
+                    // clear the tab buffer and pointer
+                    this.tabSearchResults = [];
+                    this.tabSearchPointer = 0;
 
                     // ... and reset our buffer.
                     this.buffer = "";
@@ -86,19 +92,36 @@ var TSOS;
                     // reset the buffer dumbass
                     this.buffer = currBuff;
                 } else if (chr === String.fromCharCode(9)) {
-                    // umm idk -- what the fuck is command completion ?
-                    // TODO: do I want "search length 2" to be inside commandLookup?
-                    //       do I want length to be < 2, > 2, users picks ? wtf idk.
-                    //       what if wrong on first guess ? do it again ? or return
-                    //       blank ? or the original search key ? sounds neat ...
-                    var search = this.buffer;
-                    if (search.length > 1) {
-                        // erase buffer, erarse line, find command, put command on console and in buffer.
-                        this.buffer = "";
+                    if (this.tabSearchResults.length > 0) {
+                        // we want to loop around so if we are at the end of array start over
+                        if (this.tabSearchPointer === this.tabSearchResults.length) {
+                            this.tabSearchPointer = 0;
+                        }
+
+                        // grab the next item from the array and put it in the buffer and on screen
+                        var tempString = this.tabSearchResults[this.tabSearchPointer++];
                         this.clearLine();
-                        var commandFound = this.commandLookup(search);
-                        this.putText(commandFound);
-                        this.buffer = commandFound;
+                        this.putText(tempString);
+                        this.buffer = tempString;
+                    } else {
+                        // set the array with the found results
+                        this.tabSearchResults = this.commandLookup(this.buffer);
+
+                        // set the pointer, but it should be set already
+                        this.tabSearchPointer = 0;
+
+                        // grab the first result
+                        var tempString = this.tabSearchResults[this.tabSearchPointer++];
+
+                        // clear the buffer
+                        this.buffer = "";
+
+                        // erase the line
+                        this.clearLine();
+
+                        // finally show the text and put in the the buffer in case it will be used.
+                        this.putText(tempString);
+                        this.buffer = tempString;
                     }
                 } else {
                     // This is a "normal" character, so ...
@@ -214,7 +237,8 @@ var TSOS;
 
         // looks up a command in the shells command list
         Console.prototype.commandLookup = function (wildcard) {
-            var returnString = "";
+            var returnString = [];
+            var pointer = 0;
 
             for (var i = 0; i < _OsShell.commandList.length; i++) {
                 // this creates a substring from the length of the wildcard, this will allow
@@ -224,7 +248,7 @@ var TSOS;
 
                 // if we match, set the return string
                 if (tempString === wildcard) {
-                    returnString = _OsShell.commandList[i].command;
+                    returnString[pointer++] = _OsShell.commandList[i].command;
                 }
             }
             return returnString;
