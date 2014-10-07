@@ -90,7 +90,11 @@ var _MemoryDisplay = null;
 var _CPUdisplay = null;
 
 // list for the programs, will hold programs
-var _ProgramList = null;
+// TODO: Make it really a queue, I inializie it as
+//       an array in kernel -> krnBootstrap()
+//       also, consider renaming to be similar to
+//       the ready queue's name since directed related
+var _ResidentQueue = null;
 
 // for pcb display
 var _PCBdisplay = null;

@@ -456,7 +456,7 @@ module TSOS {
                 // Clear memory, write current pid counter to term and add pcb to list @ current pid.
                // _MemManager.displayMemoryContents();
                 _StdOut.putText("PID: " + PCB.pid);
-                _ProgramList[PCB.pid] = new PCB(0, (MAX_MEM_SPACE - 1)); // TODO: this always overwrites memory at 0!!!
+                _ResidentQueue[PCB.pid] = new PCB(0, (MAX_MEM_SPACE - 1)); // TODO: this always overwrites memory at 0!!!
                 
             }else{
                // let the user know his/her program is shitty and does not work
@@ -490,7 +490,7 @@ module TSOS {
         public shellRun(args){
             //TODO: ERROR CHECKING!!!
         
-            _KernelReadyQueue.enqueue(_ProgramList[args[0]]);
+            _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
         }
     }
 }

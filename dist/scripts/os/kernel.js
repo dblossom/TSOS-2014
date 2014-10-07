@@ -49,7 +49,9 @@ var TSOS;
             _MemManager.initMemoryDisplay(_MemoryDisplay);
 
             // initalize a list of programs -- err processes really
-            _ProgramList = new Array();
+            // I know this is not a Queue -- but an array .. or list. Sorry.
+            // renaming it to follow what it really is in real life...
+            _ResidentQueue = new Array();
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");

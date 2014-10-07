@@ -48,10 +48,10 @@ var TSOS;
             this.initCPUDisplay();
 
             // update the current PCB with CPU's registers and such
-            this.updatePCB(_ProgramList[TSOS.PCB.pid - 1]);
+            this.updatePCB(_ResidentQueue[TSOS.PCB.pid - 1]);
 
             // update the current PCB display <this is kinda a bug> but want to see it work
-            _ProgramList[TSOS.PCB.pid - 1].setPCBDisplay();
+            _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
         };
 
         /**
