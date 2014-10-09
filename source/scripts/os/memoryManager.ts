@@ -33,8 +33,15 @@ module TSOS{
          * @ params - byte: what to write 
          */
         public write(address:number, byte:string):void{
-            this.memoryModule.write(address, byte);
-            this.updateMemoryCell(address,byte);
+            
+            // just hard coding for now since we are only working with 0 - 255
+            // if we try to write at address 256 we should toss an error
+            if(address > 255){
+                _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
+            }else{ // good to go!
+                this.memoryModule.write(address, byte);
+                this.updateMemoryCell(address,byte);
+            }
         }
         
         /**
@@ -46,7 +53,14 @@ module TSOS{
          * @return string - a string representation of what is in memory
          */
         public read(address:number):string{
-            return this.memoryModule.read(address);
+        
+            // same as write, just hard coding the max address for now
+            // we cannot read from any address past 255.
+            if(address > 255){
+                _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
+            }else{ // should be a valid address ... maybe 
+                return this.memoryModule.read(address);
+            }
         }
         
         /**

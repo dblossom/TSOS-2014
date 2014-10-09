@@ -144,6 +144,9 @@ var TSOS;
                     _StdOut.advanceLine(); // advance a line
                     _OsShell.putPrompt(); // put the active prompt back
                     break;
+                case ILLEGAL_MEM_ACCESS:
+                    this.krnIllegalMemAccess(params);
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -234,6 +237,21 @@ var TSOS;
         };
 
         /**
+        * An illegal access from a read / write in memory just happened!
+        * @params - reserved for future use
+        */
+        Kernel.prototype.krnIllegalMemAccess = function (params) {
+            // first let us clear memory
+            _MemManager.clearRange(0, 768);
+
+            // clear cpu
+            _CPU.init();
+
+            // throw a bsod.
+            this.bsod("ILLEGAL MEMORY ACCESS ERROR!!! BAD BAD BOY / OR GIRL");
+        };
+
+        /**
         * Generates a BSOD
         * TODO: remove some of the hard coded values (?) <-- maybe
         */
@@ -245,6 +263,11 @@ var TSOS;
             _DrawingContext.fillRect(0, 0, _Canvas.width, _Canvas.height);
             _DrawingContext.font = "bold 25px Arial";
             _DrawingContext.fillStyle = "white";
+
+            // if we want to add a little message to the top of the BSOD
+            if (msg !== "") {
+                _DrawingContext.fillText(msg, 0, 90);
+            }
             _DrawingContext.fillText(" :( ", 0, 120);
             _DrawingContext.fillText("You're FUCKED!", 0, 150);
             _DrawingContext.fillText("Toss the PC in the Trash!", 0, 180);

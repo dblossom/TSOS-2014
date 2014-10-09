@@ -25,8 +25,14 @@ var TSOS;
         * @ params - byte: what to write
         */
         MemoryManager.prototype.write = function (address, byte) {
-            this.memoryModule.write(address, byte);
-            this.updateMemoryCell(address, byte);
+            // just hard coding for now since we are only working with 0 - 255
+            // if we try to write at address 256 we should toss an error
+            if (address > 255) {
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
+            } else {
+                this.memoryModule.write(address, byte);
+                this.updateMemoryCell(address, byte);
+            }
         };
 
         /**
@@ -38,7 +44,13 @@ var TSOS;
         * @return string - a string representation of what is in memory
         */
         MemoryManager.prototype.read = function (address) {
-            return this.memoryModule.read(address);
+            // same as write, just hard coding the max address for now
+            // we cannot read from any address past 255.
+            if (address > 255) {
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
+            } else {
+                return this.memoryModule.read(address);
+            }
         };
 
         /**
