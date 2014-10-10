@@ -92,6 +92,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - executes a program in memory from given pid");
             this.commandList[this.commandList.length] = sc;
 
+            // activate step
+            sc = new TSOS.ShellCommand(this.shellStep, "step", "<on | off> - activte or deactivate step");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -450,6 +454,16 @@ var TSOS;
         Shell.prototype.shellRun = function (args) {
             //TODO: ERROR CHECKING!!!
             _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
+        };
+
+        Shell.prototype.shellStep = function (args) {
+            if (args[0].toUpperCase() === "ON") {
+                document.getElementById("btnStep").disabled = false;
+            } else if (args[0].toUpperCase() === "OFF") {
+                document.getElementById("btnStep").disabled = true;
+            } else {
+                _StdOut.putText("Usage: step <on | off> turn step on or off");
+            }
         };
         return Shell;
     })();

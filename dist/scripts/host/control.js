@@ -129,6 +129,12 @@ var TSOS;
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
         };
+
+        Control.hostBtnStep_click = function (btn) {
+            // do nothing for now
+            // run 1 cpu cycle!
+            _CPU.cycle();
+        };
         return Control;
     })();
     TSOS.Control = Control;
