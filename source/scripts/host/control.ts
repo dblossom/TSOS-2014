@@ -82,17 +82,25 @@ module TSOS {
             // Update the log console.
             var taLog = <HTMLInputElement> document.getElementById("taHostLog");
             
+            // so...get the first msg to find out what the "state" of cpu is
+            // this will give us the index of msg: in the string
             var findLastMsgIndex = taLog.value.indexOf("msg:");
+            // here we just add 4 for msg: and go for spaces since idle is 4 chars
             var findLastMsgString = taLog.value.substr(findLastMsgIndex+4,4);
+            // now let us check 2 things 1) current message is idle AND new message is idle
             if(findLastMsgString.toUpperCase() === "IDLE" && msg.toUpperCase() === "IDLE"){
-                var trimPointStart = (taLog.value.search("now:") + 4);
-                var preIdle = taLog.value.substring(0, trimPointStart);
-               
-                var trimPointEnd = (taLog.value.search(" }"));
-                var postIdle = taLog.value.substring(trimPointEnd, taLog.value.length);
+               // so it is, get the end of the line.
+                var trimPointStart = (taLog.value.search(" }"));
                 
-                taLog.value = preIdle + now + postIdle;
-            }else{ // just adding to current log
+                // +4 that is when the next line start (this caused me a bit of a headache)
+                // if you look at old commits at the ugly I was trying to do
+                // anyway: let us get the oldvalue minus that first line
+                var oldValue = taLog.value.substring((trimPointStart + 4), taLog.value.length);
+                
+                //finally repalce that first line with the new line, updating 'clock' and 'now'
+                taLog.value = str + oldValue;
+
+            }else{ // we are not logging repeated idle's so ... show us!
                 taLog.value = str + taLog.value;
             }
             // Optionally update a log database or some streaming service.

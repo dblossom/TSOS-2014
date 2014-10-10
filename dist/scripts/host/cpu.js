@@ -138,6 +138,7 @@ var TSOS;
                         }
                         break;
                     } else {
+                        _CPU.PC++;
                         break;
                     }
 

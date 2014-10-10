@@ -142,6 +142,7 @@ module TSOS {
                          }
                          break;
                      }else{ // zflag is 1 do not branch
+                         _CPU.PC++ // still need to inc past the memory... (this worked before then stopped -- hmm need to check commit history)!
                          break;
                      }
                      
