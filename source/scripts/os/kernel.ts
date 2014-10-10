@@ -143,6 +143,7 @@ module TSOS {
                 case PCB_END_IRQ:
                     //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
+                    _ResidentQueue[PCB.pid - 1].currentState = State.TERMINATED;
                     //_CPU.initCPUDisplay(); <-- cannot test progs with this
                     break;
                 case SYS_CALL_IRQ:

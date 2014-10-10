@@ -453,8 +453,12 @@ var TSOS;
 
         Shell.prototype.shellRun = function (args) {
             //TODO: ERROR CHECKING!!!
-            _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
+            if (_ResidentQueue[args[0]].currentState !== 2 /* TERMINATED */) {
+                _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
+            } else {
+                _StdOut.putText("Usage: run <pid> active process ID.");
+            }
         };
 
         Shell.prototype.shellStep = function (args) {

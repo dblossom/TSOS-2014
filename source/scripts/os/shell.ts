@@ -495,8 +495,12 @@ module TSOS {
         
         public shellRun(args){
             //TODO: ERROR CHECKING!!!
-            _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
-            _KernelInterruptQueue.enqueue(new Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
+            if(_ResidentQueue[args[0]].currentState !== State.TERMINATED){
+                _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
+                _KernelInterruptQueue.enqueue(new Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
+            }else{
+                _StdOut.putText("Usage: run <pid> active process ID.");
+            }
         }
         
         public shellStep(args){

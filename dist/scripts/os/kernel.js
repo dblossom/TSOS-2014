@@ -135,6 +135,7 @@ var TSOS;
                 case PCB_END_IRQ:
                     //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
+                    _ResidentQueue[TSOS.PCB.pid - 1].currentState = 2 /* TERMINATED */;
 
                     break;
                 case SYS_CALL_IRQ:
