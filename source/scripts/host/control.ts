@@ -132,9 +132,12 @@ module TSOS {
         }
         
         public static hostBtnStep_click(btn): void{
-            // do nothing for now
-            // run 1 cpu cycle!
-            _CPU.cycle();
+            
+            // run 1 cpu cycle by calling an IRQ!
+            // this basically just calls cycle() using an interrupt
+            // mainly to keep program execution inside the kernel.
+            _KernelInterruptQueue.enqueue(new Interrupt(STEP_CPU_IRQ, 0));
+            
         }
     }
 }

@@ -131,9 +131,10 @@ var TSOS;
         };
 
         Control.hostBtnStep_click = function (btn) {
-            // do nothing for now
-            // run 1 cpu cycle!
-            _CPU.cycle();
+            // run 1 cpu cycle by calling an IRQ!
+            // this basically just calls cycle() using an interrupt
+            // mainly to keep program execution inside the kernel.
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STEP_CPU_IRQ, 0));
         };
         return Control;
     })();

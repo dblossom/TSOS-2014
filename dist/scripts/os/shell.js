@@ -454,13 +454,16 @@ var TSOS;
         Shell.prototype.shellRun = function (args) {
             //TODO: ERROR CHECKING!!!
             _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
         };
 
         Shell.prototype.shellStep = function (args) {
             if (args[0].toUpperCase() === "ON") {
                 document.getElementById("btnStep").disabled = false;
+                _StepCPU = true;
             } else if (args[0].toUpperCase() === "OFF") {
                 document.getElementById("btnStep").disabled = true;
+                _StepCPU = false;
             } else {
                 _StdOut.putText("Usage: step <on | off> turn step on or off");
             }

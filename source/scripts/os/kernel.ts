@@ -102,8 +102,6 @@ module TSOS {
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
                 _CPU.cycle();
-            } else if(_KernelReadyQueue.getSize() > 0){ // someone typed run ..!!
-                this.krnProcess(_KernelReadyQueue.dequeue()); // Give it to Kernel to execute!
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
             }
@@ -158,6 +156,14 @@ module TSOS {
                 case ILLEGAL_OPCODE_IRQ:
                     this.krnIllegalOpCode(params);
                     break;
+                case STEP_CPU_IRQ:
+                    _CPU.cycle(); // cycle cpu
+                    break;
+                case EXEC_PROG_IRQ:
+                    // someone typed run, give it to the kernel for execution
+                    this.krnProcess(params);
+                    break;
+                    
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -219,10 +225,14 @@ module TSOS {
          * Execute a process
          * TODO: Understand and modularize some of this shit.
          */
-        public krnProcess(pcb:PCB){
+        public krnProcess(params){
+        
+            var pcb:PCB = params.dequeue();
             this.krnTrace("Executing PID: " + pcb.progCount);
             _CPU.PC = pcb.base;
-            _CPU.isExecuting = true;
+            
+            // set isExecuting to be the opposite of step
+            _CPU.isExecuting = !_StepCPU;
             _CPU.initCPUDisplay();
              
             //TODO: we need a process running status

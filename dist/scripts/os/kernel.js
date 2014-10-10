@@ -99,8 +99,6 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
-            } else if (_KernelReadyQueue.getSize() > 0) {
-                this.krnProcess(_KernelReadyQueue.dequeue()); // Give it to Kernel to execute!
             } else {
                 this.krnTrace("Idle");
             }
@@ -150,6 +148,14 @@ var TSOS;
                 case ILLEGAL_OPCODE_IRQ:
                     this.krnIllegalOpCode(params);
                     break;
+                case STEP_CPU_IRQ:
+                    _CPU.cycle(); // cycle cpu
+                    break;
+                case EXEC_PROG_IRQ:
+                    // someone typed run, give it to the kernel for execution
+                    this.krnProcess(params);
+                    break;
+
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -209,10 +215,13 @@ var TSOS;
         * Execute a process
         * TODO: Understand and modularize some of this shit.
         */
-        Kernel.prototype.krnProcess = function (pcb) {
+        Kernel.prototype.krnProcess = function (params) {
+            var pcb = params.dequeue();
             this.krnTrace("Executing PID: " + pcb.progCount);
             _CPU.PC = pcb.base;
-            _CPU.isExecuting = true;
+
+            // set isExecuting to be the opposite of step
+            _CPU.isExecuting = !_StepCPU;
             _CPU.initCPUDisplay();
             //TODO: we need a process running status
             //      do we want to add some sorta way to know what the process is ? idk.

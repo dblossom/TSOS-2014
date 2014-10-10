@@ -24,6 +24,8 @@ var PCB_END_IRQ = 2;
 var SYS_CALL_IRQ = 3;
 var ILLEGAL_MEM_ACCESS = 4;
 var ILLEGAL_OPCODE_IRQ = 5;
+var STEP_CPU_IRQ = 6;
+var EXEC_PROG_IRQ = 7;
 
 // MEMORY STUFF
 var MAX_MEM_SPACE = 256;
@@ -34,6 +36,7 @@ var MAX_ADDRESS_SPACE = MAX_MEM_SPACE * MAX_MEM_LOCATIONS;
 // Global Variables
 //
 var _CPU;
+var _StepCPU = false;
 
 var _OSclock = 0;
 

@@ -26,6 +26,8 @@ var PCB_END_IRQ: number = 2; // a process completed normally.
 var SYS_CALL_IRQ: number = 3; // a system call was made
 var ILLEGAL_MEM_ACCESS: number = 4; // memory was accessed illegally TODO: rename with _IRQ at end
 var ILLEGAL_OPCODE_IRQ: number = 5; // bad opcode passed.
+var STEP_CPU_IRQ: number = 6; // an IRQ for step.
+var EXEC_PROG_IRQ: number = 7; // loads a program from ReadyQueue to krnProcess to execute (only way for my step to work)
 
 // MEMORY STUFF
 var MAX_MEM_SPACE = 256;
@@ -37,6 +39,7 @@ var MAX_ADDRESS_SPACE = MAX_MEM_SPACE * MAX_MEM_LOCATIONS;
 // Global Variables
 //
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
+var _StepCPU: boolean = false; // do we want to step each instruction.
 
 var _OSclock: number = 0;  // Page 23.
 
