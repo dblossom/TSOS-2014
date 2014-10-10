@@ -81,7 +81,17 @@ module TSOS {
 
             // Update the log console.
             var taLog = <HTMLInputElement> document.getElementById("taHostLog");
-            taLog.value = str + taLog.value;
+            
+            var findLastMsgIndex = taLog.value.indexOf("msg:");
+            var findLastMsgString = taLog.value.substr(findLastMsgIndex+4,4);
+            if(findLastMsgString.toUpperCase() === "IDLE"){
+                var trimPointStart = (taLog.value.search("now:") + 4);
+                var trimPointEnd = (taLog.value.search(" }") + 3);
+                var postIdle = taLog.value.substr(trimPointEnd, taLog.value.length); 
+                taLog.value = str + postIdle;
+            }else{ // just adding to current log
+                taLog.value = str + taLog.value;
+            }
             // Optionally update a log database or some streaming service.
         }
 
