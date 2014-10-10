@@ -80,11 +80,14 @@ var TSOS;
 
             var findLastMsgIndex = taLog.value.indexOf("msg:");
             var findLastMsgString = taLog.value.substr(findLastMsgIndex + 4, 4);
-            if (findLastMsgString.toUpperCase() === "IDLE") {
+            if (findLastMsgString.toUpperCase() === "IDLE" && msg.toUpperCase() === "IDLE") {
                 var trimPointStart = (taLog.value.search("now:") + 4);
-                var trimPointEnd = (taLog.value.search(" }") + 3);
-                var postIdle = taLog.value.substr(trimPointEnd, taLog.value.length);
-                taLog.value = str + postIdle;
+                var preIdle = taLog.value.substring(0, trimPointStart);
+
+                var trimPointEnd = (taLog.value.search(" }"));
+                var postIdle = taLog.value.substring(trimPointEnd, taLog.value.length);
+
+                taLog.value = preIdle + now + postIdle;
             } else {
                 taLog.value = str + taLog.value;
             }
