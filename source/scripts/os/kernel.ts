@@ -155,6 +155,9 @@ module TSOS {
                 case ILLEGAL_MEM_ACCESS:
                     this.krnIllegalMemAccess(params);
                     break;
+                case ILLEGAL_OPCODE_IRQ:
+                    this.krnIllegalOpCode(params);
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -266,6 +269,30 @@ module TSOS {
              // throw a bsod.
              this.bsod("ILLEGAL MEMORY ACCESS ERROR!!! BAD BAD BOY / OR GIRL");
          
+         }
+         
+         /**
+          * An invalid opcode was passed to the cpu _ bad _ !
+          * @params: the bad opcode
+          * TODO:  add support to know where you are in memory!
+          */
+         public krnIllegalOpCode(params){
+             
+             // First, let us tell the user what the heck just happened.
+             _StdOut.putText("BAD OPCODE: " + params.toString(16) + " program terminating.");
+             
+             // advance a line
+             _StdOut.advanceLine();
+             
+             // put back the prompt
+             _OsShell.putPrompt();
+             
+             // now let us clear all of memory!
+             // hard coded 0 - 255 -- will be an issue later!
+             _MemManager.clearRange(0, (MAX_MEM_SPACE - 1));
+             
+             // reset the cpu
+             _CPU.init();
          }
         
         /**

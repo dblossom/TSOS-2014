@@ -156,6 +156,10 @@ module TSOS {
                      // put the sys call on the interrupt queue and pass the xreg as param.
                      _KernelInterruptQueue.enqueue(new Interrupt(SYS_CALL_IRQ, _CPU.Xreg));
                      break;
+                     
+                 default: // an unknown OPCODE just arrived!
+                     // call an interupt and pass the opcode to tell the user!
+                     _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_OPCODE_IRQ, opcode));
              }
              _CPU.PC++; // inc past current location in memory to next to process.
          

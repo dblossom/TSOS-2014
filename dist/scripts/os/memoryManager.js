@@ -27,7 +27,8 @@ var TSOS;
         MemoryManager.prototype.write = function (address, byte) {
             // just hard coding for now since we are only working with 0 - 255
             // if we try to write at address 256 we should toss an error
-            if (address > 255) {
+            // TODO: create a function that checks the range of incoming address.
+            if (address > MAX_MEM_SPACE) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
             } else {
                 this.memoryModule.write(address, byte);
@@ -46,7 +47,8 @@ var TSOS;
         MemoryManager.prototype.read = function (address) {
             // same as write, just hard coding the max address for now
             // we cannot read from any address past 255.
-            if (address > 255) {
+            // TODO: create a function that checks the range of an address
+            if (address > MAX_MEM_SPACE) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
             } else {
                 return this.memoryModule.read(address);
@@ -73,7 +75,7 @@ var TSOS;
         * @params -- both are meaning less right now.
         */
         MemoryManager.prototype.updateMemoryCell = function (address, data) {
-            for (var i = 0; i < 32; i++) {
+            for (var i = 0; i < (MAX_MEM_SPACE / 8); i++) {
                 _MemoryDisplay.deleteRow(0);
             }
 
@@ -95,7 +97,7 @@ var TSOS;
         MemoryManager.prototype.initMemoryDisplay = function (tblElement) {
             var row = null;
             var rowcount = 0;
-            for (var i = 0; i < 256; i++) {
+            for (var i = 0; i < MAX_MEM_SPACE; i++) {
                 if (i % 8 === 0) {
                     row = tblElement.insertRow(rowcount++);
                     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();

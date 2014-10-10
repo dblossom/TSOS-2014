@@ -404,13 +404,13 @@ var TSOS;
             }
 
             if (isValid) {
-                _StdOut.putText("Valid putting in memory, please wait... (bitch)");
+                _StdOut.putText("Loading, please wait...");
                 _StdOut.advanceLine();
 
                 // clearing memory
                 _MemManager.clearRange(0, 255);
 
-                // point incs by 2 ever go, i incs by 1. what, what what ?
+                // point incs by 2 every go, i incs by 1. what, what what ?
                 // point keeps track of the hex bytes (aka 2 nibbles, aka every 2 chars)
                 // i keeps track of where we are in the string
                 var point = 0;
@@ -424,7 +424,7 @@ var TSOS;
                 _ResidentQueue[TSOS.PCB.pid] = new TSOS.PCB(0, (MAX_MEM_SPACE - 1)); // TODO: this always overwrites memory at 0!!!
             } else {
                 // let the user know his/her program is shitty and does not work
-                _StdOut.putText("Invalid Program...IDK, try again?");
+                _StdOut.putText("Invalid Program...please try again! (or not).");
             }
         };
 

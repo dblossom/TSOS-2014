@@ -36,7 +36,8 @@ module TSOS{
             
             // just hard coding for now since we are only working with 0 - 255
             // if we try to write at address 256 we should toss an error
-            if(address > 255){
+            // TODO: create a function that checks the range of incoming address.
+            if(address > MAX_MEM_SPACE){
                 _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
             }else{ // good to go!
                 this.memoryModule.write(address, byte);
@@ -56,7 +57,8 @@ module TSOS{
         
             // same as write, just hard coding the max address for now
             // we cannot read from any address past 255.
-            if(address > 255){
+            // TODO: create a function that checks the range of an address
+            if(address > MAX_MEM_SPACE){
                 _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
             }else{ // should be a valid address ... maybe 
                 return this.memoryModule.read(address);
@@ -104,10 +106,9 @@ module TSOS{
             // my bandaid hack...
             
             // first we delete every row (even rows.length did not work right!)
-            // since I am only showing 255 until I get this working right, hard code
-            // the 32 (31) rows in the 255... so ... then delete the first row, which
-            // is always zero because well, once a row is gone its child becomes parent. 
-            for(var i:number = 0; i < 32; i++){
+            // for now we are only showing 256 mem spaces, so there should be
+            // 256 spaces / 8 "blocks" to create 32 (31) rows since its -1.
+            for(var i:number = 0; i < (MAX_MEM_SPACE / 8); i++){
                 _MemoryDisplay.deleteRow(0);
             }
             
@@ -133,7 +134,7 @@ module TSOS{
             
             var row = null;
             var rowcount = 0;
-            for(var i=0; i < 256; i++){
+            for(var i=0; i < MAX_MEM_SPACE; i++){
                 if(i%8 === 0){
                     row = tblElement.insertRow(rowcount++);
                     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();

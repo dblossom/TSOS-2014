@@ -24,7 +24,8 @@ var KEYBOARD_IRQ: number = 1;
 // ADDED Interupts for assignment 2: Assume these constants to change!!!
 var PCB_END_IRQ: number = 2; // a process completed normally.
 var SYS_CALL_IRQ: number = 3; // a system call was made
-var ILLEGAL_MEM_ACCESS: number = 4; // memory was accessed illegally
+var ILLEGAL_MEM_ACCESS: number = 4; // memory was accessed illegally TODO: rename with _IRQ at end
+var ILLEGAL_OPCODE_IRQ: number = 5; // bad opcode passed.
 
 // MEMORY STUFF
 var MAX_MEM_SPACE = 256;
