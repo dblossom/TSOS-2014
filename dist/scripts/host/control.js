@@ -134,7 +134,11 @@ var TSOS;
             // run 1 cpu cycle by calling an IRQ!
             // this basically just calls cycle() using an interrupt
             // mainly to keep program execution inside the kernel.
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STEP_CPU_IRQ, 0));
+            // little bandaid to ensure we are only stepping an active process
+            // we do have other states, so might need to tweak this later!
+            if (_ResidentQueue[TSOS.PCB.pid - 1].currentState !== 2 /* TERMINATED */) {
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STEP_CPU_IRQ, 0));
+            }
         };
         return Control;
     })();

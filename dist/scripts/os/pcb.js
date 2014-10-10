@@ -40,7 +40,7 @@ var TSOS;
         * This ASSUMES PCB variables have been set!
         */
         PCB.prototype.setPCBDisplay = function () {
-            document.getElementById('PID').innerHTML = PCB.pid.toString();
+            document.getElementById('PID').innerHTML = (PCB.pid - 1).toString();
             document.getElementById('Base').innerHTML = this.base.toString();
             document.getElementById('Limit').innerHTML = this.limit.toString();
             document.getElementById('State').innerHTML = this.currentState.toString();
