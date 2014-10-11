@@ -198,6 +198,7 @@ module TSOS {
               pcb.X_reg = this.Xreg
               pcb.Y_reg = this.Yreg
               pcb.Z_flag = this.Zflag
+              pcb.currentState = State.RUNNING; // if we were in another state ... no more!
  
           }
          

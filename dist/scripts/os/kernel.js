@@ -96,6 +96,12 @@ var TSOS;
                 // Process the first interrupt on the interrupt queue.
                 // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
+
+                // no scheduler yet - but for fun let us just put the pcb state in "waiting"
+                if ((_ResidentQueue.length > 0) && (_ResidentQueue[TSOS.PCB.pid - 1].currentState === 1 /* RUNNING */)) {
+                    _ResidentQueue[TSOS.PCB.pid - 1].currentState = 3 /* WAITING */;
+                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
+                }
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) {
                 _CPU.cycle();
@@ -136,6 +142,7 @@ var TSOS;
                     //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
                     _ResidentQueue[TSOS.PCB.pid - 1].currentState = 2 /* TERMINATED */;
+                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
 
                     break;
                 case SYS_CALL_IRQ:
@@ -224,9 +231,10 @@ var TSOS;
             // set isExecuting to be the opposite of step
             _CPU.isExecuting = !_StepCPU;
             _CPU.initCPUDisplay();
-            //TODO: we need a process running status
-            //      do we want to add some sorta way to know what the process is ? idk.
-            //      sounds like something for the pcb file ... and ... the ready queue display
+
+            // this will not work forever -- need a better way to keep track of PID's
+            _ResidentQueue[TSOS.PCB.pid - 1].currentState = 1 /* RUNNING */;
+            _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
         };
 
         /**

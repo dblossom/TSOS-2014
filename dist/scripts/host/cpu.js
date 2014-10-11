@@ -193,6 +193,7 @@ var TSOS;
             pcb.X_reg = this.Xreg;
             pcb.Y_reg = this.Yreg;
             pcb.Z_flag = this.Zflag;
+            pcb.currentState = 1 /* RUNNING */; // if we were in another state ... no more!
         };
         return Cpu;
     })();

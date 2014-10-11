@@ -14,7 +14,7 @@ module TSOS{
             NEW, // new = 0
             RUNNING, // running = 1
             TERMINATED, // terminated = 2
-            WAIT, // waiting = 3
+            WAITING, // waiting = 3
             READY // ready = 4
     }
 
@@ -56,7 +56,7 @@ module TSOS{
              document.getElementById('PID').innerHTML = (PCB.pid - 1).toString();
              document.getElementById('Base').innerHTML = this.base.toString();
              document.getElementById('Limit').innerHTML = this.limit.toString();
-             document.getElementById('State').innerHTML = this.currentState.toString();
+             document.getElementById('State').innerHTML = State[this.currentState].toString();
              document.getElementById('pcb_PC').innerHTML = this.progCount.toString();
              document.getElementById('pcb_ACC').innerHTML = this.ACC.toString();
              document.getElementById('pcb_X').innerHTML = this.X_reg.toString();

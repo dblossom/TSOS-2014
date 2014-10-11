@@ -426,6 +426,7 @@ var TSOS;
                 // _MemManager.displayMemoryContents();
                 _StdOut.putText("PID: " + TSOS.PCB.pid);
                 _ResidentQueue[TSOS.PCB.pid] = new TSOS.PCB(0, (MAX_MEM_SPACE - 1)); // TODO: this always overwrites memory at 0!!!
+                _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
             } else {
                 // let the user know his/her program is shitty and does not work
                 _StdOut.putText("Invalid Program...please try again! (or not).");
@@ -454,6 +455,7 @@ var TSOS;
         Shell.prototype.shellRun = function (args) {
             //TODO: ERROR CHECKING!!!
             if (_ResidentQueue[args[0]].currentState !== 2 /* TERMINATED */) {
+                _ResidentQueue[args[0]].currentState = 4 /* READY */; // set the state to ready
                 _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             } else {
