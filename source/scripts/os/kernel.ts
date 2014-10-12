@@ -151,7 +151,7 @@ module TSOS {
                     _CPU.init(); // reset CPU
                     _ResidentQueue[PCB.pid - 1].currentState = State.TERMINATED;
                     _ResidentQueue[PCB.pid - 1].setPCBDisplay();
-                    //_CPU.initCPUDisplay(); <-- cannot test progs with this
+                    _CPU.initCPUDisplay(); // <-- cannot test progs with this
                     break;
                 case SYS_CALL_IRQ:
                     this.krnSysCall(params);

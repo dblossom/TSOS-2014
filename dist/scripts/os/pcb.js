@@ -37,6 +37,8 @@ var TSOS;
         /**
         * Method to initalize PCB display to all zeros
         * This ASSUMES PCB variables have been set!
+        * TODO: Add typescript like and create new row  upon new PCB.
+        *       It will take some redisign of index file.
         */
         PCB.prototype.setPCBDisplay = function () {
             document.getElementById('PID').innerHTML = (PCB.pid - 1).toString();

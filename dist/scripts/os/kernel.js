@@ -143,7 +143,7 @@ var TSOS;
                     _CPU.init(); // reset CPU
                     _ResidentQueue[TSOS.PCB.pid - 1].currentState = 2 /* TERMINATED */;
                     _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
-
+                    _CPU.initCPUDisplay(); // <-- cannot test progs with this
                     break;
                 case SYS_CALL_IRQ:
                     this.krnSysCall(params);
