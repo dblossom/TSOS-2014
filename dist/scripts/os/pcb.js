@@ -24,7 +24,6 @@ var TSOS;
             this.X_reg = 0;
             this.Y_reg = 0;
             this.Z_flag = 0;
-            this.currentState = 4 /* READY */;
             // increment the pid everytime we create a PCB
             // so we do not want to start at zero but rather
             // whatever the next number will be.

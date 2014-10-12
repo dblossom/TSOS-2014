@@ -159,9 +159,13 @@ module TSOS {
             // mainly to keep program execution inside the kernel.
             
             // little bandaid to ensure we are only stepping an active process
-            // we do have other states, so might need to tweak this later!
-            if(_ResidentQueue[PCB.pid - 1].currentState !== State.TERMINATED){
-                _KernelInterruptQueue.enqueue(new Interrupt(STEP_CPU_IRQ, 0));
+            // so not "new" and not "terminated" any other state and we would
+            // be considered an active process. We could be waiting from an IRQ
+            // we could be running currently, or ready (IE: sitting on readyqueue)
+            if(_ResidentQueue[PCB.pid - 1].currentState !== State.TERMINATED &&
+               _ResidentQueue[PCB.pid - 1].currentState !== State.NEW){
+               
+                   _KernelInterruptQueue.enqueue(new Interrupt(STEP_CPU_IRQ, 0));
             }
             
         }

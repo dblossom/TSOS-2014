@@ -30,7 +30,7 @@ module TSOS{
         public X_reg: number = 0;
         public Y_reg: number = 0;
         public Z_flag: number = 0;
-        public currentState: State = State.READY; 
+        public currentState: State; 
         
         // base and limit information
         public base: number;

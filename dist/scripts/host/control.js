@@ -157,8 +157,10 @@ var TSOS;
             // this basically just calls cycle() using an interrupt
             // mainly to keep program execution inside the kernel.
             // little bandaid to ensure we are only stepping an active process
-            // we do have other states, so might need to tweak this later!
-            if (_ResidentQueue[TSOS.PCB.pid - 1].currentState !== 2 /* TERMINATED */) {
+            // so not "new" and not "terminated" any other state and we would
+            // be considered an active process. We could be waiting from an IRQ
+            // we could be running currently, or ready (IE: sitting on readyqueue)
+            if (_ResidentQueue[TSOS.PCB.pid - 1].currentState !== 2 /* TERMINATED */ && _ResidentQueue[TSOS.PCB.pid - 1].currentState !== 0 /* NEW */) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STEP_CPU_IRQ, 0));
             }
         };
