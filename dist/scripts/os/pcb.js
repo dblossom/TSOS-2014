@@ -37,19 +37,51 @@ var TSOS;
         /**
         * Method to initalize PCB display to all zeros
         * This ASSUMES PCB variables have been set!
-        * TODO: Add typescript like and create new row  upon new PCB.
-        *       It will take some redisign of index file.
         */
-        PCB.prototype.setPCBDisplay = function () {
-            document.getElementById('PID').innerHTML = (PCB.pid - 1).toString();
-            document.getElementById('Base').innerHTML = this.base.toString();
-            document.getElementById('Limit').innerHTML = this.limit.toString();
-            document.getElementById('State').innerHTML = State[this.currentState].toString();
-            document.getElementById('pcb_PC').innerHTML = this.progCount.toString();
-            document.getElementById('pcb_ACC').innerHTML = this.ACC.toString();
-            document.getElementById('pcb_X').innerHTML = this.X_reg.toString();
-            document.getElementById('pcb_Y').innerHTML = this.Y_reg.toString();
-            document.getElementById('pcb_Z').innerHTML = this.Z_flag.toString();
+        PCB.prototype.setPCBDisplay = function (tblElement) {
+            // for some reason, this seems to work best when we first set to "null"
+            var row = null;
+
+            // get the "active" row, which will always be row 1, row 0 is reserved for header
+            row = tblElement.rows[1];
+
+            // get the cells within row 1.
+            var cellsInRow = null;
+            cellsInRow = row.cells;
+
+            // set the cell with the new state information
+            // the order matters here!
+            cellsInRow[0].innerHTML = (PCB.pid - 1).toString();
+            cellsInRow[1].innerHTML = this.base.toString();
+            cellsInRow[2].innerHTML = this.limit.toString();
+            cellsInRow[3].innerHTML = State[this.currentState].toString();
+            cellsInRow[4].innerHTML = this.progCount.toString();
+            cellsInRow[5].innerHTML = this.ACC.toString();
+            cellsInRow[6].innerHTML = this.X_reg.toString();
+            cellsInRow[7].innerHTML = this.Y_reg.toString();
+            cellsInRow[8].innerHTML = this.Z_flag.toString();
+        };
+
+        /**
+        * Will add a new row the the table for display of PCB information
+        */
+        PCB.prototype.pcbNewRow = function (tblElement) {
+            // only seems to work if we create a null first ... (?)
+            var row = null;
+
+            // insert a row "on top" of the others
+            row = tblElement.insertRow(1);
+
+            //these have to be in the correct order!
+            row.insertCell(0).innerHTML = (PCB.pid - 1).toString();
+            row.insertCell(1).innerHTML = this.base.toString();
+            row.insertCell(2).innerHTML = this.limit.toString();
+            row.insertCell(3).innerHTML = State[this.currentState].toString();
+            row.insertCell(4).innerHTML = this.progCount.toString();
+            row.insertCell(5).innerHTML = this.ACC.toString();
+            row.insertCell(6).innerHTML = this.X_reg.toString();
+            row.insertCell(7).innerHTML = this.Y_reg.toString();
+            row.insertCell(8).innerHTML = this.Z_flag.toString();
         };
         PCB.pid = 0;
         return PCB;

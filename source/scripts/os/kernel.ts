@@ -103,7 +103,7 @@ module TSOS {
                 // no scheduler yet - but for fun let us just put the pcb state in "waiting"
                 if((_ResidentQueue.length > 0) && (_ResidentQueue[PCB.pid - 1].currentState === State.RUNNING)){
                     _ResidentQueue[PCB.pid - 1].currentState = State.WAITING;
-                    _ResidentQueue[PCB.pid - 1].setPCBDisplay(); 
+                    _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay); 
                 }
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
@@ -150,7 +150,7 @@ module TSOS {
                     //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
                     _ResidentQueue[PCB.pid - 1].currentState = State.TERMINATED;
-                    _ResidentQueue[PCB.pid - 1].setPCBDisplay();
+                    _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay);
                     _CPU.initCPUDisplay(); // <-- cannot test progs with this
                     break;
                 case SYS_CALL_IRQ:
@@ -245,7 +245,7 @@ module TSOS {
             
             // this will not work forever -- need a better way to keep track of PID's
             _ResidentQueue[PCB.pid - 1].currentState = State.RUNNING;
-            _ResidentQueue[PCB.pid - 1].setPCBDisplay();
+            _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay);
         
         }
          

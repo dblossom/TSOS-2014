@@ -52,7 +52,8 @@ module TSOS {
             this.updatePCB(_ResidentQueue[PCB.pid - 1]);
             
             // update the current PCB display <this is kinda a bug> but want to see it work
-            _ResidentQueue[PCB.pid - 1].setPCBDisplay();
+            // not a bug, we just need to come up with a scheme for keeping PID's better.
+            _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay);
         }
         
         /**

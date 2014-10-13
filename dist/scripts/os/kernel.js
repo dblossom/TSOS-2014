@@ -100,7 +100,7 @@ var TSOS;
                 // no scheduler yet - but for fun let us just put the pcb state in "waiting"
                 if ((_ResidentQueue.length > 0) && (_ResidentQueue[TSOS.PCB.pid - 1].currentState === 1 /* RUNNING */)) {
                     _ResidentQueue[TSOS.PCB.pid - 1].currentState = 3 /* WAITING */;
-                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
+                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay(_PCBdisplay);
                 }
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) {
@@ -142,7 +142,7 @@ var TSOS;
                     //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
                     _ResidentQueue[TSOS.PCB.pid - 1].currentState = 2 /* TERMINATED */;
-                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
+                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay(_PCBdisplay);
                     _CPU.initCPUDisplay(); // <-- cannot test progs with this
                     break;
                 case SYS_CALL_IRQ:
@@ -234,7 +234,7 @@ var TSOS;
 
             // this will not work forever -- need a better way to keep track of PID's
             _ResidentQueue[TSOS.PCB.pid - 1].currentState = 1 /* RUNNING */;
-            _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
+            _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay(_PCBdisplay);
         };
 
         /**

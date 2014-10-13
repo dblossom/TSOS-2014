@@ -426,7 +426,7 @@ var TSOS;
                 // _MemManager.displayMemoryContents();
                 _StdOut.putText("PID: " + TSOS.PCB.pid);
                 _ResidentQueue[TSOS.PCB.pid] = new TSOS.PCB(0, (MAX_MEM_SPACE - 1)); // TODO: this always overwrites memory at 0!!!
-                _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay();
+                _ResidentQueue[TSOS.PCB.pid - 1].pcbNewRow(_PCBdisplay);
             } else {
                 // let the user know his/her program is shitty and does not work
                 _StdOut.putText("Invalid Program...please try again! (or not).");
