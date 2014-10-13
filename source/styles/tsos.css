@@ -45,18 +45,30 @@ table th{
 	border:1px solid #000000;
 }
 
-#display {
-  background-color:#FFFFFF;
-  border: 1px solid black;
+#divButtonBar{
+  text-align:center;
+}
+
+#left{
+  margin:250px; 
+  margin-top:20px; 
+  width:500px; 
+}
+
+#right{
+  margin:820px;
+  margin-top:-950px;
+  width:500px;
+}
+
+#status, #datetime {
   cursor: default;
 }
 
-#status {
-
-}
-
-#datetime {
-
+#display{
+  background-color:#FFFFFF;
+  border: 1px solid black;
+  cursor: default;
 }
 
 .normal_button {

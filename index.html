@@ -41,9 +41,7 @@
 
 <body onload="onDocumentLoad();">
 
-<div id="outer" style="width:100%">
-
-   <div id="divMain" style="float:left; text-align:center; ">
+   <div id="left"> <!-- left div open -->
 
       <div id="divButtonBar" style="margin:5px;">
          <input type="button"
@@ -82,30 +80,74 @@
                 onclick="TSOS.Control.hostBtnStep_click(this);">
       </div>
 
-      <div id="divConsole" style="margin:150px; margin-top:10px; width:500px; height:350px; float:left;">
+      <div id="divConsole">
+         
          <canvas id="display"
                  width="500px"
                  height="500px"
                  tabindex="3">
          </canvas>
-      </div>
- 
-      <div id="divStaus" style="margin:150px; width:500px;">
+         
          <canvas id = "status"
                  width = "248px"
-                 height = "50px"
+                 height = "30px"
                  tabindex = "4">
          </canvas>
+         
          <canvas id = "datetime"
-                 width = "240px"
-                 height = "50px"
+                 width = "244px"
+                 height = "30px"
                  tabindex = "5">
          </canvas>
-      </div>
-   
-   </div> <!-- Close "divMain" -->
 
-   <div id="rightWrap" style="margin:200px; margin-top:10px;">
+         <label>Process Control Block</label>
+    
+         <div id="divPCBTable" style="width:400px; height:60px;">
+         <table id="PCBTable" style="width:10%; ">
+
+            <tr>
+               <th>PID</th>
+               <th>Base</th>
+               <th>Limit</th>
+               <th>State</th>
+               <th>PC</th>
+               <th>ACC</th>
+               <th>X-Reg</th>
+               <th>Y-Reg</th>
+               <th>Z-Flag</th>
+            </tr>
+            
+            <tr>
+               <td id="PID"></td>
+               <td id="Base"></td>
+               <td id="Limit"></td>
+               <td id="State"></td>
+               <td id="pcb_PC"></td>
+               <td id="pcb_ACC"></td>
+               <td id="pcb_X"></td>
+               <td id="pcb_Y"></td>
+               <td id="pcb_Z"></td>
+            </tr>
+
+         </table>
+         </div>
+
+      </div>
+
+
+<p class="footerText" style="clear:both;">
+   <br>
+   Copyright &copy; 2008 - 2014 No Rights Reserved.
+   <br>
+   Reproduction is prohibited without the express written consent of
+   Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
+</p>
+
+
+
+   </div> <!-- left div close -->
+
+   <div id="right"> <!-- right div open -->
 
       <div id="divLog">
          <label>
@@ -158,43 +200,9 @@
 
          </table>
          </div>
-         
-         <div id="divPCBDisplay">
-    
-         <label>Process Control Block</label>
-    
-         <div id="divPCBTable" style="width:400px; height:60px;">
-         <table id="PCBTable" style="width:10%; ">
 
-            <tr>
-               <th>PID</th>
-               <th>Base</th>
-               <th>Limit</th>
-               <th>State</th>
-               <th>PC</th>
-               <th>ACC</th>
-               <th>X-Reg</th>
-               <th>Y-Reg</th>
-               <th>Z-Flag</th>
-            </tr>
-            
-            <tr>
-               <td id="PID"></td>
-               <td id="Base"></td>
-               <td id="Limit"></td>
-               <td id="State"></td>
-               <td id="pcb_PC"></td>
-               <td id="pcb_ACC"></td>
-               <td id="pcb_X"></td>
-               <td id="pcb_Y"></td>
-               <td id="pcb_Z"></td>
-            </tr>
-
-         </table>
-         </div>
-         
       </div>
-      
+         
       <div id="divMemoryDisplay">
     
          <label>Memory Display</label>
@@ -203,17 +211,8 @@
          <table id="memoryTable" style="width:10%;"></table>
          </div>
       </div>
-     
-   </div> <!-- Close right wrapper -->
-</div> <!-- Close outer -->
 
-<p class="footerText" style="clear:both;">
-   <br>
-   Copyright &copy; 2008 - 2014 No Rights Reserved.
-   <br>
-   Reproduction is prohibited without the express written consent of
-   Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
-</p>
+   </div> <!-- right div close -->
 
 </body>
 </html>
