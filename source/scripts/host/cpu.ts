@@ -169,7 +169,7 @@ module TSOS {
         /**
          * Method to initalize CPU display to all zeros
          * This ASSUMES CPU variables have been set!
-         * TODO: rename to setCPUDisplay()
+         * TODO: rename to setCPUDisplay() and use ways to get / set from row collections.
          */
          public initCPUDisplay():void{
              document.getElementById('PC').innerHTML = _CPU.PC.toString();
@@ -191,6 +191,11 @@ module TSOS {
               var high:number = parseInt(_MemManager.read(++_CPU.PC),16); // load byte 2, inc PC
               return (low+high);
           }
+          
+          /**
+           * Updates the active PCB with all content, by keeping it updated there will be no
+           * need to "save a state" in further projects.
+           */
           
           private updatePCB(pcb:PCB):void{
               

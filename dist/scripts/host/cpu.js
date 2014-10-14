@@ -165,7 +165,7 @@ var TSOS;
         /**
         * Method to initalize CPU display to all zeros
         * This ASSUMES CPU variables have been set!
-        * TODO: rename to setCPUDisplay()
+        * TODO: rename to setCPUDisplay() and use ways to get / set from row collections.
         */
         Cpu.prototype.initCPUDisplay = function () {
             document.getElementById('PC').innerHTML = _CPU.PC.toString();
@@ -188,6 +188,10 @@ var TSOS;
             return (low + high);
         };
 
+        /**
+        * Updates the active PCB with all content, by keeping it updated there will be no
+        * need to "save a state" in further projects.
+        */
         Cpu.prototype.updatePCB = function (pcb) {
             pcb.progCount = this.PC;
             pcb.ACC = this.Acc;

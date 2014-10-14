@@ -8,7 +8,7 @@ Author: D. Blossom
 var TSOS;
 (function (TSOS) {
     /*
-    * This class represents memory has a hardware device
+    * This class represents memory as a hardware device
     * it contains functions to initialize a new memory address
     * read, write, clearall, and clear a block of managed memory
     */
