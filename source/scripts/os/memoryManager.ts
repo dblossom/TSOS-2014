@@ -37,7 +37,7 @@ module TSOS{
             // just hard coding for now since we are only working with 0 - 255
             // if we try to write at address 256 we should toss an error
             // TODO: create a function that checks the range of incoming address.
-            if(address > MAX_MEM_SPACE){
+            if(address > (MAX_MEM_SPACE - 1)){
                 _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
             }else{ // good to go!
                 this.memoryModule.write(address, byte);
@@ -76,70 +76,66 @@ module TSOS{
         
         /**
          * This updates the memory after it has been loaded
-         * 
-         * I had a lot of issues with typescript and updating a table
-         * feel free to read the angry comments but the really do not outline
-         * the issues I was having. Simply put, the typechecking was not allowing
-         * what would have been valid javascript to run. Gave various compile errors
-         *
+         * If  you have seen previous commits, all issues have been resovlved
          * @params -- both are meaning less right now.
          */
         public updateMemoryCell(address:number, data:string):void{
         
-        //    var row:number = Math.floor(address / 8);
+            // using the address, find the row and the cell that needs updatimg
+            var row:number = Math.floor(address / 8);
+            var cell:number = (address % 8) + 1;
             
-        //    var cell:number = (address % 8) + 1; // skip header
+            // grab the row
+            var requestedRow = null;
+            requestedRow = _MemoryDisplay.rows[row];
             
-            // *** ANGRY COMMENTS RANT, NOT FULLY RELEVENT TO CODE
-            // *******************************************************************
-            // Because typescript casts all these damn table objects as elements we
-            // run into a lot of "xxx" does not exist on type element...
-            // hours wasted looking for a work around to stick to "typescript"
+            // grab the cell
+            var requestedCell = null;
+            requestedCell = requestedRow.cells[cell];
             
-            // LENGTH IS NOT EVEN CORRECT WHAT THE FUCK FUCK FUCK
-            // SO WTF AM I DOING TO FIX THIS SHIT .... AHHHHHH
-            // *** END ************************************************************
-            
-            // TODO: <-- first the todo so everyone knows, I know what fuck is wrong
-            //       need static variables of course, and ranges and blah fucking blah.
-            
-            // my bandaid hack...
-            
-            // first we delete every row (even rows.length did not work right!)
-            // for now we are only showing 256 mem spaces, so there should be
-            // 256 spaces / 8 "blocks" to create 32 (31) rows since its -1.
-            for(var i:number = 0; i < (MAX_MEM_SPACE / 8); i++){
-                _MemoryDisplay.deleteRow(0);
-            }
-            
-            var row = null;
-            var rowcount = 0;
-            
-            // now let us loop through, re-inserting all the rows and cells
-            // lucky for us, all memory will be inialized to 00 so there will always
-            // be something in every slot, so this works with minimal garbage fucking code
-            for (var i:number = 0; i < this.memoryModule.size(); i++){
-                if(i%8 === 0){
-                    row = _MemoryDisplay.insertRow(rowcount++);
-                    row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
-                }
-               row.insertCell((i%8) + 1).innerHTML = (("00" + this.memoryModule.read(i)).slice(-2)).toUpperCase();
-            }
+            // finally update the cell
+            requestedCell.innerHTML = data.toUpperCase();
         }
         
         /**
          * This initalizes memory to all zeros
          */
         public initMemoryDisplay(tblElement: HTMLTableElement):void{
+        
+            // if a table exists, delete it for the new table
+            this.deleteMemoryTable(tblElement);
             
+            // variable for row, and row count to count the number of rows
             var row = null;
             var rowcount = 0;
+            
+            // loop through checking if a cell is a multiple of 8 then we need a new
+            // row, create the new row and continue filling all cells.
             for(var i=0; i < MAX_MEM_SPACE; i++){
                 if(i%8 === 0){
                     row = tblElement.insertRow(rowcount++);
                     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
                 } 
                 row.insertCell((i%8) + 1).innerHTML = "00";
+            }
+        }
+        
+        /**
+         * Clear / delete memory table (all rows ... BYE).
+         */
+        private deleteMemoryTable(tblElement: HTMLTableElement):void{
+            
+            // so get the first row, if null then we do nothing
+            // otherwise we delete all rows in the table. This
+            // check is basically to ensure it is not the first time
+            // the table is being initalized.
+            var row = null;
+            row = tblElement.rows[0];
+            
+            if(typeof row !== 'undefined'){
+                for(var i:number = 0; i < (MAX_MEM_SPACE / 8); i++){
+                    tblElement.deleteRow(0);
+                }
             }
         }
     }

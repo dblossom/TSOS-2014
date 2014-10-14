@@ -404,6 +404,9 @@ module TSOS {
         }
         
         public shellLoad(args){
+        
+            // clear the current memory table
+            _MemManager.initMemoryDisplay(_MemoryDisplay);
             
             // start with a valid input ?
             var isValid: boolean = true;

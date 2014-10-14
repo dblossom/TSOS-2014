@@ -371,6 +371,9 @@ var TSOS;
         };
 
         Shell.prototype.shellLoad = function (args) {
+            // clear the current memory table
+            _MemManager.initMemoryDisplay(_MemoryDisplay);
+
             // start with a valid input ?
             var isValid = true;
 

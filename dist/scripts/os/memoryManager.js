@@ -28,7 +28,7 @@ var TSOS;
             // just hard coding for now since we are only working with 0 - 255
             // if we try to write at address 256 we should toss an error
             // TODO: create a function that checks the range of incoming address.
-            if (address > MAX_MEM_SPACE) {
+            if (address > (MAX_MEM_SPACE - 1)) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
             } else {
                 this.memoryModule.write(address, byte);
@@ -66,43 +66,61 @@ var TSOS;
 
         /**
         * This updates the memory after it has been loaded
-        *
-        * I had a lot of issues with typescript and updating a table
-        * feel free to read the angry comments but the really do not outline
-        * the issues I was having. Simply put, the typechecking was not allowing
-        * what would have been valid javascript to run. Gave various compile errors
-        *
+        * If  you have seen previous commits, all issues have been resovlved
         * @params -- both are meaning less right now.
         */
         MemoryManager.prototype.updateMemoryCell = function (address, data) {
-            for (var i = 0; i < (MAX_MEM_SPACE / 8); i++) {
-                _MemoryDisplay.deleteRow(0);
-            }
+            // using the address, find the row and the cell that needs updatimg
+            var row = Math.floor(address / 8);
+            var cell = (address % 8) + 1;
 
-            var row = null;
-            var rowcount = 0;
+            // grab the row
+            var requestedRow = null;
+            requestedRow = _MemoryDisplay.rows[row];
 
-            for (var i = 0; i < this.memoryModule.size(); i++) {
-                if (i % 8 === 0) {
-                    row = _MemoryDisplay.insertRow(rowcount++);
-                    row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
-                }
-                row.insertCell((i % 8) + 1).innerHTML = (("00" + this.memoryModule.read(i)).slice(-2)).toUpperCase();
-            }
+            // grab the cell
+            var requestedCell = null;
+            requestedCell = requestedRow.cells[cell];
+
+            // finally update the cell
+            requestedCell.innerHTML = data.toUpperCase();
         };
 
         /**
         * This initalizes memory to all zeros
         */
         MemoryManager.prototype.initMemoryDisplay = function (tblElement) {
+            // if a table exists, delete it for the new table
+            this.deleteMemoryTable(tblElement);
+
+            // variable for row, and row count to count the number of rows
             var row = null;
             var rowcount = 0;
+
             for (var i = 0; i < MAX_MEM_SPACE; i++) {
                 if (i % 8 === 0) {
                     row = tblElement.insertRow(rowcount++);
                     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
                 }
                 row.insertCell((i % 8) + 1).innerHTML = "00";
+            }
+        };
+
+        /**
+        * Clear / delete memory table (all rows ... BYE).
+        */
+        MemoryManager.prototype.deleteMemoryTable = function (tblElement) {
+            // so get the first row, if null then we do nothing
+            // otherwise we delete all rows in the table. This
+            // check is basically to ensure it is not the first time
+            // the table is being initalized.
+            var row = null;
+            row = tblElement.rows[0];
+
+            if (typeof row !== 'undefined') {
+                for (var i = 0; i < (MAX_MEM_SPACE / 8); i++) {
+                    tblElement.deleteRow(0);
+                }
             }
         };
         return MemoryManager;
