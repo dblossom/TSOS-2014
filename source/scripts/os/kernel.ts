@@ -3,8 +3,6 @@
 /* ------------
      Kernel.ts
 
-     Requires globals.ts
-
      Routines for the Operating System, NOT the host.
 
      This code references page numbers in the text book:
@@ -147,11 +145,10 @@ module TSOS {
                     _StdIn.handleInput();
                     break;
                 case PCB_END_IRQ:
-                    //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
-                    _ResidentQueue[PCB.pid - 1].currentState = State.TERMINATED;
-                    _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay);
-                    _CPU.initCPUDisplay(); // <-- cannot test progs with this
+                    _ResidentQueue[PCB.pid - 1].currentState = State.TERMINATED; //update state
+                    _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay); // update display
+                    _CPU.initCPUDisplay(); // update cpu display
                     break;
                 case SYS_CALL_IRQ:
                     this.krnSysCall(params);
@@ -165,7 +162,7 @@ module TSOS {
                     this.krnIllegalOpCode(params);
                     break;
                 case STEP_CPU_IRQ:
-                    _CPU.cycle(); // cycle cpu
+                    _CPU.cycle(); // take 1 cpu "step"
                     break;
                 case EXEC_PROG_IRQ:
                     // someone typed run, give it to the kernel for execution
@@ -231,22 +228,25 @@ module TSOS {
         
         /**
          * Execute a process
-         * TODO: Understand and modularize some of this shit.
          */
         public krnProcess(params){
         
+            // get the next Process
             var pcb:PCB = params.dequeue();
+            // print a trace
             this.krnTrace("Executing PID: " + pcb.progCount);
+            // pass the base to PC ...
+            // TODO: do we want to pass the Program Counter here?
             _CPU.PC = pcb.base;
             
             // set isExecuting to be the opposite of step
             _CPU.isExecuting = !_StepCPU;
+            // update display
             _CPU.initCPUDisplay();
             
             // this will not work forever -- need a better way to keep track of PID's
             _ResidentQueue[PCB.pid - 1].currentState = State.RUNNING;
             _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay);
-        
         }
          
        /**
@@ -254,8 +254,10 @@ module TSOS {
         * @params - params, passed by the interupt handler 
         */
         public krnSysCall(params){
+            // X Reg is 1 so print the int in the Y register
             if(params === 1){ // x-reg contains a 1 print int stored in Y
                 _StdOut.putText(_CPU.Yreg.toString());
+            // X reg is 2 so we need to pring the string    
             }else if(params === 2){
                 var address:number = _CPU.Yreg;
                 var offset:number = 0;
@@ -271,7 +273,6 @@ module TSOS {
                     offset++;
                     charValue = parseInt(_MemManager.read(address+offset), 16);
                 }
-                
             }
         } 
         
@@ -286,7 +287,6 @@ module TSOS {
              _CPU.init();
              // throw a bsod.
              this.bsod("ILLEGAL MEMORY ACCESS ERROR!!! BAD BAD BOY / OR GIRL");
-         
          }
          
          /**

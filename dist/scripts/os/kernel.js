@@ -1,7 +1,6 @@
 ///<reference path="memoryManager.ts" />
 /* ------------
 Kernel.ts
-Requires globals.ts
 Routines for the Operating System, NOT the host.
 This code references page numbers in the text book:
 Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
@@ -139,11 +138,10 @@ var TSOS;
                     _StdIn.handleInput();
                     break;
                 case PCB_END_IRQ:
-                    //TODO: MORE!! we need to keep track of states and such!
                     _CPU.init(); // reset CPU
-                    _ResidentQueue[TSOS.PCB.pid - 1].currentState = 2 /* TERMINATED */;
-                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay(_PCBdisplay);
-                    _CPU.initCPUDisplay(); // <-- cannot test progs with this
+                    _ResidentQueue[TSOS.PCB.pid - 1].currentState = 2 /* TERMINATED */; //update state
+                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay(_PCBdisplay); // update display
+                    _CPU.initCPUDisplay(); // update cpu display
                     break;
                 case SYS_CALL_IRQ:
                     this.krnSysCall(params);
@@ -157,7 +155,7 @@ var TSOS;
                     this.krnIllegalOpCode(params);
                     break;
                 case STEP_CPU_IRQ:
-                    _CPU.cycle(); // cycle cpu
+                    _CPU.cycle(); // take 1 cpu "step"
                     break;
                 case EXEC_PROG_IRQ:
                     // someone typed run, give it to the kernel for execution
@@ -221,15 +219,22 @@ var TSOS;
 
         /**
         * Execute a process
-        * TODO: Understand and modularize some of this shit.
         */
         Kernel.prototype.krnProcess = function (params) {
+            // get the next Process
             var pcb = params.dequeue();
+
+            // print a trace
             this.krnTrace("Executing PID: " + pcb.progCount);
+
+            // pass the base to PC ...
+            // TODO: do we want to pass the Program Counter here?
             _CPU.PC = pcb.base;
 
             // set isExecuting to be the opposite of step
             _CPU.isExecuting = !_StepCPU;
+
+            // update display
             _CPU.initCPUDisplay();
 
             // this will not work forever -- need a better way to keep track of PID's
@@ -242,8 +247,10 @@ var TSOS;
         * @params - params, passed by the interupt handler
         */
         Kernel.prototype.krnSysCall = function (params) {
+            // X Reg is 1 so print the int in the Y register
             if (params === 1) {
                 _StdOut.putText(_CPU.Yreg.toString());
+                // X reg is 2 so we need to pring the string
             } else if (params === 2) {
                 var address = _CPU.Yreg;
                 var offset = 0;

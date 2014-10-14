@@ -370,6 +370,11 @@ var TSOS;
             }
         };
 
+        /**
+        * Will load a program into memory
+        * TODO: Modularize code, too big, too much going on here!
+        *       Too late tonight to break this.
+        */
         Shell.prototype.shellLoad = function (args) {
             // clear the current memory table
             _MemManager.initMemoryDisplay(_MemoryDisplay);
@@ -451,27 +456,50 @@ var TSOS;
             }
         };
 
+        /**
+        * Test the BSOD ... Why?
+        */
         Shell.prototype.shellTestBSOD = function (args) {
             _Kernel.krnTrapError("shit");
         };
 
+        /**
+        * Command to put program on the Ready Queue
+        */
         Shell.prototype.shellRun = function (args) {
             //TODO: ERROR CHECKING!!!
+            // Are we not terminated? No, then set status to ready and put on ready queue.
             if (_ResidentQueue[args[0]].currentState !== 2 /* TERMINATED */) {
-                _ResidentQueue[args[0]].currentState = 4 /* READY */; // set the state to ready
+                //change state
+                _ResidentQueue[args[0]].currentState = 4 /* READY */;
+
+                // add to queue
                 _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
+
+                // pass an interrupt to kernel
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             } else {
                 _StdOut.putText("Usage: run <pid> active process ID.");
             }
         };
 
+        /**
+        * Activates "step" to step through cpu cycles
+        */
         Shell.prototype.shellStep = function (args) {
+            // did someone say on?
             if (args[0].toUpperCase() === "ON") {
+                // activate the button
                 document.getElementById("btnStep").disabled = false;
+
+                // tell us we are in step mode
                 _StepCPU = true;
+                // fine forget step mode
             } else if (args[0].toUpperCase() === "OFF") {
+                // disable the button
                 document.getElementById("btnStep").disabled = true;
+
+                // tell us we are no longer manually stepping
                 _StepCPU = false;
             } else {
                 _StdOut.putText("Usage: step <on | off> turn step on or off");

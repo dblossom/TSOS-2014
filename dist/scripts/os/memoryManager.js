@@ -48,7 +48,7 @@ var TSOS;
             // same as write, just hard coding the max address for now
             // we cannot read from any address past 255.
             // TODO: create a function that checks the range of an address
-            if (address > MAX_MEM_SPACE) {
+            if (address > (MAX_MEM_SPACE - 1)) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
             } else {
                 return this.memoryModule.read(address);
