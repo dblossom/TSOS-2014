@@ -80,10 +80,43 @@ module TSOS{
          *       clear is just clearRange(x,y) with all our memory... so why have both?
          */
          public clearAllMemory(){
-             // just call "clear()" in our memory module.
-             this.memoryModule.clear();
+             
+             for(var i:number = 0; i < MAX_MEM_LOCATIONS; i++){
+                 this.clearPartition(i);
+             }
              // re-initalize the display
              this.initMemoryDisplay(_MemoryDisplay);
+         }
+         
+        /**
+         * This will clear a partition of memory
+         * @params - the memory partition to clear
+         */
+         public clearPartition(partitionNumber:number){
+             
+             switch (partitionNumber){
+                 
+                 case 0: 
+                     this.writeZeroToBlock(0, 255);
+                     break;
+                 case 1:
+                     this.writeZeroToBlock(256, 511);
+                     break;
+                 case 2:
+                     this.writeZeroToBlock(512, 768);
+                     break;
+                 default:
+                     // TODO:
+             }
+         }
+         
+        /**
+         * This will write zeros to whichever block
+         */
+         private writeZeroToBlock(start:number, end:number){
+             for(; start < end; start++){
+                 this.write(start, "00");
+             }
          }
         
         /**
