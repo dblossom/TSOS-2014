@@ -137,6 +137,12 @@ module TSOS {
                                   "<on | off> - activte or deactivate step");
             this.commandList[this.commandList.length] = sc;   
             
+            // clear memory
+            sc = new ShellCommand(this.shellClearAllMemory,
+                                  "clearmem",
+                                  "- clears all memory.");
+            this.commandList[this.commandList.length] = sc;
+            
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -542,6 +548,13 @@ module TSOS {
             }else{ // whoops typo ?
                 _StdOut.putText("Usage: step <on | off> turn step on or off");
             }
+        }
+        
+        /**
+         * Will clear all memory
+         */
+        public shellClearAllMemory(args){
+            _MemManager.clearAllMemory();
         }
     }
 }

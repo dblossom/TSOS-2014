@@ -96,6 +96,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellStep, "step", "<on | off> - activte or deactivate step");
             this.commandList[this.commandList.length] = sc;
 
+            // clear memory
+            sc = new TSOS.ShellCommand(this.shellClearAllMemory, "clearmem", "- clears all memory.");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -504,6 +508,13 @@ var TSOS;
             } else {
                 _StdOut.putText("Usage: step <on | off> turn step on or off");
             }
+        };
+
+        /**
+        * Will clear all memory
+        */
+        Shell.prototype.shellClearAllMemory = function (args) {
+            _MemManager.clearAllMemory();
         };
         return Shell;
     })();

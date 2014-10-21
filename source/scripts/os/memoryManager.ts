@@ -75,6 +75,18 @@ module TSOS{
         }
         
         /**
+         * This will clear all memory.
+         * TODO: Still not a fan of having clear() in "memory.ts" or the "system memory"
+         *       clear is just clearRange(x,y) with all our memory... so why have both?
+         */
+         public clearAllMemory(){
+             // just call "clear()" in our memory module.
+             this.memoryModule.clear();
+             // re-initalize the display
+             this.initMemoryDisplay(_MemoryDisplay);
+         }
+        
+        /**
          * This updates the memory after it has been loaded
          * If  you have seen previous commits, all issues have been resovlved
          * @params -- both are meaning less right now.
@@ -98,7 +110,7 @@ module TSOS{
         }
         
         /**
-         * This initalizes memory to all zeros
+         * This initalizes memory display to all zeros
          */
         public initMemoryDisplay(tblElement: HTMLTableElement):void{
         
