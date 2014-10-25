@@ -108,6 +108,9 @@ var _ResidentQueue = null;
 // for pcb display
 var _PCBdisplay: HTMLTableElement = null;
 
+// scheduling stuff
+var _Quantum:number = 6; // default quantum == 6
+
 // For testing...
 var _GLaDOS: any = null;
 var Glados: any = null;

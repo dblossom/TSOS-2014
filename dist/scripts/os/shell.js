@@ -100,6 +100,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellClearAllMemory, "clearmem", "- clears all memory.");
             this.commandList[this.commandList.length] = sc;
 
+            // change the quantum
+            sc = new TSOS.ShellCommand(this.shellChangeQuantum, "quantum", "<int> - the value to make the quantum.");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -516,6 +520,24 @@ var TSOS;
         */
         Shell.prototype.shellClearAllMemory = function (args) {
             _MemManager.clearAllMemory();
+        };
+
+        /**
+        * This will change the quantum rr scheduling
+        * @params - int the value to provide for the quantum
+        */
+        Shell.prototype.shellChangeQuantum = function (args) {
+            if ((args[0] > 0)) {
+                var message = "Quantum now set to: " + args[0];
+                _StdOut.putText(message);
+                _Quantum = args[0];
+                TSOS.Control.hostLog(message, "SCHEDULE EVENT");
+                if (args[0] > 8) {
+                    _StdOut.putText(" Why so large?");
+                }
+            } else {
+                _StdOut.putText("Usage: quantum <int> number greater than zero (0)!");
+            }
         };
         return Shell;
     })();

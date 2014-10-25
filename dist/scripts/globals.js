@@ -104,6 +104,9 @@ var _ResidentQueue = null;
 // for pcb display
 var _PCBdisplay = null;
 
+// scheduling stuff
+var _Quantum = 6;
+
 // For testing...
 var _GLaDOS = null;
 var Glados = null;
