@@ -30,38 +30,6 @@ var TSOS;
         };
 
         /**
-        * This will clear a "block" of memory
-        */
-        Memory.prototype.clearBlock = function (start_address, end_address) {
-            // are we even within a valid memory range ?
-            if ((start_address !== 0 || start_address !== 256 || start_address !== 512) && (end_address !== 255 || end_address !== 511 || end_address !== 768)) {
-                for (; start_address < end_address; start_address++) {
-                    this.memoryArray[start_address] = parseInt("00", 16);
-                }
-            }
-        };
-
-        /**
-        * This will clear all memory - zero machine memory!
-        */
-        Memory.prototype.clear = function () {
-            this.clearBlock(0, 768);
-        };
-
-        /**
-        * This will initalize a new memory to all zeros
-        * Same as clear but with a name like init() people will call it
-        * to initialize an array
-        *
-        * TODO: remove clear all and hope people are smart enough to "init" for clearning memory
-        */
-        Memory.prototype.init = function () {
-            //this.memoryArray = new Array<HexByte>();
-            this.clearBlock(0, 768); // <-- call clearBlock() because we might deprecate clear()
-            //     but we would not deprecate clearBlock as that seems  useful
-        };
-
-        /**
         * returns the size of length of memory
         */
         Memory.prototype.size = function () {

@@ -424,7 +424,8 @@ var TSOS;
                 _StdOut.advanceLine();
 
                 // clearing memory
-                _MemManager.clearRange(0, 255);
+                //TODO: need partition area we are writting too!
+                _MemManager.clearPartition(0);
 
                 // point incs by 2 every go, i incs by 1. what, what what ?
                 // point keeps track of the hex bytes (aka 2 nibbles, aka every 2 chars)

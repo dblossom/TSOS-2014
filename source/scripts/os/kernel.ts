@@ -282,7 +282,7 @@ module TSOS {
          */
          public krnIllegalMemAccess(params){
              // first let us clear memory
-             _MemManager.clearRange(0,768);
+             _MemManager.clearAllMemory();
              // clear cpu
              _CPU.init();
              // throw a bsod.
@@ -305,9 +305,8 @@ module TSOS {
              // put back the prompt
              _OsShell.putPrompt();
              
-             // now let us clear all of memory!
-             // hard coded 0 - 255 -- will be an issue later!
-             _MemManager.clearRange(0, (MAX_MEM_SPACE - 1));
+             //TODO: NEED THE PROPER PARTITION OF MEMORY!!!!!
+             _MemManager.clearPartition(0);
              
              // reset the cpu
              _CPU.init();

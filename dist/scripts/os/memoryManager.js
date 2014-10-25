@@ -56,15 +56,6 @@ var TSOS;
         };
 
         /**
-        * Will clear a section of memory given a starting address and "offset" or end address
-        * @ param start: where to start
-        * @ param end: where to ... well ... wait for it ... END
-        */
-        MemoryManager.prototype.clearRange = function (start, end) {
-            this.memoryModule.clearBlock(start, end);
-        };
-
-        /**
         * This will clear all memory.
         * TODO: Still not a fan of having clear() in "memory.ts" or the "system memory"
         *       clear is just clearRange(x,y) with all our memory... so why have both?
