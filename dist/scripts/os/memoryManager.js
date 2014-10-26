@@ -10,13 +10,14 @@ Author: D. Blossom
 var TSOS;
 (function (TSOS) {
     var MemoryManager = (function () {
-        // TODO: add a way to keep track of the 3 different address spaces
-        //       need to know when one will be in use as to not overwrite
-        //       a program that has not run yet -- not needed for project 1
-        //       but will be a key part for project 2!!
         function MemoryManager() {
+            // An array that will tell us about our free ranges of memory.
+            this.memoryRanges = new Array(MAX_MEM_LOCATIONS);
             // initialize our memory object.
             this.memoryModule = new TSOS.Memory(new Array());
+
+            // initalize our memory locations
+            this.initMemoryRanges();
         }
         /**
         * writes a "byte string" to a memory address then updates the display
@@ -154,6 +155,15 @@ var TSOS;
                 for (var i = 0; i < (MAX_MEM_SPACE / 8); i++) {
                     tblElement.deleteRow(0);
                 }
+            }
+        };
+
+        /**
+        * Initalizes our free memory ranges and sets them all to available
+        */
+        MemoryManager.prototype.initMemoryRanges = function () {
+            for (var i = 0; i < MAX_ADDRESS_SPACE; i += MAX_MEM_SPACE) {
+                this.memoryRanges.push(new TSOS.MemoryRange(false, i, (i + (MAX_MEM_SPACE - 1))));
             }
         };
         return MemoryManager;

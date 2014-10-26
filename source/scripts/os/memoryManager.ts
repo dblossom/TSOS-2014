@@ -1,5 +1,6 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../host/memory.ts" />
+
 /* ------------
      MemoryManager.ts
      
@@ -16,14 +17,14 @@ module TSOS{
     
         // Our memory, which will be an array.
         public memoryModule:Memory;
-        // TODO: add a way to keep track of the 3 different address spaces
-        //       need to know when one will be in use as to not overwrite
-        //       a program that has not run yet -- not needed for project 1
-        //       but will be a key part for project 2!!
+        // An array that will tell us about our free ranges of memory.
+        public memoryRanges = new Array<MemoryRange>(MAX_MEM_LOCATIONS);
 
         constructor() {
             // initialize our memory object.
             this.memoryModule = new Memory(new Array<number>());
+            // initalize our memory locations
+            this.initMemoryRanges();
         }
         
         /**
@@ -174,5 +175,18 @@ module TSOS{
                 }
             }
         }
+        
+        /**
+         * Initalizes our free memory ranges and sets them all to available
+         */
+        private initMemoryRanges(){
+            
+            for(var i:number = 0; i < MAX_ADDRESS_SPACE; i += MAX_MEM_SPACE){
+                
+                this.memoryRanges.push(new MemoryRange(false, i, (i + (MAX_MEM_SPACE - 1))));
+
+            }
+        }
+        
     }
 }
