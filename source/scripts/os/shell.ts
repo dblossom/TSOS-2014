@@ -482,7 +482,7 @@ module TSOS {
                     // i keeps track of where we are in the string
                     var point:number = 0;
                     for(var i:number = 0; i < (textInput.length / 2); i++){
-                        _MemManager.write((i + base), (textInput.charAt(point++) + textInput.charAt(point++)));
+                        _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)),_ResidentQueue[PCB.pid-1] );
                     }
                     
                     _MemManager.clearPartition(activePartition);

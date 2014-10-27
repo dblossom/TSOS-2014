@@ -441,7 +441,7 @@ var TSOS;
                     // i keeps track of where we are in the string
                     var point = 0;
                     for (var i = 0; i < (textInput.length / 2); i++) {
-                        _MemManager.write((i + base), (textInput.charAt(point++) + textInput.charAt(point++)));
+                        _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)), _ResidentQueue[TSOS.PCB.pid - 1]);
                     }
 
                     _MemManager.clearPartition(activePartition);

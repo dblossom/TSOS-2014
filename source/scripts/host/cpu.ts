@@ -88,7 +88,7 @@ module TSOS {
                      
                  case 141: // 8D - store the accumulator in memory (OH BOY)
                      var address:number = this.loadTwoBytes();
-                     _MemManager.write(address, _CPU.Acc.toString(16));
+                     _MemManager.write(address, _CPU.Acc.toString(16),_ResidentQueue[PCB.pid - 1]);
                      break;
                      
                  case 109: // 6D - add with a carry
@@ -151,7 +151,7 @@ module TSOS {
                      var address:number = this.loadTwoBytes(); // memory address
                      var tempValue:number = parseInt(_MemManager.read(address),16); // current value
                      tempValue++; // add one to current value
-                     _MemManager.write(address,tempValue.toString(16)); // store it back
+                     _MemManager.write(address,tempValue.toString(16),_ResidentQueue[PCB.pid - 1]); // store it back
                      break;
                      
                  case 255: // FF - System Call

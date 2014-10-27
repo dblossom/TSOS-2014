@@ -33,16 +33,14 @@ module TSOS{
          * @ params - address: where to write
          * @ params - byte: what to write 
          */
-        public write(address:number, byte:string):void{
-            
-            // just hard coding for now since we are only working with 0 - 255
-            // if we try to write at address 256 we should toss an error
-            // TODO: create a function that checks the range of incoming address.
-            if(address > (MAX_MEM_SPACE - 1)){
+        public write(address:number, byte:string, pcb:PCB):void{
+
+            if(address + pcb.base > pcb.limit ||
+               address + pcb.base < pcb.base) {
                 _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
             }else{ // good to go!
-                this.memoryModule.write(address, byte);
-                this.updateMemoryCell(address,byte);
+                this.memoryModule.write((address + pcb.base), byte);
+                this.updateMemoryCell(address + pcb.base,byte);
             }
         }
         
@@ -137,7 +135,8 @@ module TSOS{
          */
          private writeZeroToBlock(start:number, end:number){
              for(; start < end; start++){
-                 this.write(start, "00");
+                 this.memoryModule.write(start, "00");
+                 this.updateMemoryCell(start, "00");
              }
          }
         
@@ -178,7 +177,7 @@ module TSOS{
             
             // loop through checking if a cell is a multiple of 8 then we need a new
             // row, create the new row and continue filling all cells.
-            for(var i=0; i < MAX_MEM_SPACE; i++){
+            for(var i=0; i < MAX_ADDRESS_SPACE; i++){
                 if(i%8 === 0){
                     row = tblElement.insertRow(rowcount++);
                     row.insertCell(0).innerHTML = "$" + (("0000" + i.toString(16)).slice(-4)).toUpperCase();
