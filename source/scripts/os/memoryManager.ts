@@ -123,7 +123,7 @@ module TSOS{
                      this.writeZeroToBlock(256, 511);
                      break;
                  case 2:
-                     this.writeZeroToBlock(512, 768);
+                     this.writeZeroToBlock(512, 767);
                      break;
                  default:
                      // TODO:
