@@ -42,11 +42,8 @@ var TSOS;
         * @param address - the address of the content of memory
         * @return string - a string representation of what is in memory
         */
-        MemoryManager.prototype.read = function (address) {
-            // same as write, just hard coding the max address for now
-            // we cannot read from any address past 255.
-            // TODO: create a function that checks the range of an address
-            if (address > (MAX_MEM_SPACE - 1)) {
+        MemoryManager.prototype.read = function (address, pcb) {
+            if (address + pcb.base > pcb.limit || address + pcb.base < pcb.base) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
             } else {
                 return this.memoryModule.read(address);

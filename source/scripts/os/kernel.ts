@@ -146,8 +146,9 @@ module TSOS {
                     break;
                 case PCB_END_IRQ:
                     _CPU.init(); // reset CPU
-                    _ResidentQueue[PCB.pid - 1].currentState = State.TERMINATED; //update state
-                    _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay); // update display
+                    _ActiveProgram.currentState = State.TERMINATED; //update state
+                    _ActiveProgram.setPCBDisplay(_PCBdisplay); // update display
+                    _MemManager.deallocate(_ActiveProgram);
                     _CPU.initCPUDisplay(); // update cpu display
                     break;
                 case SYS_CALL_IRQ:
@@ -239,11 +240,15 @@ module TSOS {
         
             // get the next Process
             var pcb:PCB = params.dequeue();
+            _ActiveProgram = pcb;
             // print a trace
-            this.krnTrace("Executing PID: " + pcb.progCount);
+            this.krnTrace("Executing PID: " + pcb.pidNumber);
             // pass the base to PC ...
-            // TODO: do we want to pass the Program Counter here?
-            _CPU.PC = pcb.base;
+            _CPU.PC = pcb.progCount;
+            _CPU.Acc = pcb.ACC;
+            _CPU.Xreg = pcb.X_reg;
+            _CPU.Yreg = pcb.Y_reg;
+            _CPU.Zflag = pcb.Z_flag;
             
             // set isExecuting to be the opposite of step
             _CPU.isExecuting = !_StepCPU;
@@ -251,8 +256,8 @@ module TSOS {
             _CPU.initCPUDisplay();
             
             // this will not work forever -- need a better way to keep track of PID's
-            _ResidentQueue[PCB.pid - 1].currentState = State.RUNNING;
-            _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay);
+            pcb.currentState = State.RUNNING;
+            pcb.setPCBDisplay(_PCBdisplay);
         }
          
        /**
@@ -267,7 +272,7 @@ module TSOS {
             }else if(params === 2){
                 var address:number = _CPU.Yreg;
                 var offset:number = 0;
-                var charValue = parseInt(_MemManager.read(address + offset), 16);
+                var charValue = parseInt(_MemManager.read(address + offset, _ActiveProgram), 16);
                 
                 // So, to prevent any null issues we set charValue above before entering loop.
                 // I could have done a do while loop to always execute atlest once but for now
@@ -277,7 +282,7 @@ module TSOS {
                 while(charValue !== 0){
                     _StdOut.putText(String.fromCharCode(charValue));
                     offset++;
-                    charValue = parseInt(_MemManager.read(address+offset), 16);
+                    charValue = parseInt(_MemManager.read(address+offset, _ActiveProgram), 16);
                 }
             }
         } 

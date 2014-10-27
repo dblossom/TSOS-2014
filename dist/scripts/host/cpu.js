@@ -42,7 +42,7 @@ var TSOS;
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             // So, let us read the next spot in memory at the current PC and execute it
-            this.instructionSet(_MemManager.read(_CPU.PC));
+            this.instructionSet(_MemManager.read(_CPU.PC, _ActiveProgram));
 
             // let us update the CPU display
             this.initCPUDisplay();
@@ -52,7 +52,7 @@ var TSOS;
 
             // update the current PCB display <this is kinda a bug> but want to see it work
             // not a bug, we just need to come up with a scheme for keeping PID's better.
-            _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay(_PCBdisplay);
+            _ActiveProgram.setPCBDisplay(_PCBdisplay);
         };
 
         /**
@@ -74,12 +74,12 @@ var TSOS;
                 case 169:
                     // here is the exact point I am making! We already stored as number
                     // but since we are returning a string, we are converting again... STUPID!
-                    _CPU.Acc = parseInt(_MemManager.read(++_CPU.PC), 16); // load ACC & inc PC
+                    _CPU.Acc = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram), 16); // load ACC & inc PC
                     break;
 
                 case 173:
                     var address = this.loadTwoBytes();
-                    _CPU.Acc = (parseInt(_MemManager.read(address), 16)); // store in ACC.
+                    _CPU.Acc = (parseInt(_MemManager.read(address, _ActiveProgram), 16)); // store in ACC.
                     break;
 
                 case 141:
@@ -89,26 +89,26 @@ var TSOS;
 
                 case 109:
                     var address = this.loadTwoBytes();
-                    var num = parseInt(_MemManager.read(address), 16);
+                    var num = parseInt(_MemManager.read(address, _ActiveProgram), 16);
                     _CPU.Acc += num;
                     break;
 
                 case 162:
-                    _CPU.Xreg = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    _CPU.Xreg = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram), 16);
                     break;
 
                 case 174:
                     var address = this.loadTwoBytes();
-                    _CPU.Xreg = parseInt(_MemManager.read(address), 16);
+                    _CPU.Xreg = parseInt(_MemManager.read(address, _ActiveProgram), 16);
                     break;
 
                 case 160:
-                    _CPU.Yreg = parseInt(_MemManager.read(++_CPU.PC), 16);
+                    _CPU.Yreg = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram), 16);
                     break;
 
                 case 172:
                     var address = this.loadTwoBytes();
-                    _CPU.Yreg = parseInt(_MemManager.read(address), 16);
+                    _CPU.Yreg = parseInt(_MemManager.read(address, _ActiveProgram), 16);
                     break;
 
                 case 234:
@@ -120,7 +120,7 @@ var TSOS;
 
                 case 236:
                     var address = this.loadTwoBytes();
-                    var data = parseInt(_MemManager.read(address), 16);
+                    var data = parseInt(_MemManager.read(address, _ActiveProgram), 16);
                     if (data === _CPU.Xreg) {
                         _CPU.Zflag = 1;
                     } else {
@@ -130,7 +130,7 @@ var TSOS;
 
                 case 208:
                     if (_CPU.Zflag === 0) {
-                        var branch = parseInt(_MemManager.read(++_CPU.PC), 16);
+                        var branch = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram), 16);
                         _CPU.PC += branch;
 
                         // Are we branching past valid address space?
@@ -145,9 +145,9 @@ var TSOS;
 
                 case 238:
                     var address = this.loadTwoBytes();
-                    var tempValue = parseInt(_MemManager.read(address), 16);
+                    var tempValue = parseInt(_MemManager.read(address, _ActiveProgram), 16);
                     tempValue++; // add one to current value
-                    _MemManager.write(address, tempValue.toString(16), _ResidentQueue[TSOS.PCB.pid - 1]); // store it back
+                    _MemManager.write(address, tempValue.toString(16), _ActiveProgram); // store it back
                     break;
 
                 case 255:
@@ -183,8 +183,8 @@ var TSOS;
             // so, it is the next 2 locations, we are little endian here...
             // load low number then high number then add together
             //I suppose A+B = B+A however for illistration ...
-            var low = parseInt(_MemManager.read(++_CPU.PC), 16);
-            var high = parseInt(_MemManager.read(++_CPU.PC), 16);
+            var low = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram), 16);
+            var high = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram), 16);
             return (low + high);
         };
 

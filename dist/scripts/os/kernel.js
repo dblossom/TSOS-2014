@@ -139,8 +139,9 @@ var TSOS;
                     break;
                 case PCB_END_IRQ:
                     _CPU.init(); // reset CPU
-                    _ResidentQueue[TSOS.PCB.pid - 1].currentState = 2 /* TERMINATED */; //update state
-                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay(_PCBdisplay); // update display
+                    _ActiveProgram.currentState = 2 /* TERMINATED */; //update state
+                    _ActiveProgram.setPCBDisplay(_PCBdisplay); // update display
+                    _MemManager.deallocate(_ActiveProgram);
                     _CPU.initCPUDisplay(); // update cpu display
                     break;
                 case SYS_CALL_IRQ:
@@ -229,13 +230,17 @@ var TSOS;
         Kernel.prototype.krnProcess = function (params) {
             // get the next Process
             var pcb = params.dequeue();
+            _ActiveProgram = pcb;
 
             // print a trace
-            this.krnTrace("Executing PID: " + pcb.progCount);
+            this.krnTrace("Executing PID: " + pcb.pidNumber);
 
             // pass the base to PC ...
-            // TODO: do we want to pass the Program Counter here?
-            _CPU.PC = pcb.base;
+            _CPU.PC = pcb.progCount;
+            _CPU.Acc = pcb.ACC;
+            _CPU.Xreg = pcb.X_reg;
+            _CPU.Yreg = pcb.Y_reg;
+            _CPU.Zflag = pcb.Z_flag;
 
             // set isExecuting to be the opposite of step
             _CPU.isExecuting = !_StepCPU;
@@ -244,8 +249,8 @@ var TSOS;
             _CPU.initCPUDisplay();
 
             // this will not work forever -- need a better way to keep track of PID's
-            _ResidentQueue[TSOS.PCB.pid - 1].currentState = 1 /* RUNNING */;
-            _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay(_PCBdisplay);
+            pcb.currentState = 1 /* RUNNING */;
+            pcb.setPCBDisplay(_PCBdisplay);
         };
 
         /**
@@ -260,12 +265,12 @@ var TSOS;
             } else if (params === 2) {
                 var address = _CPU.Yreg;
                 var offset = 0;
-                var charValue = parseInt(_MemManager.read(address + offset), 16);
+                var charValue = parseInt(_MemManager.read(address + offset, _ActiveProgram), 16);
 
                 while (charValue !== 0) {
                     _StdOut.putText(String.fromCharCode(charValue));
                     offset++;
-                    charValue = parseInt(_MemManager.read(address + offset), 16);
+                    charValue = parseInt(_MemManager.read(address + offset, _ActiveProgram), 16);
                 }
             }
         };

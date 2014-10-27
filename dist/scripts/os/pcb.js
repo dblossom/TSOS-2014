@@ -27,7 +27,7 @@ var TSOS;
             // increment the pid everytime we create a PCB
             // so we do not want to start at zero but rather
             // whatever the next number will be.
-            PCB.pid++;
+            this.pidNumber = PCB.pid++;
 
             // mark the base and limit
             this.base = base;
@@ -43,7 +43,7 @@ var TSOS;
             var row = null;
 
             // get the "active" row, which will always be row 1, row 0 is reserved for header
-            row = tblElement.rows[1];
+            row = tblElement.rows[_ActiveProgram.pidNumber + 1];
 
             // get the cells within row 1.
             var cellsInRow = null;
@@ -70,7 +70,7 @@ var TSOS;
             var row = null;
 
             // insert a row "on top" of the others
-            row = tblElement.insertRow(1);
+            row = tblElement.insertRow(PCB.pid);
 
             //these have to be in the correct order!
             row.insertCell(0).innerHTML = (PCB.pid - 1).toString();

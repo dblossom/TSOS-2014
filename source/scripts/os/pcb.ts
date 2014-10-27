@@ -31,6 +31,7 @@ module TSOS{
         public Y_reg: number = 0;
         public Z_flag: number = 0;
         public currentState: State; 
+        public pidNumber:number;
         
         // base and limit information
         public base: number;
@@ -40,8 +41,8 @@ module TSOS{
             // increment the pid everytime we create a PCB
             // so we do not want to start at zero but rather
             // whatever the next number will be.
-            PCB.pid++;
             
+            this.pidNumber = PCB.pid++;
             // mark the base and limit
             this.base = base;
             this.limit = limit;
@@ -57,7 +58,7 @@ module TSOS{
              // for some reason, this seems to work best when we first set to "null"
              var row = null;
              // get the "active" row, which will always be row 1, row 0 is reserved for header
-             row = tblElement.rows[1];
+             row = tblElement.rows[_ActiveProgram.pidNumber+1];
              
              // get the cells within row 1.
              var cellsInRow = null;
@@ -83,7 +84,7 @@ module TSOS{
              // only seems to work if we create a null first ... (?)
              var row = null;
              // insert a row "on top" of the others
-             row = tblElement.insertRow(1);
+             row = tblElement.insertRow(PCB.pid);
              
              //these have to be in the correct order!
              row.insertCell(0).innerHTML = (PCB.pid - 1).toString();

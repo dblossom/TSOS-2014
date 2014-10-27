@@ -43,7 +43,7 @@ module TSOS {
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             
             // So, let us read the next spot in memory at the current PC and execute it
-            this.instructionSet(_MemManager.read(_CPU.PC));
+            this.instructionSet(_MemManager.read(_CPU.PC, _ActiveProgram));
             
             // let us update the CPU display
             this.initCPUDisplay();
@@ -53,7 +53,7 @@ module TSOS {
             
             // update the current PCB display <this is kinda a bug> but want to see it work
             // not a bug, we just need to come up with a scheme for keeping PID's better.
-            _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay);
+            _ActiveProgram.setPCBDisplay(_PCBdisplay);
         }
         
         /**
@@ -78,12 +78,12 @@ module TSOS {
                  case 169: // A9 - load the accumulator with a constant
                                 // here is the exact point I am making! We already stored as number
                                 // but since we are returning a string, we are converting again... STUPID!
-                     _CPU.Acc = parseInt(_MemManager.read(++_CPU.PC),16); // load ACC & inc PC
+                     _CPU.Acc = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram),16); // load ACC & inc PC
                      break;
                      
                  case 173: // AD - load the accumulator from memory
                      var address:number = this.loadTwoBytes();
-                     _CPU.Acc = (parseInt(_MemManager.read(address), 16)); // store in ACC.
+                     _CPU.Acc = (parseInt(_MemManager.read(address, _ActiveProgram), 16)); // store in ACC.
                      break;
                      
                  case 141: // 8D - store the accumulator in memory (OH BOY)
@@ -93,26 +93,26 @@ module TSOS {
                      
                  case 109: // 6D - add with a carry
                      var address:number = this.loadTwoBytes();
-                     var num:number = parseInt(_MemManager.read(address),16);    
+                     var num:number = parseInt(_MemManager.read(address, _ActiveProgram),16);    
                      _CPU.Acc += num;
                      break;
                      
                  case 162: // A2 - load X reg with constant
-                     _CPU.Xreg = parseInt(_MemManager.read(++_CPU.PC),16);
+                     _CPU.Xreg = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram),16);
                      break;
                      
                  case 174: // AE - load x reg from memory
                      var address:number = this.loadTwoBytes();
-                     _CPU.Xreg = parseInt(_MemManager.read(address),16);
+                     _CPU.Xreg = parseInt(_MemManager.read(address, _ActiveProgram),16);
                      break;
                      
                  case 160: // A0 - load y reg with constant
-                     _CPU.Yreg = parseInt(_MemManager.read(++_CPU.PC), 16);
+                     _CPU.Yreg = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram), 16);
                      break;
                      
                  case 172: // AC - load y reg from memory
                      var address:number = this.loadTwoBytes();
-                     _CPU.Yreg = parseInt(_MemManager.read(address), 16);
+                     _CPU.Yreg = parseInt(_MemManager.read(address, _ActiveProgram), 16);
                      break;
                      
                  case 234: // EA - no op
@@ -124,7 +124,7 @@ module TSOS {
                      
                  case 236: // EC - compare a byte in memory to X reg set Z flag if equal 
                      var address:number = this.loadTwoBytes();
-                     var data:number = parseInt(_MemManager.read(address), 16);
+                     var data:number = parseInt(_MemManager.read(address, _ActiveProgram), 16);
                      if(data === _CPU.Xreg){
                          _CPU.Zflag = 1;
                      }else{
@@ -134,7 +134,7 @@ module TSOS {
                  
                  case 208: // D0 - Branch X bytes if z flag = 0
                      if(_CPU.Zflag === 0){
-                         var branch:number = parseInt(_MemManager.read(++_CPU.PC),16);
+                         var branch:number = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram),16);
                          _CPU.PC += branch;
                          
                          // Are we branching past valid address space?
@@ -149,9 +149,9 @@ module TSOS {
                      
                  case 238: // EE - Increment the value of a byte
                      var address:number = this.loadTwoBytes(); // memory address
-                     var tempValue:number = parseInt(_MemManager.read(address),16); // current value
+                     var tempValue:number = parseInt(_MemManager.read(address, _ActiveProgram),16); // current value
                      tempValue++; // add one to current value
-                     _MemManager.write(address,tempValue.toString(16),_ResidentQueue[PCB.pid - 1]); // store it back
+                     _MemManager.write(address,tempValue.toString(16),_ActiveProgram); // store it back
                      break;
                      
                  case 255: // FF - System Call
@@ -187,8 +187,8 @@ module TSOS {
               // so, it is the next 2 locations, we are little endian here...
               // load low number then high number then add together
               //I suppose A+B = B+A however for illistration ...  
-              var low:number = parseInt(_MemManager.read(++_CPU.PC),16); // load byte 1, inc PC
-              var high:number = parseInt(_MemManager.read(++_CPU.PC),16); // load byte 2, inc PC
+              var low:number = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram),16); // load byte 1, inc PC
+              var high:number = parseInt(_MemManager.read(++_CPU.PC, _ActiveProgram),16); // load byte 2, inc PC
               return (low+high);
           }
           

@@ -52,12 +52,10 @@ module TSOS{
          * @param address - the address of the content of memory
          * @return string - a string representation of what is in memory
          */
-        public read(address:number):string{
+        public read(address:number, pcb:PCB):string{
         
-            // same as write, just hard coding the max address for now
-            // we cannot read from any address past 255.
-            // TODO: create a function that checks the range of an address
-            if(address > (MAX_MEM_SPACE - 1)){
+            if(address + pcb.base > pcb.limit ||
+               address + pcb.base < pcb.base){
                 _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
             }else{ // should be a valid address ... maybe 
                 return this.memoryModule.read(address);
