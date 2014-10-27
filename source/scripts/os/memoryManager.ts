@@ -18,13 +18,13 @@ module TSOS{
         // Our memory, which will be an array.
         public memoryModule:Memory;
         // An array that will tell us about our free ranges of memory.
-        public memoryRanges = new Array<MemoryRange>(MAX_MEM_LOCATIONS);
+        public memoryRanges = new Array<MemoryRange>();
 
         constructor() {
             // initialize our memory object.
             this.memoryModule = new Memory(new Array<number>());
             // initalize our memory locations
-            this.initMemoryRanges();
+            this.initMemoryRanges(this.memoryRanges);
         }
         
         /**
@@ -63,6 +63,36 @@ module TSOS{
                 _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
             }else{ // should be a valid address ... maybe 
                 return this.memoryModule.read(address);
+            }
+        }
+        
+        /**
+         * Allocate memory to a given PCB
+         * @return - the free memory location
+         *           (-)1 indicates no mem to allocate
+         */
+        public allocate():number{
+            var partition: number = -1;
+            for(var i:number = 0; i < this.memoryRanges.length; i++){
+                if(this.memoryRanges[i].inuse === false){
+                    partition = i;
+                    this.memoryRanges[i].inuse = true;
+                    break;
+                }
+            }
+            return partition;
+        }
+        
+        /**
+         * Deallocate memory for a given PCB
+         */
+        public deallocate(pcb: PCB){
+            
+            var base:number = pcb.base;
+            for(var i:number = 0; i < this.memoryRanges.length; i++){
+                if(this.memoryRanges[i].base === base){
+                    this.memoryRanges[i].inuse = false;
+                }
             }
         }
         
@@ -179,7 +209,7 @@ module TSOS{
         /**
          * Initalizes our free memory ranges and sets them all to available
          */
-        private initMemoryRanges(){
+        private initMemoryRanges(memoryRanges:Array<MemoryRange>){
             
             for(var i:number = 0; i < MAX_ADDRESS_SPACE; i += MAX_MEM_SPACE){
                 

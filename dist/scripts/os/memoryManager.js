@@ -12,12 +12,12 @@ var TSOS;
     var MemoryManager = (function () {
         function MemoryManager() {
             // An array that will tell us about our free ranges of memory.
-            this.memoryRanges = new Array(MAX_MEM_LOCATIONS);
+            this.memoryRanges = new Array();
             // initialize our memory object.
             this.memoryModule = new TSOS.Memory(new Array());
 
             // initalize our memory locations
-            this.initMemoryRanges();
+            this.initMemoryRanges(this.memoryRanges);
         }
         /**
         * writes a "byte string" to a memory address then updates the display
@@ -53,6 +53,35 @@ var TSOS;
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
             } else {
                 return this.memoryModule.read(address);
+            }
+        };
+
+        /**
+        * Allocate memory to a given PCB
+        * @return - the free memory location
+        *           (-)1 indicates no mem to allocate
+        */
+        MemoryManager.prototype.allocate = function () {
+            var partition = -1;
+            for (var i = 0; i < this.memoryRanges.length; i++) {
+                if (this.memoryRanges[i].inuse === false) {
+                    partition = i;
+                    this.memoryRanges[i].inuse = true;
+                    break;
+                }
+            }
+            return partition;
+        };
+
+        /**
+        * Deallocate memory for a given PCB
+        */
+        MemoryManager.prototype.deallocate = function (pcb) {
+            var base = pcb.base;
+            for (var i = 0; i < this.memoryRanges.length; i++) {
+                if (this.memoryRanges[i].base === base) {
+                    this.memoryRanges[i].inuse = false;
+                }
             }
         };
 
@@ -161,7 +190,7 @@ var TSOS;
         /**
         * Initalizes our free memory ranges and sets them all to available
         */
-        MemoryManager.prototype.initMemoryRanges = function () {
+        MemoryManager.prototype.initMemoryRanges = function (memoryRanges) {
             for (var i = 0; i < MAX_ADDRESS_SPACE; i += MAX_MEM_SPACE) {
                 this.memoryRanges.push(new TSOS.MemoryRange(false, i, (i + (MAX_MEM_SPACE - 1))));
             }

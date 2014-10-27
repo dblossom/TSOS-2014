@@ -384,32 +384,26 @@ var TSOS;
         *       Too late tonight to break this.
         */
         Shell.prototype.shellLoad = function (args) {
-            // clear the current memory table
-            _MemManager.initMemoryDisplay(_MemoryDisplay);
-
-            // start with a valid input ?
+            // SO: something is happening where I cannot create a function to separate
+            //     the validate function... IDK. I debug and see the function, BUT it throws
+            //     a type error "not a function" so ... maybe it is eclipse, doubt it...idk
+            //     for now, this crap stays.
             var isValid = true;
 
-            var textInput = "";
-            textInput = _ProgramTextArea.value;
-
-            // little hack to make sure no blank text is passed.
-            if (textInput === "") {
-                isValid = false;
-            }
-
             // first we need to trim <-- actually probably not
-            textInput.trim();
+            var textInput = _ProgramTextArea.value.trim();
 
             // remove all whitespace?
             // replace(" ", "") only removes first
             // The plan here is simple.. We want A 9 00, A9 00 to be treated as the same
-            // SO - we remove ALL spaces, and process every "2 nibbles" -- if we end 1 short
-            // we will just pad a zero -- which is honestly a bad practice and I will probably
-            // remove it later...
+            // SO - we remove ALL spaces, and process every "2 nibbles"
             textInput = textInput.replace(/ /g, "");
 
-            // loop over the entire input grabbing every 2 chars and loading them into memory.
+            if (textInput === "") {
+                isValid = false;
+            }
+
+            // loop over the entire input grabbing every 2 chars and checking them.
             var pointer = 0;
             while (pointer < textInput.length && isValid == true) {
                 if (!textInput.charAt(pointer++).match(/[A-F0-9]/i)) {
@@ -423,27 +417,38 @@ var TSOS;
                 isValid = false;
             }
 
+            // END Validate input
+            // clear the current memory table
+            // TODO: NEED TO CLEAR CORRECT PARTITION
+            _MemManager.initMemoryDisplay(_MemoryDisplay);
+
             if (isValid) {
                 _StdOut.putText("Loading, please wait...");
                 _StdOut.advanceLine();
 
-                // clearing memory
-                //TODO: need partition area we are writting too!
-                _MemManager.clearPartition(0);
+                // Allocate a partition
+                var activePartition = _MemManager.allocate();
 
-                // point incs by 2 every go, i incs by 1. what, what what ?
-                // point keeps track of the hex bytes (aka 2 nibbles, aka every 2 chars)
-                // i keeps track of where we are in the string
-                var point = 0;
-                for (var i = 0; i < (textInput.length / 2); i++) {
-                    _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)));
+                // make sure we have room in memory!
+                if (activePartition !== -1) {
+                    _StdOut.putText("PID: " + TSOS.PCB.pid);
+                    var base = _MemManager.memoryRanges[activePartition].base;
+                    var limit = _MemManager.memoryRanges[activePartition].limit;
+                    _ResidentQueue[TSOS.PCB.pid] = new TSOS.PCB(base, limit);
+
+                    // point incs by 2 every go, i incs by 1. what, what what ?
+                    // point keeps track of the hex bytes (aka 2 nibbles, aka every 2 chars)
+                    // i keeps track of where we are in the string
+                    var point = 0;
+                    for (var i = 0; i < (textInput.length / 2); i++) {
+                        _MemManager.write((i + base), (textInput.charAt(point++) + textInput.charAt(point++)));
+                    }
+
+                    _MemManager.clearPartition(activePartition);
+
+                    // TODO: Need to fix this I suppose too.
+                    _ResidentQueue[TSOS.PCB.pid - 1].pcbNewRow(_PCBdisplay);
                 }
-
-                // Clear memory, write current pid counter to term and add pcb to list @ current pid.
-                // _MemManager.displayMemoryContents();
-                _StdOut.putText("PID: " + TSOS.PCB.pid);
-                _ResidentQueue[TSOS.PCB.pid] = new TSOS.PCB(0, (MAX_MEM_SPACE - 1)); // TODO: this always overwrites memory at 0!!!
-                _ResidentQueue[TSOS.PCB.pid - 1].pcbNewRow(_PCBdisplay);
             } else {
                 // let the user know his/her program is shitty and does not work
                 _StdOut.putText("Invalid Program...please try again! (or not).");
