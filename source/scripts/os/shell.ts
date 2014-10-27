@@ -454,38 +454,37 @@ module TSOS {
             if(textInput.length % 2 !== 0){
                 isValid = false;
             }
-                   
-            if(isValid){ 
+             
+            // Allocate a partition
+            var activePartition:number = _MemManager.allocate();      
+            
+            if(isValid && (activePartition !== -1)){ 
             
                 _StdOut.putText("Loading, please wait...");
                 _StdOut.advanceLine();
                 
-                // Allocate a partition
-                var activePartition:number = _MemManager.allocate();
+                _MemManager.clearPartition(activePartition);
                 
-                // make sure we have room in memory!
-                if(activePartition !== -1){
-                
-                    _MemManager.clearPartition(activePartition);
-                
-                    _StdOut.putText("PID: " + PCB.pid);
-                    var base:number = _MemManager.memoryRanges[activePartition].base;
-                    var limit:number = _MemManager.memoryRanges[activePartition].limit;
-                    _ResidentQueue[PCB.pid] = new PCB(base, limit);
+                _StdOut.putText("PID: " + PCB.pid);
+                var base:number = _MemManager.memoryRanges[activePartition].base;
+                var limit:number = _MemManager.memoryRanges[activePartition].limit;
+                _ResidentQueue[PCB.pid] = new PCB(base, limit);
                     
-                    // point incs by 2 every go, i incs by 1. what, what what ?
-                    // point keeps track of the hex bytes (aka 2 nibbles, aka every 2 chars)
-                    // i keeps track of where we are in the string
-                    var point:number = 0;
-                    for(var i:number = 0; i < (textInput.length / 2); i++){
-                        _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)),_ResidentQueue[PCB.pid-1] );
-                    }
-                    _ResidentQueue[PCB.pid - 1].pcbNewRow(_PCBdisplay);
+                // point incs by 2 every go, i incs by 1. what, what what ?
+                // point keeps track of the hex bytes (aka 2 nibbles, aka every 2 chars)
+                // i keeps track of where we are in the string
+                var point:number = 0;
+                for(var i:number = 0; i < (textInput.length / 2); i++){
+                    _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)),_ResidentQueue[PCB.pid-1] );
                 }
+                _ResidentQueue[PCB.pid - 1].pcbNewRow(_PCBdisplay);
 
             }else{
                // let the user know his/her program is shitty and does not work
                _StdOut.putText("Invalid Program...please try again! (or not).");
+               if(activePartition === -1){
+                   _KernelInterruptQueue.enqueue(new Interrupt(OUT_OF_MEM_IRQ, _ProgramTextArea.value));
+               }
             }
         }
         

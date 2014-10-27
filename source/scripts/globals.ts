@@ -28,6 +28,7 @@ var ILLEGAL_MEM_ACCESS: number = 4; // memory was accessed illegally TODO: renam
 var ILLEGAL_OPCODE_IRQ: number = 5; // bad opcode passed.
 var STEP_CPU_IRQ: number = 6; // an IRQ for step.
 var EXEC_PROG_IRQ: number = 7; // loads a program from ReadyQueue to krnProcess to execute (only way for my step to work)
+var OUT_OF_MEM_IRQ: number = 8; // throws error if no available memory. (for now just a little print to screen).
 
 // MEMORY STUFF
 var MAX_MEM_SPACE = 256;

@@ -168,6 +168,12 @@ module TSOS {
                     // someone typed run, give it to the kernel for execution
                     this.krnProcess(params);
                     break;
+                case OUT_OF_MEM_IRQ:
+                    // for now just tell the user no memory for program.
+                    _StdOut.putText("Sorry, out of memory for program " + params);
+                    _StdOut.advanceLine();
+                    _OsShell.putPrompt(); 
+                    break;
                     
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
