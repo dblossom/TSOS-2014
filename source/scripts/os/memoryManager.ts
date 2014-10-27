@@ -134,9 +134,9 @@ module TSOS{
          * This will write zeros to whichever block
          */
          private writeZeroToBlock(start:number, end:number){
-             for(; start < end; start++){
+             for(; start < end+1; start++){
                  this.memoryModule.write(start, "00");
-                 this.updateMemoryCell(start, "00");
+                 this.updateMemoryCell(start, "ZZ");
              }
          }
         

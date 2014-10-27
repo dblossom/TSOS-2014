@@ -454,13 +454,7 @@ module TSOS {
             if(textInput.length % 2 !== 0){
                 isValid = false;
             }
-            
-            // END Validate input
-        
-            // clear the current memory table
-            // TODO: NEED TO CLEAR CORRECT PARTITION
-            _MemManager.initMemoryDisplay(_MemoryDisplay);
-            
+                   
             if(isValid){ 
             
                 _StdOut.putText("Loading, please wait...");
@@ -471,6 +465,8 @@ module TSOS {
                 
                 // make sure we have room in memory!
                 if(activePartition !== -1){
+                
+                    _MemManager.clearPartition(activePartition);
                 
                     _StdOut.putText("PID: " + PCB.pid);
                     var base:number = _MemManager.memoryRanges[activePartition].base;
@@ -484,9 +480,6 @@ module TSOS {
                     for(var i:number = 0; i < (textInput.length / 2); i++){
                         _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)),_ResidentQueue[PCB.pid-1] );
                     }
-                    
-                    _MemManager.clearPartition(activePartition);
-                    // TODO: Need to fix this I suppose too.
                     _ResidentQueue[PCB.pid - 1].pcbNewRow(_PCBdisplay);
                 }
 

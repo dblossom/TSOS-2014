@@ -417,11 +417,6 @@ var TSOS;
                 isValid = false;
             }
 
-            // END Validate input
-            // clear the current memory table
-            // TODO: NEED TO CLEAR CORRECT PARTITION
-            _MemManager.initMemoryDisplay(_MemoryDisplay);
-
             if (isValid) {
                 _StdOut.putText("Loading, please wait...");
                 _StdOut.advanceLine();
@@ -431,6 +426,8 @@ var TSOS;
 
                 // make sure we have room in memory!
                 if (activePartition !== -1) {
+                    _MemManager.clearPartition(activePartition);
+
                     _StdOut.putText("PID: " + TSOS.PCB.pid);
                     var base = _MemManager.memoryRanges[activePartition].base;
                     var limit = _MemManager.memoryRanges[activePartition].limit;
@@ -443,10 +440,6 @@ var TSOS;
                     for (var i = 0; i < (textInput.length / 2); i++) {
                         _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)), _ResidentQueue[TSOS.PCB.pid - 1]);
                     }
-
-                    _MemManager.clearPartition(activePartition);
-
-                    // TODO: Need to fix this I suppose too.
                     _ResidentQueue[TSOS.PCB.pid - 1].pcbNewRow(_PCBdisplay);
                 }
             } else {
