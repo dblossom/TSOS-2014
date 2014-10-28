@@ -58,7 +58,7 @@ module TSOS{
                address + pcb.base < pcb.base){
                 _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
             }else{ // should be a valid address ... maybe 
-                return this.memoryModule.read(address);
+                return this.memoryModule.read(address + pcb.base);
             }
         }
         
@@ -134,7 +134,7 @@ module TSOS{
          private writeZeroToBlock(start:number, end:number){
              for(; start < end+1; start++){
                  this.memoryModule.write(start, "00");
-                 this.updateMemoryCell(start, "ZZ");
+                 this.updateMemoryCell(start, "00");
              }
          }
         

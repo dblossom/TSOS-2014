@@ -46,7 +46,7 @@ var TSOS;
             if (address + pcb.base > pcb.limit || address + pcb.base < pcb.base) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
             } else {
-                return this.memoryModule.read(address);
+                return this.memoryModule.read(address + pcb.base);
             }
         };
 
@@ -118,7 +118,7 @@ var TSOS;
         MemoryManager.prototype.writeZeroToBlock = function (start, end) {
             for (; start < end + 1; start++) {
                 this.memoryModule.write(start, "00");
-                this.updateMemoryCell(start, "ZZ");
+                this.updateMemoryCell(start, "00");
             }
         };
 
