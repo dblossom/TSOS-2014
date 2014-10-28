@@ -66,15 +66,15 @@ module TSOS{
          
              // set the cell with the new state information
              // the order matters here!
-             cellsInRow[0].innerHTML = (PCB.pid - 1).toString();
-             cellsInRow[1].innerHTML = this.base.toString();
-             cellsInRow[2].innerHTML = this.limit.toString();
-             cellsInRow[3].innerHTML = State[this.currentState].toString();
-             cellsInRow[4].innerHTML = this.progCount.toString();
-             cellsInRow[5].innerHTML = this.ACC.toString();
-             cellsInRow[6].innerHTML = this.X_reg.toString();
-             cellsInRow[7].innerHTML = this.Y_reg.toString();
-             cellsInRow[8].innerHTML = this.Z_flag.toString();
+             cellsInRow[0].innerHTML = _ActiveProgram.pidNumber.toString();
+             cellsInRow[1].innerHTML = _ActiveProgram.base.toString();
+             cellsInRow[2].innerHTML = _ActiveProgram.limit.toString();
+             cellsInRow[3].innerHTML = State[_ActiveProgram.currentState].toString();
+             cellsInRow[4].innerHTML = _ActiveProgram.progCount.toString();
+             cellsInRow[5].innerHTML = _ActiveProgram.ACC.toString();
+             cellsInRow[6].innerHTML = _ActiveProgram.X_reg.toString();
+             cellsInRow[7].innerHTML = _ActiveProgram.Y_reg.toString();
+             cellsInRow[8].innerHTML = _ActiveProgram.Z_flag.toString();
          }
          
          /**
