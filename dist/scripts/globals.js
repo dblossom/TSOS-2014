@@ -107,8 +107,9 @@ var _ResidentQueue = null;
 var _PCBdisplay = null;
 
 // scheduling stuff
-var _Quantum = 6;
+var _Quantum = 6000;
 
+// var _CPU_Schedule:Schedule
 // For testing...
 var _GLaDOS = null;
 var Glados = null;

@@ -111,7 +111,8 @@ var _ResidentQueue = null;
 var _PCBdisplay: HTMLTableElement = null;
 
 // scheduling stuff
-var _Quantum:number = 6; // default quantum == 6
+var _Quantum:number = 6000; // default quantum == 6 (make it high for testing RR)
+// var _CPU_Schedule:Schedule
 
 // For testing...
 var _GLaDOS: any = null;
