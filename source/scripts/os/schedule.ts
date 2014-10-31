@@ -28,13 +28,21 @@ module TSOS{
         // which routine are we running (currently only support Round Robin)
         // however, we are setting up nicely for iP4
         public routine: ScheduleRoutine;
+        private cpuCount:number;
         
         /**
          * The constructor not much to say here...
          * @params anyRoutine, the routine of this schedule
          */
         constructor(anyRoutine: ScheduleRoutine) {
+        
             this.routine = anyRoutine;
+            
+            // so we can keep track of CPU use count
+            // we will decrement this counter.
+            if(this.routine === ScheduleRoutine.RR){
+                this.cpuCount = _Quantum;
+            }
         }
         
         /**
@@ -60,9 +68,25 @@ module TSOS{
         
         
         public roundRobin(quantum:number){
-            // empty shell
-        }
         
+            if(_CPU.isExecuting){
+            
+                 // turn is over
+                if(this.cpuCount === 0){
+                    // enqueue an interupt to change processes - handled by kernel
+                    _KernelInterruptQueue.enqueue(new Interrupt(CON_SWITCH_IRQ, 0)); // not sure what I want to pass yet so just 0.
+                    // get ready for the next guy .. or the same guy ..
+                    this.cpuCount = _Quantum;
+                }else{// turn is not over, keep swinging (that sounds dirty...)
+                
+                    // decrement the rr counter by one
+                    this.cpuCount--;
+                    // make a call to the CPU CYCLE.
+                    _CPU.cycle();
+                }
+            }else if(_KernelReadyQueue.getSize() > 0){ // if there is still stuff to do, one process ended, is there another?
+                alert("hello");
+            }   
+        }   
     }
-    
 }

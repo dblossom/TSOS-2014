@@ -53,6 +53,9 @@ module TSOS {
             // I know this is not a Queue -- but an array .. or list. Sorry.
             // renaming it to follow what it really is in real life...
             _ResidentQueue = new Array<PCB>();
+            
+            // set the default scheduler (round robin)
+            _CPU_Schedule = new Schedule(ScheduleRoutine.RR);
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
@@ -105,7 +108,7 @@ module TSOS {
                 }
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
-                _CPU.cycle();
+                _CPU_Schedule.go();
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
             }
@@ -150,6 +153,9 @@ module TSOS {
                     _ActiveProgram.setPCBDisplay(_PCBdisplay); // update display
                     _MemManager.deallocate(_ActiveProgram);
                     _CPU.initCPUDisplay(); // update cpu display
+                    if(_KernelReadyQueue.getSize() > 0){
+                        this.krnProcess(_KernelReadyQueue);
+                    }
                     break;
                 case SYS_CALL_IRQ:
                     this.krnSysCall(params);
@@ -174,6 +180,9 @@ module TSOS {
                     _StdOut.putText("Sorry, out of memory for program " + params);
                     _StdOut.advanceLine();
                     _OsShell.putPrompt(); 
+                    break;
+                case CON_SWITCH_IRQ:
+                    this.krnContextSwitch();
                     break;
                     
                 default:
@@ -258,6 +267,7 @@ module TSOS {
             // this will not work forever -- need a better way to keep track of PID's
             pcb.currentState = State.RUNNING;
             pcb.setPCBDisplay(_PCBdisplay);
+
         }
          
        /**
@@ -321,6 +331,13 @@ module TSOS {
              
              // reset the cpu
              _CPU.init();
+         }
+         
+         /**
+          * Time to do a context switch
+          */
+         public krnContextSwitch(){
+         
          }
         
         /**

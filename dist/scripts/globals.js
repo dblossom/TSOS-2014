@@ -27,6 +27,7 @@ var ILLEGAL_OPCODE_IRQ = 5;
 var STEP_CPU_IRQ = 6;
 var EXEC_PROG_IRQ = 7;
 var OUT_OF_MEM_IRQ = 8;
+var CON_SWITCH_IRQ = 9;
 
 // MEMORY STUFF
 var MAX_MEM_SPACE = 256;
@@ -108,8 +109,8 @@ var _PCBdisplay = null;
 
 // scheduling stuff
 var _Quantum = 6000;
+var _CPU_Schedule = null;
 
-// var _CPU_Schedule:Schedule
 // For testing...
 var _GLaDOS = null;
 var Glados = null;

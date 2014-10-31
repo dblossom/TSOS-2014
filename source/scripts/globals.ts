@@ -29,6 +29,7 @@ var ILLEGAL_OPCODE_IRQ: number = 5; // bad opcode passed.
 var STEP_CPU_IRQ: number = 6; // an IRQ for step.
 var EXEC_PROG_IRQ: number = 7; // loads a program from ReadyQueue to krnProcess to execute (only way for my step to work)
 var OUT_OF_MEM_IRQ: number = 8; // throws error if no available memory. (for now just a little print to screen).
+var CON_SWITCH_IRQ: number = 9; // tells the kernel to change processes.
 
 // MEMORY STUFF
 var MAX_MEM_SPACE = 256;
@@ -112,7 +113,7 @@ var _PCBdisplay: HTMLTableElement = null;
 
 // scheduling stuff
 var _Quantum:number = 6000; // default quantum == 6 (make it high for testing RR)
-// var _CPU_Schedule:Schedule
+var _CPU_Schedule: TSOS.Schedule = null; 
 
 // For testing...
 var _GLaDOS: any = null;

@@ -104,6 +104,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellChangeQuantum, "quantum", "<int> - the value to make the quantum.");
             this.commandList[this.commandList.length] = sc;
 
+            // run all processes on the _ResidentQueue
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- run all processes on Resident Queue.");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -535,6 +539,23 @@ var TSOS;
                 }
             } else {
                 _StdOut.putText("Usage: quantum <int> number greater than zero (0)!");
+            }
+        };
+
+        /**
+        * Run all processes on the resident queue
+        */
+        Shell.prototype.shellRunAll = function (args) {
+            if (typeof args[0] !== 'undefined') {
+                _StdOut.putText("Usage: Nothing! Just type runall and all processes will run");
+            } else {
+                for (var i = 0; i < _ResidentQueue.length; i++) {
+                    if (_ResidentQueue[i].currentState === 0 /* NEW */) {
+                        _KernelReadyQueue.enqueue(_ResidentQueue[i]);
+                    }
+                }
+
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             }
         };
         return Shell;

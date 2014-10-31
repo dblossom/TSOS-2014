@@ -149,6 +149,12 @@ module TSOS {
                                   "<int> - the value to make the quantum.");
             this.commandList[this.commandList.length] = sc;
             
+            // run all processes on the _ResidentQueue
+            sc = new ShellCommand(this.shellRunAll,
+                                  "runall",
+                                  "- run all processes on Resident Queue.");
+            this.commandList[this.commandList.length] = sc;
+            
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -579,5 +585,22 @@ module TSOS {
             }
         }
         
+        /**
+         * Run all processes on the resident queue
+         */
+        public shellRunAll(args){
+            if(typeof args[0] !== 'undefined'){
+                _StdOut.putText("Usage: Nothing! Just type runall and all processes will run");
+            }else{
+                
+                for(var i:number = 0; i < _ResidentQueue.length; i++){
+                    if(_ResidentQueue[i].currentState === State.NEW){
+                        _KernelReadyQueue.enqueue(_ResidentQueue[i]);
+                    }
+                }
+                
+                _KernelInterruptQueue.enqueue(new Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
+            }
+        }
     }
 }

@@ -25,6 +25,12 @@ var TSOS;
         */
         function Schedule(anyRoutine) {
             this.routine = anyRoutine;
+
+            // so we can keep track of CPU use count
+            // we will decrement this counter.
+            if (this.routine === 0 /* RR */) {
+                this.cpuCount = _Quantum;
+            }
         }
         /**
         * This function is what will determine which routine to run based on
@@ -41,7 +47,24 @@ var TSOS;
         };
 
         Schedule.prototype.roundRobin = function (quantum) {
-            // empty shell
+            if (_CPU.isExecuting) {
+                // turn is over
+                if (this.cpuCount === 0) {
+                    // enqueue an interupt to change processes - handled by kernel
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CON_SWITCH_IRQ, 0)); // not sure what I want to pass yet so just 0.
+
+                    // get ready for the next guy .. or the same guy ..
+                    this.cpuCount = _Quantum;
+                } else {
+                    // decrement the rr counter by one
+                    this.cpuCount--;
+
+                    // make a call to the CPU CYCLE.
+                    _CPU.cycle();
+                }
+            } else if (_KernelReadyQueue.getSize() > 0) {
+                alert("hello");
+            }
         };
         return Schedule;
     })();

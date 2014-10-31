@@ -52,6 +52,9 @@ var TSOS;
             // renaming it to follow what it really is in real life...
             _ResidentQueue = new Array();
 
+            // set the default scheduler (round robin)
+            _CPU_Schedule = new TSOS.Schedule(0 /* RR */);
+
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
             this.krnEnableInterrupts();
@@ -103,7 +106,7 @@ var TSOS;
                 }
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) {
-                _CPU.cycle();
+                _CPU_Schedule.go();
             } else {
                 this.krnTrace("Idle");
             }
@@ -143,6 +146,9 @@ var TSOS;
                     _ActiveProgram.setPCBDisplay(_PCBdisplay); // update display
                     _MemManager.deallocate(_ActiveProgram);
                     _CPU.initCPUDisplay(); // update cpu display
+                    if (_KernelReadyQueue.getSize() > 0) {
+                        this.krnProcess(_KernelReadyQueue);
+                    }
                     break;
                 case SYS_CALL_IRQ:
                     this.krnSysCall(params);
@@ -167,6 +173,9 @@ var TSOS;
                     _StdOut.putText("Sorry, out of memory for program " + params);
                     _StdOut.advanceLine();
                     _OsShell.putPrompt();
+                    break;
+                case CON_SWITCH_IRQ:
+                    this.krnContextSwitch();
                     break;
 
                 default:
@@ -310,6 +319,12 @@ var TSOS;
 
             // reset the cpu
             _CPU.init();
+        };
+
+        /**
+        * Time to do a context switch
+        */
+        Kernel.prototype.krnContextSwitch = function () {
         };
 
         /**
