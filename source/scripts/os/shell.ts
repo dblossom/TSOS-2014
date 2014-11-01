@@ -620,6 +620,13 @@ module TSOS {
          */
         public shellPS(args){
         
+            for(var i:number = 0; i < _ResidentQueue.length; i++){
+                if(_ResidentQueue[i].currentState !== State.TERMINATED){
+                    _StdOut.putText("Process ID: " + _ResidentQueue[i].pidNumber);
+                    _StdOut.advanceLine();
+                }
+            }
         }
+        
     }
 }

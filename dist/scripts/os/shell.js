@@ -573,6 +573,12 @@ var TSOS;
         * Display all active processes
         */
         Shell.prototype.shellPS = function (args) {
+            for (var i = 0; i < _ResidentQueue.length; i++) {
+                if (_ResidentQueue[i].currentState !== 2 /* TERMINATED */) {
+                    _StdOut.putText("Process ID: " + _ResidentQueue[i].pidNumber);
+                    _StdOut.advanceLine();
+                }
+            }
         };
         return Shell;
     })();
