@@ -85,7 +85,7 @@ var TSOS;
 
                 case 141:
                     var address = this.loadTwoBytes();
-                    _MemManager.write(address, _CPU.Acc.toString(16), _ResidentQueue[TSOS.PCB.pid - 1]);
+                    _MemManager.write(address, _CPU.Acc.toString(16), _ActiveProgram);
                     break;
 
                 case 109:
