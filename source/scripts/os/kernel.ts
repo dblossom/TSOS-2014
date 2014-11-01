@@ -330,7 +330,32 @@ module TSOS {
           * Time to do a context switch
           */
          public krnContextSwitch(){
-         
+             
+             // save current PCB state
+             // put that PCB on the ready queue and update its state
+             // grab the next PCB off the ready queue and update the CPU
+             // in the case where there is one PCB - we must put on before taking off
+             
+             _ActiveProgram.currentState = State.WAITING;
+             
+             _ActiveProgram.setPCBDisplay(_PCBdisplay);
+             
+             _KernelReadyQueue.enqueue(_ActiveProgram);
+             
+             _ActiveProgram = _KernelReadyQueue.dequeue();
+             
+             _CPU.PC = _ActiveProgram.progCount;
+             _CPU.Acc = _ActiveProgram.ACC;
+             _CPU.Xreg = _ActiveProgram.X_reg;
+             _CPU.Yreg = _ActiveProgram.Y_reg;
+             _CPU.Zflag = _ActiveProgram.Z_flag;
+             
+             _CPU.isExecuting = true;
+             
+             _ActiveProgram.currentState = State.RUNNING;
+             
+             _ActiveProgram.setPCBDisplay(_PCBdisplay);
+             
          }
          
          /**
