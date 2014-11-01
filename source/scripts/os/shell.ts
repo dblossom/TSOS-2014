@@ -155,6 +155,12 @@ module TSOS {
                                   "- run all processes on Resident Queue.");
             this.commandList[this.commandList.length] = sc;
             
+            // display all active processes
+            sc = new ShellCommand(this.shellPS,
+                                  "ps",
+                                  "- display all active processes.");
+            this.commandList[this.commandList.length] = sc;
+            
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -531,6 +537,7 @@ module TSOS {
                 _ResidentQueue[args[0]].currentState = State.READY;
                 // add to queue
                 _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
+              //  _ResidentQueue[args[0]].pcbNewRow(_PCBdisplay);
                 // pass an interrupt to kernel
                 _KernelInterruptQueue.enqueue(new Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             }else{ // whoops, bad PID
@@ -573,12 +580,16 @@ module TSOS {
          */
         public shellChangeQuantum(args){
             if((args[0] > 0)){
-                var message:string = "Quantum now set to: " + args[0];
-                _StdOut.putText(message);
                 _Quantum = args[0];
+                _CPU_Schedule.cpuCount = _Quantum;
+                var message:string = "Quantum now set to: " + _Quantum;
+                _StdOut.putText(message);
                 Control.hostLog(message, "SCHEDULE EVENT");
-                if(args[0] > 8){
+                if(_Quantum > 8){
                     _StdOut.putText(" Why so large?");
+                }
+                if(_Quantum == 1){
+                    _StdOut.putText(" Really? Really? Making me work today");
                 }
             }else{
                 _StdOut.putText("Usage: quantum <int> number greater than zero (0)!");
@@ -596,11 +607,19 @@ module TSOS {
                 for(var i:number = 0; i < _ResidentQueue.length; i++){
                     if(_ResidentQueue[i].currentState === State.NEW){
                         _KernelReadyQueue.enqueue(_ResidentQueue[i]);
+                    //    _ResidentQueue[i].pcbNewRow(_PCBdisplay);
                     }
                 }
                 
                 _KernelInterruptQueue.enqueue(new Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             }
+        }
+        
+        /**
+         * Display all active processes
+         */
+        public shellPS(args){
+        
         }
     }
 }

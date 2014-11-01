@@ -108,6 +108,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- run all processes on Resident Queue.");
             this.commandList[this.commandList.length] = sc;
 
+            // display all active processes
+            sc = new TSOS.ShellCommand(this.shellPS, "ps", "- display all active processes.");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -487,6 +491,7 @@ var TSOS;
                 // add to queue
                 _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
 
+                //  _ResidentQueue[args[0]].pcbNewRow(_PCBdisplay);
                 // pass an interrupt to kernel
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             } else {
@@ -530,12 +535,16 @@ var TSOS;
         */
         Shell.prototype.shellChangeQuantum = function (args) {
             if ((args[0] > 0)) {
-                var message = "Quantum now set to: " + args[0];
-                _StdOut.putText(message);
                 _Quantum = args[0];
+                _CPU_Schedule.cpuCount = _Quantum;
+                var message = "Quantum now set to: " + _Quantum;
+                _StdOut.putText(message);
                 TSOS.Control.hostLog(message, "SCHEDULE EVENT");
-                if (args[0] > 8) {
+                if (_Quantum > 8) {
                     _StdOut.putText(" Why so large?");
+                }
+                if (_Quantum == 1) {
+                    _StdOut.putText(" Really? Really? Making me work today");
                 }
             } else {
                 _StdOut.putText("Usage: quantum <int> number greater than zero (0)!");
@@ -552,11 +561,18 @@ var TSOS;
                 for (var i = 0; i < _ResidentQueue.length; i++) {
                     if (_ResidentQueue[i].currentState === 0 /* NEW */) {
                         _KernelReadyQueue.enqueue(_ResidentQueue[i]);
+                        //    _ResidentQueue[i].pcbNewRow(_PCBdisplay);
                     }
                 }
 
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             }
+        };
+
+        /**
+        * Display all active processes
+        */
+        Shell.prototype.shellPS = function (args) {
         };
         return Shell;
     })();
