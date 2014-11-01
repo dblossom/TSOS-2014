@@ -28,7 +28,7 @@ module TSOS{
         // which routine are we running (currently only support Round Robin)
         // however, we are setting up nicely for iP4
         public routine: ScheduleRoutine;
-        private cpuCount:number;
+        public cpuCount:number;
         
         /**
          * The constructor not much to say here...
@@ -84,8 +84,8 @@ module TSOS{
                     // make a call to the CPU CYCLE.
                     _CPU.cycle();
                 }
-            }else if(_KernelReadyQueue.getSize() > 0){ // if there is still stuff to do, one process ended, is there another?
-                alert("hello");
+            }else if(_KernelReadyQueue.getSize() > 0){ // so I sort of do something at process end that might eliminate the need for this here.
+
             }   
         }   
     }

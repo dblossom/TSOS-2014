@@ -148,14 +148,7 @@ module TSOS {
                     _StdIn.handleInput();
                     break;
                 case PCB_END_IRQ:
-                    _CPU.init(); // reset CPU
-                    _ActiveProgram.currentState = State.TERMINATED; //update state
-                    _ActiveProgram.setPCBDisplay(_PCBdisplay); // update display
-                    _MemManager.deallocate(_ActiveProgram);
-                    _CPU.initCPUDisplay(); // update cpu display
-                    if(_KernelReadyQueue.getSize() > 0){
-                        this.krnProcess(_KernelReadyQueue);
-                    }
+                    this.krnProcessEnd(_ActiveProgram);
                     break;
                 case SYS_CALL_IRQ:
                     this.krnSysCall(params);
@@ -338,6 +331,29 @@ module TSOS {
           */
          public krnContextSwitch(){
          
+         }
+         
+         /**
+          * Activites needed to be completed when a process ends
+          */
+         public krnProcessEnd(pcb:PCB){
+             // reset the CPU
+             _CPU.init();
+             // update the state of process to be terminated
+             pcb.currentState = State.TERMINATED;
+             // update the process display on the "GUI"
+             pcb.setPCBDisplay(_PCBdisplay);
+             // deallocate the memory for the next process
+             _MemManager.deallocate(_ActiveProgram);
+             // update the CPU displays
+             _CPU.initCPUDisplay();
+             // reset the counter for the quantum
+             _CPU_Schedule.cpuCount = _Quantum;
+             
+             // finally if there is another process on the queue, DO IT!
+             if(_KernelReadyQueue.getSize() > 0){
+                 this.krnProcess(_KernelReadyQueue);
+             }
          }
         
         /**

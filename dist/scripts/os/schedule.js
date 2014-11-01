@@ -63,7 +63,6 @@ var TSOS;
                     _CPU.cycle();
                 }
             } else if (_KernelReadyQueue.getSize() > 0) {
-                alert("hello");
             }
         };
         return Schedule;
