@@ -89,7 +89,7 @@ var _ProgramTextArea = null;
 // for memory -- program loading stuff
 var _Memory;
 var _MemManager;
-var _ActiveProgram;
+var _ActiveProgram = null;
 
 // for display memory
 var _MemoryDisplay = null;

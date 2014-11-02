@@ -93,7 +93,7 @@ var _ProgramTextArea: HTMLTextAreaElement = null;
 // for memory -- program loading stuff
 var _Memory: TSOS.Memory; // do I need this ?
 var _MemManager: TSOS.MemoryManager;
-var _ActiveProgram: TSOS.PCB;
+var _ActiveProgram: TSOS.PCB = null;
 
 // for display memory
 var _MemoryDisplay: HTMLTableElement = null;

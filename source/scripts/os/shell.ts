@@ -620,12 +620,26 @@ module TSOS {
          */
         public shellPS(args){
         
-            for(var i:number = 0; i < _ResidentQueue.length; i++){
-                if(_ResidentQueue[i].currentState !== State.TERMINATED){
-                    _StdOut.putText("Process ID: " + _ResidentQueue[i].pidNumber);
-                    _StdOut.advanceLine();
-                }
+            // is a process being executed?
+            if(_ActiveProgram !== null){
+                _StdOut.putText("Process ID: " + _ActiveProgram.pidNumber);
+                _StdOut.advanceLine();
             }
+            
+            // anything on the queue? -- do not want to print if there is only
+            // one active program, so make sure that is not null!
+            if(_KernelReadyQueue.getSize() === 0 && _ActiveProgram === null){
+                _StdOut.putText("No active processes.");
+            }
+            
+            // well, if there are things on the queue tell the person, they asked!
+            for(var i:number = 0; i < _KernelReadyQueue.getSize(); i++){
+            
+                _StdOut.putText("Process ID: " + _KernelReadyQueue.q[i].pidNumber);
+                _StdOut.advanceLine();
+            
+            }        
+
         }
         
     }

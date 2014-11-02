@@ -365,6 +365,9 @@ var TSOS;
             // reset the counter for the quantum
             _CPU_Schedule.cpuCount = _Quantum;
 
+            // null the active process ...
+            _ActiveProgram = null;
+
             // finally if there is another process on the queue, DO IT!
             if (_KernelReadyQueue.getSize() > 0) {
                 this.krnProcess(_KernelReadyQueue);
