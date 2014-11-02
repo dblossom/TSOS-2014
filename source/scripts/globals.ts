@@ -19,9 +19,9 @@ var CPU_CLOCK_INTERVAL: number = 100;   // This is in ms, or milliseconds, so 10
 
 var TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
                             // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
-var KEYBOARD_IRQ: number = 1;
 
-// ADDED Interupts for assignment 2: Assume these constants to change!!!
+// software interupts...
+var KEYBOARD_IRQ: number = 1;
 var PCB_END_IRQ: number = 2; // a process completed normally.
 var SYS_CALL_IRQ: number = 3; // a system call was made
 var ILLEGAL_MEM_ACCESS: number = 4; // memory was accessed illegally TODO: rename with _IRQ at end
@@ -30,6 +30,7 @@ var STEP_CPU_IRQ: number = 6; // an IRQ for step.
 var EXEC_PROG_IRQ: number = 7; // loads a program from ReadyQueue to krnProcess to execute (only way for my step to work)
 var OUT_OF_MEM_IRQ: number = 8; // throws error if no available memory. (for now just a little print to screen).
 var CON_SWITCH_IRQ: number = 9; // tells the kernel to change processes.
+var PCB_KILL_IRQ: number = 10; // we want to kill a process!
 
 // MEMORY STUFF
 var MAX_MEM_SPACE = 256;

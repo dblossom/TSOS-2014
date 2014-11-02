@@ -170,7 +170,12 @@ var TSOS;
                 case CON_SWITCH_IRQ:
                     this.krnContextSwitch();
                     break;
-
+                case PCB_KILL_IRQ:
+                    this.krnProcessKill(params);
+                    _StdOut.putText("Process " + params.pidNumber + " has been zapped!");
+                    _StdOut.advanceLine();
+                    _StdOut.putPrompt();
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -372,6 +377,29 @@ var TSOS;
             if (_KernelReadyQueue.getSize() > 0) {
                 this.krnProcess(_KernelReadyQueue);
             }
+        };
+
+        /**
+        * Kill an active process
+        */
+        Kernel.prototype.krnProcessKill = function (pcb) {
+            if (_ActiveProgram.pidNumber === pcb.pidNumber) {
+                this.krnProcessEnd(pcb); // simple enough right?
+            } else {
+                for (var i = 0; i < _KernelReadyQueue.getSize(); i++) {
+                    // do we have a match ...
+                    if (pcb.pidNumber === _KernelReadyQueue.q[i].pidNumber) {
+                        _KernelReadyQueue.q.splice(i, 1);
+                        _ResidentQueue[pcb.pidNumber].currentState = 2 /* TERMINATED */;
+                        _ResidentQueue[pcb.pidNumber].setPCBDisplay(_PCBdisplay);
+                    }
+                }
+                _CPU.isExecuting = true; // back to work.
+            }
+
+            _StdOut.putText("Process " + pcb.pidNumber + " has been zapped!");
+            _StdOut.advanceLine();
+            _StdOut.putPrompt();
         };
 
         /**

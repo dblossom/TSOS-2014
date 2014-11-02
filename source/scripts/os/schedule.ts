@@ -84,8 +84,8 @@ module TSOS{
                     // make a call to the CPU CYCLE.
                     _CPU.cycle();
                 }
-            }else if(_KernelReadyQueue.getSize() > 0){ // so I sort of do something at process end that might eliminate the need for this here.
-
+            }else if(_KernelReadyQueue.getSize() > 0){
+                // so I sort of do something at process end that might eliminate the need for this here.
             }   
         }   
     }

@@ -63,6 +63,7 @@ var TSOS;
                     _CPU.cycle();
                 }
             } else if (_KernelReadyQueue.getSize() > 0) {
+                // so I sort of do something at process end that might eliminate the need for this here.
             }
         };
         return Schedule;

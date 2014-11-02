@@ -17,9 +17,8 @@ var CPU_CLOCK_INTERVAL = 100;
 var TIMER_IRQ = 0;
 
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
+// software interupts...
 var KEYBOARD_IRQ = 1;
-
-// ADDED Interupts for assignment 2: Assume these constants to change!!!
 var PCB_END_IRQ = 2;
 var SYS_CALL_IRQ = 3;
 var ILLEGAL_MEM_ACCESS = 4;
@@ -28,6 +27,7 @@ var STEP_CPU_IRQ = 6;
 var EXEC_PROG_IRQ = 7;
 var OUT_OF_MEM_IRQ = 8;
 var CON_SWITCH_IRQ = 9;
+var PCB_KILL_IRQ = 10;
 
 // MEMORY STUFF
 var MAX_MEM_SPACE = 256;

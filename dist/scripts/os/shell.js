@@ -112,6 +112,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellPS, "ps", "- display all active processes.");
             this.commandList[this.commandList.length] = sc;
 
+            // kill an active process
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "<pid> - The process to kill.");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -589,6 +593,23 @@ var TSOS;
                 _StdOut.putText("Process ID: " + _KernelReadyQueue.q[i].pidNumber);
                 _StdOut.advanceLine();
             }
+        };
+
+        /**
+        * Kill an active process (do we only kill "ready_queue" processes??
+        */
+        Shell.prototype.shellKill = function (args) {
+            // first and foremost give me a second here ...
+            //  if(_ActiveProgram.pidNumber === args){
+            _CPU.isExecuting = false;
+
+            //  }
+            // now pass the PCB to kill off to the interrupt queue...
+            // TODO: check now or later or ever if the pid:
+            //       1) EVER existed
+            //       2) Has been terminated previous...
+            //       3) something else ?
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PCB_KILL_IRQ, _ResidentQueue[args]));
         };
         return Shell;
     })();
