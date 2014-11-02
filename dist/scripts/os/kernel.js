@@ -391,7 +391,7 @@ var TSOS;
                     if (pcb.pidNumber === _KernelReadyQueue.q[i].pidNumber) {
                         _KernelReadyQueue.q.splice(i, 1);
                         _ResidentQueue[pcb.pidNumber].currentState = 2 /* TERMINATED */;
-                        _ResidentQueue[pcb.pidNumber].setPCBDisplay(_PCBdisplay);
+                        _ResidentQueue[pcb.pidNumber].setPCBDisplay(_PCBdisplay, pcb);
                     }
                 }
                 _CPU.isExecuting = true; // back to work.

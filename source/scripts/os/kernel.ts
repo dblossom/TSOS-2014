@@ -405,7 +405,7 @@ module TSOS {
                           
                           _KernelReadyQueue.q.splice(i,1);
                           _ResidentQueue[pcb.pidNumber].currentState = State.TERMINATED;
-                          _ResidentQueue[pcb.pidNumber].setPCBDisplay(_PCBdisplay);
+                          _ResidentQueue[pcb.pidNumber].setPCBDisplay(_PCBdisplay, pcb);
                           
                       }
                   }
