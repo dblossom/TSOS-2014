@@ -481,8 +481,6 @@ module TSOS {
                 _StdOut.putText("Loading, please wait...");
                 _StdOut.advanceLine();
                 
-                _MemManager.clearPartition(activePartition);
-                
                 _StdOut.putText("PID: " + PCB.pid);
                 var base:number = _MemManager.memoryRanges[activePartition].base;
                 var limit:number = _MemManager.memoryRanges[activePartition].limit;

@@ -53,7 +53,7 @@ var TSOS;
 
             // update the current PCB display <this is kinda a bug> but want to see it work
             // not a bug, we just need to come up with a scheme for keeping PID's better.
-            _ActiveProgram.setPCBDisplay(_PCBdisplay);
+            _ActiveProgram.setPCBDisplay(_PCBdisplay, _ActiveProgram);
         };
 
         /**

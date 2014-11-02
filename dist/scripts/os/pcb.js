@@ -38,12 +38,14 @@ var TSOS;
         * Method to initalize PCB display to all zeros
         * This ASSUMES PCB variables have been set!
         */
-        PCB.prototype.setPCBDisplay = function (tblElement) {
+        PCB.prototype.setPCBDisplay = function (tblElement, pcb) {
+            // So, I am passing in a PCB which in each call ends up being that PCB
+            // I should probably just call "this" on the methods below...
             // for some reason, this seems to work best when we first set to "null"
             var row = null;
 
             // get the "active" row, which will always be row 1, row 0 is reserved for header
-            row = tblElement.rows[_ActiveProgram.pidNumber + 1];
+            row = tblElement.rows[pcb.pidNumber + 1];
 
             // get the cells within row 1.
             var cellsInRow = null;
@@ -51,15 +53,15 @@ var TSOS;
 
             // set the cell with the new state information
             // the order matters here!
-            cellsInRow[0].innerHTML = _ActiveProgram.pidNumber.toString();
-            cellsInRow[1].innerHTML = _ActiveProgram.base.toString();
-            cellsInRow[2].innerHTML = _ActiveProgram.limit.toString();
-            cellsInRow[3].innerHTML = State[_ActiveProgram.currentState].toString();
-            cellsInRow[4].innerHTML = _ActiveProgram.progCount.toString();
-            cellsInRow[5].innerHTML = _ActiveProgram.ACC.toString();
-            cellsInRow[6].innerHTML = _ActiveProgram.X_reg.toString();
-            cellsInRow[7].innerHTML = _ActiveProgram.Y_reg.toString();
-            cellsInRow[8].innerHTML = _ActiveProgram.Z_flag.toString();
+            cellsInRow[0].innerHTML = pcb.pidNumber.toString();
+            cellsInRow[1].innerHTML = pcb.base.toString();
+            cellsInRow[2].innerHTML = pcb.limit.toString();
+            cellsInRow[3].innerHTML = State[pcb.currentState].toString();
+            cellsInRow[4].innerHTML = pcb.progCount.toString();
+            cellsInRow[5].innerHTML = pcb.ACC.toString();
+            cellsInRow[6].innerHTML = pcb.X_reg.toString();
+            cellsInRow[7].innerHTML = pcb.Y_reg.toString();
+            cellsInRow[8].innerHTML = pcb.Z_flag.toString();
         };
 
         /**

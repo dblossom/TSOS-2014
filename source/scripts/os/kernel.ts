@@ -264,7 +264,7 @@ module TSOS {
             
             // this will not work forever -- need a better way to keep track of PID's
             pcb.currentState = State.RUNNING;
-            pcb.setPCBDisplay(_PCBdisplay);
+            pcb.setPCBDisplay(_PCBdisplay, pcb);
 
         }
          
@@ -343,7 +343,7 @@ module TSOS {
              
              _ActiveProgram.currentState = State.WAITING;
              
-             _ActiveProgram.setPCBDisplay(_PCBdisplay);
+             _ActiveProgram.setPCBDisplay(_PCBdisplay, _ActiveProgram);
              
              _KernelReadyQueue.enqueue(_ActiveProgram);
              
@@ -359,7 +359,7 @@ module TSOS {
              
              _ActiveProgram.currentState = State.RUNNING;
              
-             _ActiveProgram.setPCBDisplay(_PCBdisplay);
+             _ActiveProgram.setPCBDisplay(_PCBdisplay, _ActiveProgram);
              
          }
          
@@ -372,7 +372,7 @@ module TSOS {
              // update the state of process to be terminated
              pcb.currentState = State.TERMINATED;
              // update the process display on the "GUI"
-             pcb.setPCBDisplay(_PCBdisplay);
+             pcb.setPCBDisplay(_PCBdisplay, pcb);
              // deallocate the memory for the next process
              _MemManager.deallocate(_ActiveProgram);
              // update the CPU displays

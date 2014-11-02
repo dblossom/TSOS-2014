@@ -257,7 +257,7 @@ var TSOS;
 
             // this will not work forever -- need a better way to keep track of PID's
             pcb.currentState = 1 /* RUNNING */;
-            pcb.setPCBDisplay(_PCBdisplay);
+            pcb.setPCBDisplay(_PCBdisplay, pcb);
         };
 
         /**
@@ -329,7 +329,7 @@ var TSOS;
             // in the case where there is one PCB - we must put on before taking off
             _ActiveProgram.currentState = 3 /* WAITING */;
 
-            _ActiveProgram.setPCBDisplay(_PCBdisplay);
+            _ActiveProgram.setPCBDisplay(_PCBdisplay, _ActiveProgram);
 
             _KernelReadyQueue.enqueue(_ActiveProgram);
 
@@ -345,7 +345,7 @@ var TSOS;
 
             _ActiveProgram.currentState = 1 /* RUNNING */;
 
-            _ActiveProgram.setPCBDisplay(_PCBdisplay);
+            _ActiveProgram.setPCBDisplay(_PCBdisplay, _ActiveProgram);
         };
 
         /**
@@ -359,7 +359,7 @@ var TSOS;
             pcb.currentState = 2 /* TERMINATED */;
 
             // update the process display on the "GUI"
-            pcb.setPCBDisplay(_PCBdisplay);
+            pcb.setPCBDisplay(_PCBdisplay, pcb);
 
             // deallocate the memory for the next process
             _MemManager.deallocate(_ActiveProgram);

@@ -72,6 +72,7 @@ module TSOS{
             for(var i:number = 0; i < this.memoryRanges.length; i++){
                 if(this.memoryRanges[i].inuse === false){
                     partition = i;
+                    this.clearPartition(i);
                     this.memoryRanges[i].inuse = true;
                     break;
                 }
@@ -111,6 +112,8 @@ module TSOS{
          * @params - the memory partition to clear
          */
          public clearPartition(partitionNumber:number){
+         
+             this.memoryRanges[partitionNumber].inuse = false;
              
              switch (partitionNumber){
                  
