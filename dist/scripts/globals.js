@@ -108,7 +108,7 @@ var _ResidentQueue = null;
 var _PCBdisplay = null;
 
 // scheduling stuff
-var _Quantum = 3;
+var _Quantum = 6;
 var _CPU_Schedule = null;
 
 // For testing...
