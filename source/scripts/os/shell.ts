@@ -534,17 +534,33 @@ module TSOS {
          * Command to put program on the Ready Queue
          */
         public shellRun(args){
-            //TODO: ERROR CHECKING!!!
-            // Are we not terminated? No, then set status to ready and put on ready queue.
-            if(_ResidentQueue[args[0]].currentState !== State.TERMINATED){
+        
+            // Because we are not using a "used queue" and keeping it on the resident queue
+            // we need to know if it is a usable...
+            var used:boolean = (_ResidentQueue[args[0]].currentState === State.TERMINATED);
+            
+            // If a program is in execution, we want to ensure we do not just start processing
+            // So, if there is not a program in execution AND we never used it before, just put
+            // the process to the back of the queue and update display - scheduler will take over!
+            if(_ActiveProgram !== null && !used){
+                // gives to scheduler
+                _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
+                // show us what is going on ... 
+                _ResidentQueue[args[0]].pcbNewRow(_PCBdisplay);
+                
+            // so if there is not an active process we only care if it was used...
+            }else if(!used){
                 //change state
                 _ResidentQueue[args[0]].currentState = State.READY;
                 // add to queue
                 _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
+                // diplay it
                 _ResidentQueue[args[0]].pcbNewRow(_PCBdisplay);
-                // pass an interrupt to kernel
+                // pass an interrupt to kernel saying, do some work you lazy bum!
                 _KernelInterruptQueue.enqueue(new Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
-            }else{ // whoops, bad PID
+                
+            // whoops, bad PID
+            }else{ 
                 _StdOut.putText("Usage: run <pid> active process ID.");
             }
         }
