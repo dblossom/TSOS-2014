@@ -240,7 +240,7 @@ var TSOS;
             _ActiveProgram = pcb;
 
             // print a trace
-            this.krnTrace("Executing PID: " + pcb.pidNumber);
+            TSOS.Control.hostLog("Executing PID: " + pcb.pidNumber, "OS");
 
             // pass the base to PC ...
             _CPU.PC = pcb.progCount;
@@ -257,7 +257,7 @@ var TSOS;
 
             // this will not work forever -- need a better way to keep track of PID's
             pcb.currentState = 1 /* RUNNING */;
-            pcb.setPCBDisplay(_PCBdisplay, pcb);
+            pcb.setPCBDisplay(_PCBdisplay);
         };
 
         /**
@@ -329,7 +329,7 @@ var TSOS;
             // in the case where there is one PCB - we must put on before taking off
             _ActiveProgram.currentState = 3 /* WAITING */;
 
-            _ActiveProgram.setPCBDisplay(_PCBdisplay, _ActiveProgram);
+            _ActiveProgram.setPCBDisplay(_PCBdisplay);
 
             _KernelReadyQueue.enqueue(_ActiveProgram);
 
@@ -345,7 +345,8 @@ var TSOS;
 
             _ActiveProgram.currentState = 1 /* RUNNING */;
 
-            _ActiveProgram.setPCBDisplay(_PCBdisplay, _ActiveProgram);
+            _ActiveProgram.setPCBDisplay(_PCBdisplay);
+            //   _CPU_Schedule.cpuCount = _Quantum;
         };
 
         /**
@@ -359,7 +360,7 @@ var TSOS;
             pcb.currentState = 2 /* TERMINATED */;
 
             // update the process display on the "GUI"
-            pcb.setPCBDisplay(_PCBdisplay, pcb);
+            pcb.setPCBDisplay(_PCBdisplay);
 
             // deallocate the memory for the next process
             _MemManager.deallocate(_ActiveProgram);
@@ -392,6 +393,7 @@ var TSOS;
                         _KernelReadyQueue.q.splice(i, 1);
                         _ResidentQueue[pcb.pidNumber].currentState = 2 /* TERMINATED */;
                         _ResidentQueue[pcb.pidNumber].setPCBDisplay(_PCBdisplay, pcb);
+                        _MemManager.deallocate(pcb);
                     }
                 }
                 _CPU.isExecuting = true; // back to work.

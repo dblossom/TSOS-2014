@@ -53,7 +53,7 @@ module TSOS{
          * Method to initalize PCB display to all zeros
          * This ASSUMES PCB variables have been set!
          */
-         public setPCBDisplay(tblElement: HTMLTableElement, pcb:PCB):void{
+         public setPCBDisplay(tblElement: HTMLTableElement):void{
          
              // So, I am passing in a PCB which in each call ends up being that PCB
              // I should probably just call "this" on the methods below...
@@ -61,7 +61,7 @@ module TSOS{
              // for some reason, this seems to work best when we first set to "null"
              var row = null;
              // get the "active" row, which will always be row 1, row 0 is reserved for header
-             row = tblElement.rows[pcb.pidNumber+1];
+             row = tblElement.rows[this.pidNumber+1];
              
              // get the cells within row 1.
              var cellsInRow = null;
@@ -69,15 +69,15 @@ module TSOS{
          
              // set the cell with the new state information
              // the order matters here!
-             cellsInRow[0].innerHTML = pcb.pidNumber.toString();
-             cellsInRow[1].innerHTML = pcb.base.toString();
-             cellsInRow[2].innerHTML = pcb.limit.toString();
-             cellsInRow[3].innerHTML = State[pcb.currentState].toString();
-             cellsInRow[4].innerHTML = pcb.progCount.toString();
-             cellsInRow[5].innerHTML = pcb.ACC.toString();
-             cellsInRow[6].innerHTML = pcb.X_reg.toString();
-             cellsInRow[7].innerHTML = pcb.Y_reg.toString();
-             cellsInRow[8].innerHTML = pcb.Z_flag.toString();
+             cellsInRow[0].innerHTML = this.pidNumber.toString();
+             cellsInRow[1].innerHTML = this.base.toString();
+             cellsInRow[2].innerHTML = this.limit.toString();
+             cellsInRow[3].innerHTML = State[this.currentState].toString();
+             cellsInRow[4].innerHTML = this.progCount.toString();
+             cellsInRow[5].innerHTML = this.ACC.toString();
+             cellsInRow[6].innerHTML = this.X_reg.toString();
+             cellsInRow[7].innerHTML = this.Y_reg.toString();
+             cellsInRow[8].innerHTML = this.Z_flag.toString();
          }
          
          /**

@@ -249,7 +249,7 @@ module TSOS {
             var pcb:PCB = params.dequeue();
             _ActiveProgram = pcb;
             // print a trace
-            this.krnTrace("Executing PID: " + pcb.pidNumber);
+            Control.hostLog("Executing PID: " + pcb.pidNumber, "OS");
             // pass the base to PC ...
             _CPU.PC = pcb.progCount;
             _CPU.Acc = pcb.ACC;
@@ -264,7 +264,7 @@ module TSOS {
             
             // this will not work forever -- need a better way to keep track of PID's
             pcb.currentState = State.RUNNING;
-            pcb.setPCBDisplay(_PCBdisplay, pcb);
+            pcb.setPCBDisplay(_PCBdisplay);
 
         }
          
@@ -339,11 +339,11 @@ module TSOS {
              // save current PCB state
              // put that PCB on the ready queue and update its state
              // grab the next PCB off the ready queue and update the CPU
-             // in the case where there is one PCB - we must put on before taking off
+             // in the case where there is one PCB - we must put on before taking off     
              
              _ActiveProgram.currentState = State.WAITING;
              
-             _ActiveProgram.setPCBDisplay(_PCBdisplay, _ActiveProgram);
+             _ActiveProgram.setPCBDisplay(_PCBdisplay);
              
              _KernelReadyQueue.enqueue(_ActiveProgram);
              
@@ -359,7 +359,9 @@ module TSOS {
              
              _ActiveProgram.currentState = State.RUNNING;
              
-             _ActiveProgram.setPCBDisplay(_PCBdisplay, _ActiveProgram);
+             _ActiveProgram.setPCBDisplay(_PCBdisplay);
+             
+          //   _CPU_Schedule.cpuCount = _Quantum;
              
          }
          
@@ -372,7 +374,7 @@ module TSOS {
              // update the state of process to be terminated
              pcb.currentState = State.TERMINATED;
              // update the process display on the "GUI"
-             pcb.setPCBDisplay(_PCBdisplay, pcb);
+             pcb.setPCBDisplay(_PCBdisplay);
              // deallocate the memory for the next process
              _MemManager.deallocate(_ActiveProgram);
              // update the CPU displays
@@ -406,6 +408,7 @@ module TSOS {
                           _KernelReadyQueue.q.splice(i,1);
                           _ResidentQueue[pcb.pidNumber].currentState = State.TERMINATED;
                           _ResidentQueue[pcb.pidNumber].setPCBDisplay(_PCBdisplay, pcb);
+                          _MemManager.deallocate(pcb);
                           
                       }
                   }

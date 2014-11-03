@@ -60,7 +60,8 @@ var TSOS;
             for (var i = 0; i < this.memoryRanges.length; i++) {
                 if (this.memoryRanges[i].inuse === false) {
                     partition = i;
-                    this.clearPartition(i);
+
+                    //       this.clearPartition(i);
                     this.memoryRanges[i].inuse = true;
                     break;
                 }
@@ -99,8 +100,6 @@ var TSOS;
         * @params - the memory partition to clear
         */
         MemoryManager.prototype.clearPartition = function (partitionNumber) {
-            this.memoryRanges[partitionNumber].inuse = false;
-
             switch (partitionNumber) {
                 case 0:
                     this.writeZeroToBlock(0, 255);

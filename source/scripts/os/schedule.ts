@@ -73,6 +73,9 @@ module TSOS{
             
                  // turn is over
                 if(this.cpuCount === 0){
+                
+                    Control.hostLog("Quantum Expired, prepare for context switch", "OS");
+                
                     // enqueue an interupt to change processes - handled by kernel
                     _KernelInterruptQueue.enqueue(new Interrupt(CON_SWITCH_IRQ, 0)); // not sure what I want to pass yet so just 0.
                     // get ready for the next guy .. or the same guy ..
@@ -84,9 +87,9 @@ module TSOS{
                     // make a call to the CPU CYCLE.
                     _CPU.cycle();
                 }
-            }else if(_KernelReadyQueue.getSize() > 0){
+            } //else if(_KernelReadyQueue.getSize() > 0){
                 // so I sort of do something at process end that might eliminate the need for this here.
-            }   
+             // }   
         }   
     }
 }
