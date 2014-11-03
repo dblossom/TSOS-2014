@@ -72,10 +72,10 @@ var TSOS;
             var row = null;
 
             // insert a row "on top" of the others
-            row = tblElement.insertRow(PCB.pid);
+            row = tblElement.insertRow(this.pidNumber + 1);
 
             //these have to be in the correct order!
-            row.insertCell(0).innerHTML = (PCB.pid - 1).toString();
+            row.insertCell(0).innerHTML = (this.pidNumber).toString();
             row.insertCell(1).innerHTML = this.base.toString();
             row.insertCell(2).innerHTML = this.limit.toString();
             row.insertCell(3).innerHTML = State[this.currentState].toString();

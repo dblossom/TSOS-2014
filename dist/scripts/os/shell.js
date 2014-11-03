@@ -448,7 +448,7 @@ var TSOS;
                 for (var i = 0; i < (textInput.length / 2); i++) {
                     _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)), _ResidentQueue[TSOS.PCB.pid - 1]);
                 }
-                _ResidentQueue[TSOS.PCB.pid - 1].pcbNewRow(_PCBdisplay);
+                //   _ResidentQueue[PCB.pid - 1].pcbNewRow(_PCBdisplay);
             } else {
                 // let the user know his/her program is shitty and does not work
                 _StdOut.putText("Invalid Program...please try again! (or not).");
@@ -492,8 +492,8 @@ var TSOS;
 
                 // add to queue
                 _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
+                _ResidentQueue[args[0]].pcbNewRow(_PCBdisplay);
 
-                //  _ResidentQueue[args[0]].pcbNewRow(_PCBdisplay);
                 // pass an interrupt to kernel
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             } else {
@@ -563,7 +563,7 @@ var TSOS;
                 for (var i = 0; i < _ResidentQueue.length; i++) {
                     if (_ResidentQueue[i].currentState === 0 /* NEW */) {
                         _KernelReadyQueue.enqueue(_ResidentQueue[i]);
-                        //    _ResidentQueue[i].pcbNewRow(_PCBdisplay);
+                        _ResidentQueue[i].pcbNewRow(_PCBdisplay);
                     }
                 }
 
