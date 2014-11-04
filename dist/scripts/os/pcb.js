@@ -39,13 +39,14 @@ var TSOS;
         * This ASSUMES PCB variables have been set!
         */
         PCB.prototype.setPCBDisplay = function (tblElement) {
-            // So, I am passing in a PCB which in each call ends up being that PCB
-            // I should probably just call "this" on the methods below...
+            // find the row number associated with this PCB
+            var rowNumber = this.findPCBRow(tblElement);
+
             // for some reason, this seems to work best when we first set to "null"
             var row = null;
 
             // get the "active" row, which will always be row 1, row 0 is reserved for header
-            row = tblElement.rows[this.pidNumber + 1];
+            row = tblElement.rows[rowNumber];
 
             // get the cells within row 1.
             var cellsInRow = null;
@@ -72,7 +73,7 @@ var TSOS;
             var row = null;
 
             // insert a row "on top" of the others
-            row = tblElement.insertRow(this.pidNumber + 1);
+            row = tblElement.insertRow(-1);
 
             //these have to be in the correct order!
             row.insertCell(0).innerHTML = (this.pidNumber).toString();
@@ -84,6 +85,26 @@ var TSOS;
             row.insertCell(6).innerHTML = this.X_reg.toString();
             row.insertCell(7).innerHTML = this.Y_reg.toString();
             row.insertCell(8).innerHTML = this.Z_flag.toString();
+        };
+
+        PCB.prototype.findPCBRow = function (tblElement) {
+            var returnRow;
+
+            for (var i = 1; i < tblElement.rows.length; i++) {
+                var row = null;
+                row = tblElement.rows[i];
+
+                var cellsInRow = null;
+                cellsInRow = row.cells;
+
+                if (this.pidNumber.toString() === cellsInRow[0].innerHTML) {
+                    returnRow = i;
+
+                    break;
+                }
+            }
+
+            return returnRow;
         };
         PCB.pid = 0;
         return PCB;
