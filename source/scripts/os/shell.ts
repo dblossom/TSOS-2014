@@ -471,15 +471,15 @@ module TSOS {
             // an even number or we could run into an error - just catch that now.
             if(textInput.length % 2 !== 0){
                 isValid = false;
-            }
-             
-            // Allocate a partition
-            var activePartition:number = _MemManager.allocate();      
+            }   
             
             if(isValid && (activePartition !== -1)){ 
             
                 _StdOut.putText("Loading, please wait...");
                 _StdOut.advanceLine();
+                 
+                // Allocate a partition
+                var activePartition:number = _MemManager.allocate();   
                 
                 _StdOut.putText("PID: " + PCB.pid);
                 var base:number = _MemManager.memoryRanges[activePartition].base;

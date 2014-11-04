@@ -429,12 +429,12 @@ var TSOS;
                 isValid = false;
             }
 
-            // Allocate a partition
-            var activePartition = _MemManager.allocate();
-
             if (isValid && (activePartition !== -1)) {
                 _StdOut.putText("Loading, please wait...");
                 _StdOut.advanceLine();
+
+                // Allocate a partition
+                var activePartition = _MemManager.allocate();
 
                 _StdOut.putText("PID: " + TSOS.PCB.pid);
                 var base = _MemManager.memoryRanges[activePartition].base;
