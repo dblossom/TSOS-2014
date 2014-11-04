@@ -68,6 +68,9 @@ module TSOS {
             
             // set a default for "status" (this a good place for this??)
             _OsShell.shellStatus("running...");
+            
+            // set mode bit to user mode
+            _Mode = 1;
 
             // Finally, initiate testing.
            if (_GLaDOS) {
@@ -245,6 +248,9 @@ module TSOS {
          */
         public krnProcess(params){
         
+            // we are about to create a process ... kernel mode
+            _Mode = 0;
+        
             // get the next Process
             var pcb:PCB = params.dequeue();
             _ActiveProgram = pcb;
@@ -265,7 +271,9 @@ module TSOS {
             // this will not work forever -- need a better way to keep track of PID's
             pcb.currentState = State.RUNNING;
             pcb.setPCBDisplay(_PCBdisplay);
-
+            
+            // process created, execute in user mode
+            _Mode = 1;
         }
          
        /**
@@ -273,6 +281,10 @@ module TSOS {
         * @params - params, passed by the interupt handler 
         */
         public krnSysCall(params){
+        
+            // we are about to make a system call kernel mode
+            _Mode = 0;
+        
             // X Reg is 1 so print the int in the Y register
             if(params === 1){ // x-reg contains a 1 print int stored in Y
                 _StdOut.putText(_CPU.Yreg.toString());
@@ -293,6 +305,8 @@ module TSOS {
                     charValue = parseInt(_MemManager.read(address+offset, _ActiveProgram), 16);
                 }
             }
+            // done, back to user mode
+            _Mode = 1;
         } 
         
         /**
@@ -300,6 +314,10 @@ module TSOS {
          * @params - reserved for future use
          */
          public krnIllegalMemAccess(params){
+         
+             // well kernel should throw BSOD right?
+             _Mode = 0;
+         
              // first let us clear memory
              _MemManager.clearAllMemory();
              // clear cpu
@@ -336,10 +354,8 @@ module TSOS {
           */
          public krnContextSwitch(){
              
-             // save current PCB state
-             // put that PCB on the ready queue and update its state
-             // grab the next PCB off the ready queue and update the CPU
-             // in the case where there is one PCB - we must put on before taking off     
+             // Change mode bit to kernel
+             _Mode = 0;
              
              _ActiveProgram.currentState = State.WAITING;
              
@@ -361,7 +377,8 @@ module TSOS {
              
              _ActiveProgram.setPCBDisplay(_PCBdisplay);
              
-          //   _CPU_Schedule.cpuCount = _Quantum;
+             // done with kernel mode, put it back
+             _Mode = 1;
              
          }
          
@@ -369,6 +386,10 @@ module TSOS {
           * Activites needed to be completed when a process ends
           */
          public krnProcessEnd(pcb:PCB){
+         
+             // will be dealing with memory and stuff
+             _Mode = 0;
+         
              // reset the CPU
              _CPU.init();
              // update the state of process to be terminated
@@ -384,6 +405,9 @@ module TSOS {
              
              // null the active process ...
              _ActiveProgram = null;
+             
+             // back to user mode
+             _Mode = 1;
              
              // finally if there is another process on the queue, DO IT!
              if(_KernelReadyQueue.getSize() > 0){

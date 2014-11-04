@@ -67,6 +67,9 @@ var TSOS;
             // set a default for "status" (this a good place for this??)
             _OsShell.shellStatus("running...");
 
+            // set mode bit to user mode
+            _Mode = 1;
+
             // Finally, initiate testing.
             if (_GLaDOS) {
                 _GLaDOS.afterStartup();
@@ -235,6 +238,9 @@ var TSOS;
         * Execute a process
         */
         Kernel.prototype.krnProcess = function (params) {
+            // we are about to create a process ... kernel mode
+            _Mode = 0;
+
             // get the next Process
             var pcb = params.dequeue();
             _ActiveProgram = pcb;
@@ -258,6 +264,9 @@ var TSOS;
             // this will not work forever -- need a better way to keep track of PID's
             pcb.currentState = 1 /* RUNNING */;
             pcb.setPCBDisplay(_PCBdisplay);
+
+            // process created, execute in user mode
+            _Mode = 1;
         };
 
         /**
@@ -265,6 +274,9 @@ var TSOS;
         * @params - params, passed by the interupt handler
         */
         Kernel.prototype.krnSysCall = function (params) {
+            // we are about to make a system call kernel mode
+            _Mode = 0;
+
             // X Reg is 1 so print the int in the Y register
             if (params === 1) {
                 _StdOut.putText(_CPU.Yreg.toString());
@@ -280,6 +292,9 @@ var TSOS;
                     charValue = parseInt(_MemManager.read(address + offset, _ActiveProgram), 16);
                 }
             }
+
+            // done, back to user mode
+            _Mode = 1;
         };
 
         /**
@@ -287,6 +302,9 @@ var TSOS;
         * @params - reserved for future use
         */
         Kernel.prototype.krnIllegalMemAccess = function (params) {
+            // well kernel should throw BSOD right?
+            _Mode = 0;
+
             // first let us clear memory
             _MemManager.clearAllMemory();
 
@@ -323,10 +341,9 @@ var TSOS;
         * Time to do a context switch
         */
         Kernel.prototype.krnContextSwitch = function () {
-            // save current PCB state
-            // put that PCB on the ready queue and update its state
-            // grab the next PCB off the ready queue and update the CPU
-            // in the case where there is one PCB - we must put on before taking off
+            // Change mode bit to kernel
+            _Mode = 0;
+
             _ActiveProgram.currentState = 3 /* WAITING */;
 
             _ActiveProgram.setPCBDisplay(_PCBdisplay);
@@ -346,13 +363,18 @@ var TSOS;
             _ActiveProgram.currentState = 1 /* RUNNING */;
 
             _ActiveProgram.setPCBDisplay(_PCBdisplay);
-            //   _CPU_Schedule.cpuCount = _Quantum;
+
+            // done with kernel mode, put it back
+            _Mode = 1;
         };
 
         /**
         * Activites needed to be completed when a process ends
         */
         Kernel.prototype.krnProcessEnd = function (pcb) {
+            // will be dealing with memory and stuff
+            _Mode = 0;
+
             // reset the CPU
             _CPU.init();
 
@@ -373,6 +395,9 @@ var TSOS;
 
             // null the active process ...
             _ActiveProgram = null;
+
+            // back to user mode
+            _Mode = 1;
 
             // finally if there is another process on the queue, DO IT!
             if (_KernelReadyQueue.getSize() > 0) {

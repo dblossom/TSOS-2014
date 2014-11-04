@@ -15,8 +15,8 @@ module TSOS{
      * therefore commented out.
      */
     export enum ScheduleRoutine{ 
-        RR //, // round robin = 0
-      //  FCFS, // first come first served = 1
+        RR, //, // round robin = 0
+        FCFS //, // first come first served = 1
       //  PRIORITY // priority = 2
     }
     
@@ -59,6 +59,10 @@ module TSOS{
                     this.roundRobin(_Quantum);
                     break;
                 
+                // First come first serve
+                case ScheduleRoutine.FCFS:
+                    this.firstCome();
+                    break;
                 
                 // how the freak did we even get here?
                 default:
@@ -66,7 +70,9 @@ module TSOS{
             }
         }
         
-        
+        /**
+         * Round Robing scheduling routine
+         */
         public roundRobin(quantum:number){
         
             if(_CPU.isExecuting){
@@ -75,11 +81,11 @@ module TSOS{
                 if(this.cpuCount === 0){
                 
                     Control.hostLog("Quantum Expired, prepare for context switch", "OS");
-                
                     // enqueue an interupt to change processes - handled by kernel
                     _KernelInterruptQueue.enqueue(new Interrupt(CON_SWITCH_IRQ, 0)); // not sure what I want to pass yet so just 0.
                     // get ready for the next guy .. or the same guy ..
-                    this.cpuCount = _Quantum;
+                    this.cpuCount = quantum;
+
                 }else{// turn is not over, keep swinging (that sounds dirty...)
                 
                     // decrement the rr counter by one
@@ -87,9 +93,22 @@ module TSOS{
                     // make a call to the CPU CYCLE.
                     _CPU.cycle();
                 }
-            } //else if(_KernelReadyQueue.getSize() > 0){
-                // so I sort of do something at process end that might eliminate the need for this here.
-             // }   
+            } 
+        }
+        
+        /**
+         * First come first serve scheduling routine
+         */
+        public firstCome(){
+            
+            // if the quantum count is zero, give me 1 more go!
+            if(this.cpuCount === 0){
+                this.cpuCount++;
+            }
+            
+            // pass a high value into round robin routine to make it
+            // seem like FCFS
+            this.roundRobin(9999);
         }   
     }
 }

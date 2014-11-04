@@ -12,6 +12,7 @@ var TSOS;
     */
     (function (ScheduleRoutine) {
         ScheduleRoutine[ScheduleRoutine["RR"] = 0] = "RR";
+        ScheduleRoutine[ScheduleRoutine["FCFS"] = 1] = "FCFS";
     })(TSOS.ScheduleRoutine || (TSOS.ScheduleRoutine = {}));
     var ScheduleRoutine = TSOS.ScheduleRoutine;
 
@@ -42,10 +43,17 @@ var TSOS;
                     this.roundRobin(_Quantum);
                     break;
 
+                case 1 /* FCFS */:
+                    this.firstCome();
+                    break;
+
                 default:
             }
         };
 
+        /**
+        * Round Robing scheduling routine
+        */
         Schedule.prototype.roundRobin = function (quantum) {
             if (_CPU.isExecuting) {
                 // turn is over
@@ -56,7 +64,7 @@ var TSOS;
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CON_SWITCH_IRQ, 0)); // not sure what I want to pass yet so just 0.
 
                     // get ready for the next guy .. or the same guy ..
-                    this.cpuCount = _Quantum;
+                    this.cpuCount = quantum;
                 } else {
                     // decrement the rr counter by one
                     this.cpuCount--;
@@ -65,8 +73,20 @@ var TSOS;
                     _CPU.cycle();
                 }
             }
-            // so I sort of do something at process end that might eliminate the need for this here.
-            // }
+        };
+
+        /**
+        * First come first serve scheduling routine
+        */
+        Schedule.prototype.firstCome = function () {
+            // if the quantum count is zero, give me 1 more go!
+            if (this.cpuCount === 0) {
+                this.cpuCount++;
+            }
+
+            // pass a high value into round robin routine to make it
+            // seem like FCFS
+            this.roundRobin(9999);
         };
         return Schedule;
     })();
