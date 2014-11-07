@@ -26,6 +26,8 @@ var TSOS;
         * @ params - byte: what to write
         */
         MemoryManager.prototype.write = function (address, byte, pcb) {
+            // so we want to write within our bounds
+            // otherwise throw an interrupt
             if (address + pcb.base > pcb.limit || address + pcb.base < pcb.base) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
             } else {
@@ -43,6 +45,7 @@ var TSOS;
         * @return string - a string representation of what is in memory
         */
         MemoryManager.prototype.read = function (address, pcb) {
+            // just like write, we want to ensure we are only reading memory we have access too
             if (address + pcb.base > pcb.limit || address + pcb.base < pcb.base) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(ILLEGAL_MEM_ACCESS, 0));
             } else {
@@ -56,15 +59,26 @@ var TSOS;
         *           (-)1 indicates no mem to allocate
         */
         MemoryManager.prototype.allocate = function () {
+            // assume no free space
             var partition = -1;
+
             for (var i = 0; i < this.memoryRanges.length; i++) {
+                // if inuse is false, we can use it
                 if (this.memoryRanges[i].inuse === false) {
+                    // what partition are we in?
                     partition = i;
+
+                    // clearn the memory ... do we clear in load too ? whatever
                     this.clearPartition(i);
+
+                    // do not let anyone else use this until we are done
                     this.memoryRanges[i].inuse = true;
+
                     break;
                 }
             }
+
+            // FINALLY, where is that free space ... or -1 if none.
             return partition;
         };
 
@@ -72,8 +86,12 @@ var TSOS;
         * Deallocate memory for a given PCB
         */
         MemoryManager.prototype.deallocate = function (pcb) {
+            // what was the base of the PCB
             var base = pcb.base;
+
             for (var i = 0; i < this.memoryRanges.length; i++) {
+                // okay, found it - now set it for someone else to use...
+                // NOT clearing memory here so we can see it on the display
                 if (this.memoryRanges[i].base === base) {
                     this.memoryRanges[i].inuse = false;
                 }
@@ -99,6 +117,7 @@ var TSOS;
         * @params - the memory partition to clear
         */
         MemoryManager.prototype.clearPartition = function (partitionNumber) {
+            // so set the range to no longer be in use so another process can have it
             this.memoryRanges[partitionNumber].inuse = false;
 
             switch (partitionNumber) {
@@ -119,20 +138,24 @@ var TSOS;
         * Retuns if there is available memory
         */
         MemoryManager.prototype.memoryAvailable = function () {
+            // Assume no free memory
             var returnBool = false;
 
             for (var i = 0; i < this.memoryRanges.length; i++) {
+                // if we find one, set our return boolean to true and bust outta this loop
                 if (this.memoryRanges[i].inuse === false) {
                     returnBool = true;
                     break;
                 }
             }
 
+            // finally, return what happened
             return returnBool;
         };
 
         /**
         * This will write zeros to whichever block
+        * TODO: consider making this public
         */
         MemoryManager.prototype.writeZeroToBlock = function (start, end) {
             for (; start < end + 1; start++) {
@@ -144,7 +167,7 @@ var TSOS;
         /**
         * This updates the memory after it has been loaded
         * If  you have seen previous commits, all issues have been resovlved
-        * @params -- both are meaning less right now.
+        * @params address to updated, data to put there
         */
         MemoryManager.prototype.updateMemoryCell = function (address, data) {
             // using the address, find the row and the cell that needs updatimg

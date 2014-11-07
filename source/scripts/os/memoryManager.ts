@@ -35,6 +35,8 @@ module TSOS{
          */
         public write(address:number, byte:string, pcb:PCB):void{
 
+            // so we want to write within our bounds
+            // otherwise throw an interrupt
             if(address + pcb.base > pcb.limit ||
                address + pcb.base < pcb.base) {
                 _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
@@ -54,6 +56,7 @@ module TSOS{
          */
         public read(address:number, pcb:PCB):string{
         
+            // just like write, we want to ensure we are only reading memory we have access too
             if(address + pcb.base > pcb.limit ||
                address + pcb.base < pcb.base){
                 _KernelInterruptQueue.enqueue(new Interrupt(ILLEGAL_MEM_ACCESS, 0));
@@ -68,15 +71,23 @@ module TSOS{
          *           (-)1 indicates no mem to allocate
          */
         public allocate():number{
+            // assume no free space
             var partition: number = -1;
+            // loop through the list of ranges trying to find an open space
             for(var i:number = 0; i < this.memoryRanges.length; i++){
+                // if inuse is false, we can use it
                 if(this.memoryRanges[i].inuse === false){
+                    // what partition are we in?
                     partition = i;
+                    // clearn the memory ... do we clear in load too ? whatever
                     this.clearPartition(i);
+                    // do not let anyone else use this until we are done
                     this.memoryRanges[i].inuse = true;
+                    // leave the loop, got what we came for
                     break;
                 }
             }
+            // FINALLY, where is that free space ... or -1 if none.
             return partition;
         }
         
@@ -85,8 +96,12 @@ module TSOS{
          */
         public deallocate(pcb: PCB){
             
+            // what was the base of the PCB
             var base:number = pcb.base;
+            // given that base, find the object in our memory range array
             for(var i:number = 0; i < this.memoryRanges.length; i++){
+                // okay, found it - now set it for someone else to use...
+                // NOT clearing memory here so we can see it on the display
                 if(this.memoryRanges[i].base === base){
                     this.memoryRanges[i].inuse = false;
                 }
@@ -100,6 +115,7 @@ module TSOS{
          */
          public clearAllMemory(){
              
+             // for each block of memory, clear it ...
              for(var i:number = 0; i < MAX_MEM_LOCATIONS; i++){
                  this.clearPartition(i);
              }
@@ -113,8 +129,10 @@ module TSOS{
          */
          public clearPartition(partitionNumber:number){
          
+             // so set the range to no longer be in use so another process can have it
              this.memoryRanges[partitionNumber].inuse = false;
              
+             // given a partition number (0, 1 or 2) clear that block
              switch (partitionNumber){
                  
                  case 0: 
@@ -127,7 +145,7 @@ module TSOS{
                      this.writeZeroToBlock(512, 767);
                      break;
                  default:
-                     // TODO:
+                     // TODO: invalid partition error -- maybe a print to screen or IRQ ?
              }
          }
          
@@ -135,23 +153,27 @@ module TSOS{
          * Retuns if there is available memory
          */
          public memoryAvailable():boolean{
+             // Assume no free memory
              var returnBool: boolean = false;
              
+             // similar to allocate, loop our ranges looking for a false inuse boolean
              for(var i:number = 0; i < this.memoryRanges.length; i++){
+                 // if we find one, set our return boolean to true and bust outta this loop
                  if(this.memoryRanges[i].inuse === false){
                      returnBool = true;
                      break;
                  }
              }
-             
+             // finally, return what happened
              return returnBool;
-             
          }
          
          /**
           * This will write zeros to whichever block
+          * TODO: consider making this public
           */
          private writeZeroToBlock(start:number, end:number){
+             // I mean given a start and end, it will put 00 in that block of memory locations
              for(; start < end+1; start++){
                  this.memoryModule.write(start, "00");
                  this.updateMemoryCell(start, "00");
@@ -161,7 +183,7 @@ module TSOS{
         /**
          * This updates the memory after it has been loaded
          * If  you have seen previous commits, all issues have been resovlved
-         * @params -- both are meaning less right now.
+         * @params address to updated, data to put there
          */
         public updateMemoryCell(address:number, data:string):void{
         
@@ -228,6 +250,8 @@ module TSOS{
          */
         private initMemoryRanges(memoryRanges:Array<MemoryRange>){
             
+            // for however many blocks of memory we want, push a range ...
+            // we could in theory have 4, 5, 6, whatever blocks of memory.
             for(var i:number = 0; i < MAX_ADDRESS_SPACE; i += MAX_MEM_SPACE){
                 
                 this.memoryRanges.push(new MemoryRange(false, i, (i + (MAX_MEM_SPACE - 1))));
