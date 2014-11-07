@@ -585,14 +585,18 @@ var TSOS;
         * Kill an active process (do we only kill "ready_queue" processes??
         */
         Shell.prototype.shellKill = function (args) {
-            _CPU.isExecuting = false;
+            if (args[0] < TSOS.PCB.pid) {
+                if (_ResidentQueue[args[0]].currentState === 2 /* TERMINATED */) {
+                    _StdOut.putText("Process ID: " + args[0] + " is no longer running.");
+                    _StdOut.advanceLine();
+                } else {
+                    _CPU.isExecuting = false;
 
-            // now pass the PCB to kill off to the interrupt queue...
-            // TODO: check now or later or ever if the pid:
-            //       1) EVER existed
-            //       2) Has been terminated previous...
-            //       3) something else ?
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PCB_KILL_IRQ, _ResidentQueue[args]));
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PCB_KILL_IRQ, _ResidentQueue[args]));
+                }
+            } else {
+                _StdOut.putText("Usage: kill <int> must be an active process, or at least on that existed at some point!");
+            }
         };
 
         /**
