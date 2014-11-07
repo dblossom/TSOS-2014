@@ -103,9 +103,9 @@ var TSOS;
                 var interrupt = _KernelInterruptQueue.dequeue();
 
                 // no scheduler yet - but for fun let us just put the pcb state in "waiting"
-                if ((_ResidentQueue.length > 0) && (_ResidentQueue[TSOS.PCB.pid - 1].currentState === 1 /* RUNNING */)) {
-                    _ResidentQueue[TSOS.PCB.pid - 1].currentState = 3 /* WAITING */;
-                    _ResidentQueue[TSOS.PCB.pid - 1].setPCBDisplay(_PCBdisplay);
+                if ((_ActiveProgram !== null)) {
+                    _ActiveProgram.currentState = 3 /* WAITING */;
+                    _ActiveProgram.setPCBDisplay(_PCBdisplay);
                 }
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) {
@@ -261,7 +261,6 @@ var TSOS;
             // update display
             _CPU.initCPUDisplay();
 
-            // this will not work forever -- need a better way to keep track of PID's
             pcb.currentState = 1 /* RUNNING */;
             pcb.setPCBDisplay(_PCBdisplay);
 
@@ -344,7 +343,7 @@ var TSOS;
             // Change mode bit to kernel
             _Mode = 0;
 
-            _ActiveProgram.currentState = 3 /* WAITING */;
+            _ActiveProgram.currentState = 4 /* READY */;
 
             _ActiveProgram.setPCBDisplay(_PCBdisplay);
 

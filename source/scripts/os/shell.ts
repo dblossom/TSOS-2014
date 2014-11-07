@@ -257,7 +257,6 @@ module TSOS {
             }
             return retVal;
         }
-
         //
         // Shell Command Functions.  Again, not part of Shell() class per se', just called from there.
         //
@@ -440,48 +439,22 @@ module TSOS {
          */
         public shellLoad(args){
         
-            // SO: something is happening where I cannot create a function to separate
-            //     the validate function... IDK. I debug and see the function, BUT it throws
-            //     a type error "not a function" so ... maybe it is eclipse, doubt it...idk
-            //     for now, this crap stays.
-            var isValid:boolean = true;
+            var isValid:boolean = new Shell().validateProgram(_ProgramTextArea.value.trim());
+                
+            if(isValid && _MemManager.memoryAvailable()){
             
-            // first we need to trim <-- actually probably not
-            var textInput:string = _ProgramTextArea.value.trim();
-            // remove all whitespace?
-            // replace(" ", "") only removes first
-            // The plan here is simple.. We want A 9 00, A9 00 to be treated as the same
-            // SO - we remove ALL spaces, and process every "2 nibbles"
-            textInput = textInput.replace(/ /g,"");
-        
-            if(textInput === ""){
-                isValid = false;
-            }
+                var textInput:string = _ProgramTextArea.value.trim();
+                
+                //TODO: return the fixed string when validating program...
+                //      make empty string or maybe return an array? IDK yet.
+                textInput = textInput.replace(/ /g,"");
             
-            // loop over the entire input grabbing every 2 chars and checking them.
-            var pointer: number = 0;
-            while(pointer < textInput.length && isValid == true){
-            
-                if(!textInput.charAt(pointer++).match(/[A-F0-9]/i)){
-                    isValid = false;
-                }
-            }
-            
-            // since we remove all spaces and we want to load byte size chunks we need to ensure
-            // an even number or we could run into an error - just catch that now.
-            if(textInput.length % 2 !== 0){
-                isValid = false;
-            }   
-            
-            if(isValid && (activePartition !== -1)){ 
+                var activePartition:number = _MemManager.allocate();
             
                 _StdOut.putText("Loading, please wait...");
-                _StdOut.advanceLine();
-                 
-                // Allocate a partition
-                var activePartition:number = _MemManager.allocate();   
-                
+                _StdOut.advanceLine(); 
                 _StdOut.putText("PID: " + PCB.pid);
+                
                 var base:number = _MemManager.memoryRanges[activePartition].base;
                 var limit:number = _MemManager.memoryRanges[activePartition].limit;
                 _ResidentQueue[PCB.pid] = new PCB(base, limit);
@@ -493,12 +466,11 @@ module TSOS {
                 for(var i:number = 0; i < (textInput.length / 2); i++){
                     _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)),_ResidentQueue[PCB.pid-1] );
                 }
-             //   _ResidentQueue[PCB.pid - 1].pcbNewRow(_PCBdisplay);
 
             }else{
                // let the user know his/her program is shitty and does not work
                _StdOut.putText("Invalid Program...please try again! (or not).");
-               if(activePartition === -1){
+               if(!_MemManager.memoryAvailable()){
                    _KernelInterruptQueue.enqueue(new Interrupt(OUT_OF_MEM_IRQ, _ProgramTextArea.value));
                }
             }
@@ -664,10 +636,7 @@ module TSOS {
          */
         public shellKill(args){
         
-            // first and foremost give me a second here ... 
-          //  if(_ActiveProgram.pidNumber === args){
-                _CPU.isExecuting = false;
-          //  }
+            _CPU.isExecuting = false;
             // now pass the PCB to kill off to the interrupt queue...
             // TODO: check now or later or ever if the pid:
             //       1) EVER existed
@@ -675,5 +644,51 @@ module TSOS {
             //       3) something else ?
             _KernelInterruptQueue.enqueue(new Interrupt(PCB_KILL_IRQ, _ResidentQueue[args]))
         }
+        
+                
+        /**
+         * Check if program is valid
+         */
+        public validateProgram(anyString:string){
+            
+            // SO: something is happening where I cannot create a function to separate
+            //     the validate function... IDK. I debug and see the function, BUT it throws
+            //     a type error "not a function" so ... maybe it is eclipse, doubt it...idk
+            //     for now, this crap stays.
+            var isValid:boolean = true;
+            
+            // first we need to trim <-- actually probably not
+            var textInput:string = anyString; 
+            // remove all whitespace?
+            // replace(" ", "") only removes first
+            // The plan here is simple.. We want A 9 00, A9 00 to be treated as the same
+            // SO - we remove ALL spaces, and process every "2 nibbles"
+            textInput = textInput.replace(/ /g,"");
+        
+            if(textInput === ""){
+                isValid = false;
+            }
+            
+            // loop over the entire input grabbing every 2 chars and checking them.
+            var pointer: number = 0;
+            while(pointer < textInput.length && isValid == true){
+            
+                if(!textInput.charAt(pointer++).match(/[A-F0-9]/i)){
+                    isValid = false;
+                }
+            }
+            
+            // since we remove all spaces and we want to load byte size chunks we need to ensure
+            // an even number or we could run into an error - just catch that now.
+            if(textInput.length % 2 !== 0){
+                isValid = false;
+            }       
+            return isValid;
+        }
+        
+        public loadMemory(textInput:string){
+        
+        }
+        
     }
 }

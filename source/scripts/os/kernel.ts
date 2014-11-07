@@ -105,9 +105,9 @@ module TSOS {
                 var interrupt = _KernelInterruptQueue.dequeue();
                 
                 // no scheduler yet - but for fun let us just put the pcb state in "waiting"
-                if((_ResidentQueue.length > 0) && (_ResidentQueue[PCB.pid - 1].currentState === State.RUNNING)){
-                    _ResidentQueue[PCB.pid - 1].currentState = State.WAITING;
-                    _ResidentQueue[PCB.pid - 1].setPCBDisplay(_PCBdisplay); 
+                if((_ActiveProgram !== null)){
+                    _ActiveProgram.currentState = State.WAITING;
+                    _ActiveProgram.setPCBDisplay(_PCBdisplay); 
                 }
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
@@ -268,7 +268,6 @@ module TSOS {
             // update display
             _CPU.initCPUDisplay();
             
-            // this will not work forever -- need a better way to keep track of PID's
             pcb.currentState = State.RUNNING;
             pcb.setPCBDisplay(_PCBdisplay);
             
@@ -357,7 +356,7 @@ module TSOS {
              // Change mode bit to kernel
              _Mode = 0;
              
-             _ActiveProgram.currentState = State.WAITING;
+             _ActiveProgram.currentState = State.READY;
              
              _ActiveProgram.setPCBDisplay(_PCBdisplay);
              

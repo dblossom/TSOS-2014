@@ -396,47 +396,21 @@ var TSOS;
         *       Too late tonight to break this.
         */
         Shell.prototype.shellLoad = function (args) {
-            // SO: something is happening where I cannot create a function to separate
-            //     the validate function... IDK. I debug and see the function, BUT it throws
-            //     a type error "not a function" so ... maybe it is eclipse, doubt it...idk
-            //     for now, this crap stays.
-            var isValid = true;
+            var isValid = new Shell().validateProgram(_ProgramTextArea.value.trim());
 
-            // first we need to trim <-- actually probably not
-            var textInput = _ProgramTextArea.value.trim();
+            if (isValid && _MemManager.memoryAvailable()) {
+                var textInput = _ProgramTextArea.value.trim();
 
-            // remove all whitespace?
-            // replace(" ", "") only removes first
-            // The plan here is simple.. We want A 9 00, A9 00 to be treated as the same
-            // SO - we remove ALL spaces, and process every "2 nibbles"
-            textInput = textInput.replace(/ /g, "");
+                //TODO: return the fixed string when validating program...
+                //      make empty string or maybe return an array? IDK yet.
+                textInput = textInput.replace(/ /g, "");
 
-            if (textInput === "") {
-                isValid = false;
-            }
-
-            // loop over the entire input grabbing every 2 chars and checking them.
-            var pointer = 0;
-            while (pointer < textInput.length && isValid == true) {
-                if (!textInput.charAt(pointer++).match(/[A-F0-9]/i)) {
-                    isValid = false;
-                }
-            }
-
-            // since we remove all spaces and we want to load byte size chunks we need to ensure
-            // an even number or we could run into an error - just catch that now.
-            if (textInput.length % 2 !== 0) {
-                isValid = false;
-            }
-
-            if (isValid && (activePartition !== -1)) {
-                _StdOut.putText("Loading, please wait...");
-                _StdOut.advanceLine();
-
-                // Allocate a partition
                 var activePartition = _MemManager.allocate();
 
+                _StdOut.putText("Loading, please wait...");
+                _StdOut.advanceLine();
                 _StdOut.putText("PID: " + TSOS.PCB.pid);
+
                 var base = _MemManager.memoryRanges[activePartition].base;
                 var limit = _MemManager.memoryRanges[activePartition].limit;
                 _ResidentQueue[TSOS.PCB.pid] = new TSOS.PCB(base, limit);
@@ -448,11 +422,10 @@ var TSOS;
                 for (var i = 0; i < (textInput.length / 2); i++) {
                     _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)), _ResidentQueue[TSOS.PCB.pid - 1]);
                 }
-                //   _ResidentQueue[PCB.pid - 1].pcbNewRow(_PCBdisplay);
             } else {
                 // let the user know his/her program is shitty and does not work
                 _StdOut.putText("Invalid Program...please try again! (or not).");
-                if (activePartition === -1) {
+                if (!_MemManager.memoryAvailable()) {
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(OUT_OF_MEM_IRQ, _ProgramTextArea.value));
                 }
             }
@@ -612,17 +585,56 @@ var TSOS;
         * Kill an active process (do we only kill "ready_queue" processes??
         */
         Shell.prototype.shellKill = function (args) {
-            // first and foremost give me a second here ...
-            //  if(_ActiveProgram.pidNumber === args){
             _CPU.isExecuting = false;
 
-            //  }
             // now pass the PCB to kill off to the interrupt queue...
             // TODO: check now or later or ever if the pid:
             //       1) EVER existed
             //       2) Has been terminated previous...
             //       3) something else ?
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PCB_KILL_IRQ, _ResidentQueue[args]));
+        };
+
+        /**
+        * Check if program is valid
+        */
+        Shell.prototype.validateProgram = function (anyString) {
+            // SO: something is happening where I cannot create a function to separate
+            //     the validate function... IDK. I debug and see the function, BUT it throws
+            //     a type error "not a function" so ... maybe it is eclipse, doubt it...idk
+            //     for now, this crap stays.
+            var isValid = true;
+
+            // first we need to trim <-- actually probably not
+            var textInput = anyString;
+
+            // remove all whitespace?
+            // replace(" ", "") only removes first
+            // The plan here is simple.. We want A 9 00, A9 00 to be treated as the same
+            // SO - we remove ALL spaces, and process every "2 nibbles"
+            textInput = textInput.replace(/ /g, "");
+
+            if (textInput === "") {
+                isValid = false;
+            }
+
+            // loop over the entire input grabbing every 2 chars and checking them.
+            var pointer = 0;
+            while (pointer < textInput.length && isValid == true) {
+                if (!textInput.charAt(pointer++).match(/[A-F0-9]/i)) {
+                    isValid = false;
+                }
+            }
+
+            // since we remove all spaces and we want to load byte size chunks we need to ensure
+            // an even number or we could run into an error - just catch that now.
+            if (textInput.length % 2 !== 0) {
+                isValid = false;
+            }
+            return isValid;
+        };
+
+        Shell.prototype.loadMemory = function (textInput) {
         };
         return Shell;
     })();

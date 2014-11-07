@@ -132,8 +132,25 @@ module TSOS{
          }
          
         /**
-         * This will write zeros to whichever block
+         * Retuns if there is available memory
          */
+         public memoryAvailable():boolean{
+             var returnBool: boolean = false;
+             
+             for(var i:number = 0; i < this.memoryRanges.length; i++){
+                 if(this.memoryRanges[i].inuse === false){
+                     returnBool = true;
+                     break;
+                 }
+             }
+             
+             return returnBool;
+             
+         }
+         
+         /**
+          * This will write zeros to whichever block
+          */
          private writeZeroToBlock(start:number, end:number){
              for(; start < end+1; start++){
                  this.memoryModule.write(start, "00");

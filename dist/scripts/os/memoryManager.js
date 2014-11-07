@@ -116,6 +116,22 @@ var TSOS;
         };
 
         /**
+        * Retuns if there is available memory
+        */
+        MemoryManager.prototype.memoryAvailable = function () {
+            var returnBool = false;
+
+            for (var i = 0; i < this.memoryRanges.length; i++) {
+                if (this.memoryRanges[i].inuse === false) {
+                    returnBool = true;
+                    break;
+                }
+            }
+
+            return returnBool;
+        };
+
+        /**
         * This will write zeros to whichever block
         */
         MemoryManager.prototype.writeZeroToBlock = function (start, end) {
