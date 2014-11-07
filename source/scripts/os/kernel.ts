@@ -51,7 +51,6 @@ module TSOS {
             _MemManager.initMemoryDisplay(_MemoryDisplay);
             // initalize a list of programs -- err processes really
             // I know this is not a Queue -- but an array .. or list. Sorry.
-            // renaming it to follow what it really is in real life...
             _ResidentQueue = new Array<PCB>();
             
             // set the default scheduler (round robin)
@@ -104,7 +103,7 @@ module TSOS {
                 // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
                 
-                // no scheduler yet - but for fun let us just put the pcb state in "waiting"
+                // for fun let us just put the pcb state in "waiting"
                 if((_ActiveProgram !== null)){
                     _ActiveProgram.currentState = State.WAITING;
                     _ActiveProgram.setPCBDisplay(_PCBdisplay); 
@@ -150,43 +149,40 @@ module TSOS {
                     _krnKeyboardDriver.isr(params);   // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
-                case PCB_END_IRQ:
+                case PCB_END_IRQ: // called when a process is ending normally
                     this.krnProcessEnd(_ActiveProgram);
-                    break;
-                case SYS_CALL_IRQ:
+                    break; 
+                case SYS_CALL_IRQ:  // called for a system call (IE FF)
                     this.krnSysCall(params);
                     _StdOut.advanceLine(); // advance a line
                     _OsShell.putPrompt(); // put the active prompt back
                     break;
-                case ILLEGAL_MEM_ACCESS:
+                case ILLEGAL_MEM_ACCESS: // called if there is a memory access violation
                     this.krnIllegalMemAccess(params);
                     break;
-                case ILLEGAL_OPCODE_IRQ:
+                case ILLEGAL_OPCODE_IRQ: // called if a bad opcode is passed to CPU
                     this.krnIllegalOpCode(params);
                     break;
-                case STEP_CPU_IRQ:
+                case STEP_CPU_IRQ: // called when we want to "step" through the CPU cycles
                     _CPU.cycle(); // take 1 cpu "step"
                     break;
-                case EXEC_PROG_IRQ:
+                case EXEC_PROG_IRQ: // we want to execute a program
                     // someone typed run, give it to the kernel for execution
                     this.krnProcess(params);
                     break;
-                case OUT_OF_MEM_IRQ:
+                case OUT_OF_MEM_IRQ: // no free memory...should go to downloadmoreram.com! 
                     // for now just tell the user no memory for program.
                     _StdOut.putText("Sorry, out of memory for program " + params);
                     _StdOut.advanceLine();
                     _OsShell.putPrompt(); 
                     break;
-                case CON_SWITCH_IRQ:
+                case CON_SWITCH_IRQ: // we need to do a context switch!
                     this.krnContextSwitch();
                     break;
-                case PCB_KILL_IRQ:
+                case PCB_KILL_IRQ: // called when we are killing a pcb in ready queue or active
                     this.krnProcessKill(params);
-                    _StdOut.putText("Process " + params.pidNumber + " has been zapped!");
-                    _StdOut.advanceLine();
-                    _StdOut.putPrompt();
                     break;
-                default:
+                default: 
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
         }
@@ -253,10 +249,13 @@ module TSOS {
         
             // get the next Process
             var pcb:PCB = params.dequeue();
+            // set our "active pcb pointer"
             _ActiveProgram = pcb;
-            // print a trace
+            // print a trace so we know ... (hmm, this might not work well - or at all - with run all?)
             Control.hostLog("Executing PID: " + pcb.pidNumber, "OS");
-            // pass the base to PC ...
+            
+            // set the CPU to this PCB's stuff!
+            // stuff being (program counter, accumulator, x, y, reg and z flag
             _CPU.PC = pcb.progCount;
             _CPU.Acc = pcb.ACC;
             _CPU.Xreg = pcb.X_reg;
@@ -268,6 +267,8 @@ module TSOS {
             // update display
             _CPU.initCPUDisplay();
             
+            // set PCB to running and set display
+            // Do we want to set _ActiveProgram maybe ? or set that pointer later ?
             pcb.currentState = State.RUNNING;
             pcb.setPCBDisplay(_PCBdisplay);
             
@@ -285,12 +286,15 @@ module TSOS {
             _Mode = 0;
         
             // X Reg is 1 so print the int in the Y register
-            if(params === 1){ // x-reg contains a 1 print int stored in Y
+            if(params === 1){
                 _StdOut.putText(_CPU.Yreg.toString());
             // X reg is 2 so we need to pring the string    
             }else if(params === 2){
+                // get address stored in Y
                 var address:number = _CPU.Yreg;
+                // keep track of memory starting + locations
                 var offset:number = 0;
+                // get the char at a memory location starting at Y going to offset -- this will be clear in a min.
                 var charValue = parseInt(_MemManager.read(address + offset, _ActiveProgram), 16);
                 
                 // So, to prevent any null issues we set charValue above before entering loop.
@@ -314,15 +318,19 @@ module TSOS {
          */
          public krnIllegalMemAccess(params){
          
+             // TODO: Be more informative about what has exactly happened...
+             //       maybe only kill the running program... okay.
+         
              // well kernel should throw BSOD right?
              _Mode = 0;
-         
              // first let us clear memory
              _MemManager.clearAllMemory();
              // clear cpu
              _CPU.init();
              // throw a bsod.
              this.bsod("ILLEGAL MEMORY ACCESS ERROR!!! BAD BAD BOY / OR GIRL");
+             // shutdown
+             this.krnShutdown();
          }
          
          /**
@@ -333,7 +341,7 @@ module TSOS {
          public krnIllegalOpCode(params){
              
              // First, let us tell the user what the heck just happened.
-             _StdOut.putText("BAD OPCODE: " + params.toString(16) + " program terminating.");
+             _StdOut.putText("BAD OPCODE: " + params.toString(16) + " program (PID: " + _ActiveProgram.pidNumber + ") terminating.");
              
              // advance a line
              _StdOut.advanceLine();
@@ -341,11 +349,46 @@ module TSOS {
              // put back the prompt
              _OsShell.putPrompt();
              
-             //TODO: NEED THE PROPER PARTITION OF MEMORY!!!!!
-             _MemManager.clearPartition(0);
+             // set to terminated
+             _ActiveProgram.currentState = State.TERMINATED;
+             
+             // update the display
+             _ActiveProgram.setPCBDisplay(_PCBdisplay);
+             
+             // deallocate memory from active program
+             _MemManager.deallocate(_ActiveProgram);
+             
+             //bandaid here until I think of something else:
+             //clear partition takes an int of 0, 1, 2 so we will find that from the base
+             var partition:number = -1;
+             
+             if(_ActiveProgram.base === 0){
+                 partition = 0;
+             }else if(_ActiveProgram.base === 256){
+                 partition = 1;
+             }else if(_ActiveProgram.base === 512){
+                 partition = 2;
+             }
+             
+             // now that we have the partition, pass it to clear the memory...
+             // I am also thinking of making a function in my MMU be public and use it here
+             // might serve a better function down the road anyway ... 
+             _MemManager.clearPartition(partition);
              
              // reset the cpu
              _CPU.init();
+             
+             // set active program to null
+             _ActiveProgram = null;
+             
+             // TODO: make a function that checks the need to do a context switch and does it
+             //       other wise this will get missed some place I feel, or not work ask expected...
+             
+             // finally if there is another process on the queue, DO IT! Do not let one bad program
+             // spoil all of our fun!
+             if(_KernelReadyQueue.getSize() > 0){
+                 this.krnProcess(_KernelReadyQueue);
+             }
          }
          
          /**
@@ -356,24 +399,32 @@ module TSOS {
              // Change mode bit to kernel
              _Mode = 0;
              
+             // change the current state from running to ready
              _ActiveProgram.currentState = State.READY;
              
+             // updaet the display
              _ActiveProgram.setPCBDisplay(_PCBdisplay);
              
+             // put the currently running program to the back of the line
              _KernelReadyQueue.enqueue(_ActiveProgram);
              
+             // get the next process to run
              _ActiveProgram = _KernelReadyQueue.dequeue();
              
+             // set the CPU with the new pcb's pc, acc, x & y regs and z flag
              _CPU.PC = _ActiveProgram.progCount;
              _CPU.Acc = _ActiveProgram.ACC;
              _CPU.Xreg = _ActiveProgram.X_reg;
              _CPU.Yreg = _ActiveProgram.Y_reg;
              _CPU.Zflag = _ActiveProgram.Z_flag;
              
+             // get back to work - maybe do this last?
              _CPU.isExecuting = true;
              
+             // set the new current to running
              _ActiveProgram.currentState = State.RUNNING;
              
+             // update the display
              _ActiveProgram.setPCBDisplay(_PCBdisplay);
              
              // done with kernel mode, put it back
@@ -419,31 +470,36 @@ module TSOS {
           */
           public krnProcessKill(pcb:PCB){
            
+              // so if the program is running currently just pass it to process end
               if(_ActiveProgram.pidNumber === pcb.pidNumber){
                   this.krnProcessEnd(pcb); // simple enough right?
               }else{
-              
+                  
                   // first we need to find it on the Ready Queue
                   for(var i:number = 0; i < _KernelReadyQueue.getSize(); i++){
                       // do we have a match ... 
                       if(pcb.pidNumber === _KernelReadyQueue.q[i].pidNumber){
-                          
+                          // okay ... match found, now what ?
+                          // splice - nice function, removes (or adds) to a queue at a spot!
+                          // hmmm -- maybe this will help with a heap or some other way for priority!     
                           _KernelReadyQueue.q.splice(i,1);
+                          // set it to terminated on the resident queue (we are dual purposing the resident queue
                           _ResidentQueue[pcb.pidNumber].currentState = State.TERMINATED;
+                          // update the display to terminated
                           _ResidentQueue[pcb.pidNumber].setPCBDisplay(_PCBdisplay, pcb);
+                          // deallocate the memory assigned to this pcb
                           _MemManager.deallocate(pcb);
-                          
                       }
                   }
-                  _CPU.isExecuting = true; // back to work.
-              
+                  // thank you for pausing, now -- BACK TO WORK!
+                  _CPU.isExecuting = true;
               }
-
-                    _StdOut.putText("Process " + pcb.pidNumber + " has been zapped!");
-                    _StdOut.advanceLine();
-                    _StdOut.putPrompt();
+                  // FINALLY, let us print a little message to the terminal so we know what happened...
+                  // IF it happened, kill in shell will notify if bad PID was passed!
+                  _StdOut.putText("Process " + pcb.pidNumber + " has been zapped!");
+                  _StdOut.advanceLine();
+                  _OsShell.putPrompt();
           }
-         
         
         /**
          * Generates a BSOD
@@ -468,5 +524,6 @@ module TSOS {
             _DrawingContext.fillText("What are we going to do ?", 0, 210);
             _DrawingContext.fillText("Have you tried turning it off and on again?", 0, 240);
         }
+        
     }
 }

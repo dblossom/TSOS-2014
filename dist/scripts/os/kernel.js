@@ -49,7 +49,6 @@ var TSOS;
 
             // initalize a list of programs -- err processes really
             // I know this is not a Queue -- but an array .. or list. Sorry.
-            // renaming it to follow what it really is in real life...
             _ResidentQueue = new Array();
 
             // set the default scheduler (round robin)
@@ -102,7 +101,7 @@ var TSOS;
                 // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
 
-                // no scheduler yet - but for fun let us just put the pcb state in "waiting"
+                // for fun let us just put the pcb state in "waiting"
                 if ((_ActiveProgram !== null)) {
                     _ActiveProgram.currentState = 3 /* WAITING */;
                     _ActiveProgram.setPCBDisplay(_PCBdisplay);
@@ -175,9 +174,6 @@ var TSOS;
                     break;
                 case PCB_KILL_IRQ:
                     this.krnProcessKill(params);
-                    _StdOut.putText("Process " + params.pidNumber + " has been zapped!");
-                    _StdOut.advanceLine();
-                    _StdOut.putPrompt();
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
@@ -243,12 +239,15 @@ var TSOS;
 
             // get the next Process
             var pcb = params.dequeue();
+
+            // set our "active pcb pointer"
             _ActiveProgram = pcb;
 
-            // print a trace
+            // print a trace so we know ... (hmm, this might not work well - or at all - with run all?)
             TSOS.Control.hostLog("Executing PID: " + pcb.pidNumber, "OS");
 
-            // pass the base to PC ...
+            // set the CPU to this PCB's stuff!
+            // stuff being (program counter, accumulator, x, y, reg and z flag
             _CPU.PC = pcb.progCount;
             _CPU.Acc = pcb.ACC;
             _CPU.Xreg = pcb.X_reg;
@@ -261,6 +260,8 @@ var TSOS;
             // update display
             _CPU.initCPUDisplay();
 
+            // set PCB to running and set display
+            // Do we want to set _ActiveProgram maybe ? or set that pointer later ?
             pcb.currentState = 1 /* RUNNING */;
             pcb.setPCBDisplay(_PCBdisplay);
 
@@ -281,8 +282,13 @@ var TSOS;
                 _StdOut.putText(_CPU.Yreg.toString());
                 // X reg is 2 so we need to pring the string
             } else if (params === 2) {
+                // get address stored in Y
                 var address = _CPU.Yreg;
+
+                // keep track of memory starting + locations
                 var offset = 0;
+
+                // get the char at a memory location starting at Y going to offset -- this will be clear in a min.
                 var charValue = parseInt(_MemManager.read(address + offset, _ActiveProgram), 16);
 
                 while (charValue !== 0) {
@@ -301,6 +307,8 @@ var TSOS;
         * @params - reserved for future use
         */
         Kernel.prototype.krnIllegalMemAccess = function (params) {
+            // TODO: Be more informative about what has exactly happened...
+            //       maybe only kill the running program... okay.
             // well kernel should throw BSOD right?
             _Mode = 0;
 
@@ -312,6 +320,9 @@ var TSOS;
 
             // throw a bsod.
             this.bsod("ILLEGAL MEMORY ACCESS ERROR!!! BAD BAD BOY / OR GIRL");
+
+            // shutdown
+            this.krnShutdown();
         };
 
         /**
@@ -321,7 +332,7 @@ var TSOS;
         */
         Kernel.prototype.krnIllegalOpCode = function (params) {
             // First, let us tell the user what the heck just happened.
-            _StdOut.putText("BAD OPCODE: " + params.toString(16) + " program terminating.");
+            _StdOut.putText("BAD OPCODE: " + params.toString(16) + " program (PID: " + _ActiveProgram.pidNumber + ") terminating.");
 
             // advance a line
             _StdOut.advanceLine();
@@ -329,11 +340,45 @@ var TSOS;
             // put back the prompt
             _OsShell.putPrompt();
 
-            //TODO: NEED THE PROPER PARTITION OF MEMORY!!!!!
-            _MemManager.clearPartition(0);
+            // set to terminated
+            _ActiveProgram.currentState = 2 /* TERMINATED */;
+
+            // update the display
+            _ActiveProgram.setPCBDisplay(_PCBdisplay);
+
+            // deallocate memory from active program
+            _MemManager.deallocate(_ActiveProgram);
+
+            //bandaid here until I think of something else:
+            //clear partition takes an int of 0, 1, 2 so we will find that from the base
+            var partition = -1;
+
+            if (_ActiveProgram.base === 0) {
+                partition = 0;
+            } else if (_ActiveProgram.base === 256) {
+                partition = 1;
+            } else if (_ActiveProgram.base === 512) {
+                partition = 2;
+            }
+
+            // now that we have the partition, pass it to clear the memory...
+            // I am also thinking of making a function in my MMU be public and use it here
+            // might serve a better function down the road anyway ...
+            _MemManager.clearPartition(partition);
 
             // reset the cpu
             _CPU.init();
+
+            // set active program to null
+            _ActiveProgram = null;
+
+            // TODO: make a function that checks the need to do a context switch and does it
+            //       other wise this will get missed some place I feel, or not work ask expected...
+            // finally if there is another process on the queue, DO IT! Do not let one bad program
+            // spoil all of our fun!
+            if (_KernelReadyQueue.getSize() > 0) {
+                this.krnProcess(_KernelReadyQueue);
+            }
         };
 
         /**
@@ -343,24 +388,32 @@ var TSOS;
             // Change mode bit to kernel
             _Mode = 0;
 
+            // change the current state from running to ready
             _ActiveProgram.currentState = 4 /* READY */;
 
+            // updaet the display
             _ActiveProgram.setPCBDisplay(_PCBdisplay);
 
+            // put the currently running program to the back of the line
             _KernelReadyQueue.enqueue(_ActiveProgram);
 
+            // get the next process to run
             _ActiveProgram = _KernelReadyQueue.dequeue();
 
+            // set the CPU with the new pcb's pc, acc, x & y regs and z flag
             _CPU.PC = _ActiveProgram.progCount;
             _CPU.Acc = _ActiveProgram.ACC;
             _CPU.Xreg = _ActiveProgram.X_reg;
             _CPU.Yreg = _ActiveProgram.Y_reg;
             _CPU.Zflag = _ActiveProgram.Z_flag;
 
+            // get back to work - maybe do this last?
             _CPU.isExecuting = true;
 
+            // set the new current to running
             _ActiveProgram.currentState = 1 /* RUNNING */;
 
+            // update the display
             _ActiveProgram.setPCBDisplay(_PCBdisplay);
 
             // done with kernel mode, put it back
@@ -408,24 +461,38 @@ var TSOS;
         * Kill an active process
         */
         Kernel.prototype.krnProcessKill = function (pcb) {
+            // so if the program is running currently just pass it to process end
             if (_ActiveProgram.pidNumber === pcb.pidNumber) {
                 this.krnProcessEnd(pcb); // simple enough right?
             } else {
                 for (var i = 0; i < _KernelReadyQueue.getSize(); i++) {
                     // do we have a match ...
                     if (pcb.pidNumber === _KernelReadyQueue.q[i].pidNumber) {
+                        // okay ... match found, now what ?
+                        // splice - nice function, removes (or adds) to a queue at a spot!
+                        // hmmm -- maybe this will help with a heap or some other way for priority!
                         _KernelReadyQueue.q.splice(i, 1);
+
+                        // set it to terminated on the resident queue (we are dual purposing the resident queue
                         _ResidentQueue[pcb.pidNumber].currentState = 2 /* TERMINATED */;
+
+                        // update the display to terminated
                         _ResidentQueue[pcb.pidNumber].setPCBDisplay(_PCBdisplay, pcb);
+
+                        // deallocate the memory assigned to this pcb
                         _MemManager.deallocate(pcb);
                     }
                 }
-                _CPU.isExecuting = true; // back to work.
+
+                // thank you for pausing, now -- BACK TO WORK!
+                _CPU.isExecuting = true;
             }
 
+            // FINALLY, let us print a little message to the terminal so we know what happened...
+            // IF it happened, kill in shell will notify if bad PID was passed!
             _StdOut.putText("Process " + pcb.pidNumber + " has been zapped!");
             _StdOut.advanceLine();
-            _StdOut.putPrompt();
+            _OsShell.putPrompt();
         };
 
         /**
