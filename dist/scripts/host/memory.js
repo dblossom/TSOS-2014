@@ -16,6 +16,9 @@ var TSOS;
         function Memory(memoryArray) {
             this.memoryArray = memoryArray;
         }
+        /**
+        * This will write a byte to memory
+        */
         Memory.prototype.write = function (address, hexbyte) {
             // so this at its very basic form will put a "hex byte" in a memory location
             this.memoryArray[address] = parseInt(hexbyte, 16); //store as int.

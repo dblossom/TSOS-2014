@@ -49,10 +49,9 @@ module TSOS {
             this.initCPUDisplay();
             
             // update the current PCB with CPU's registers and such
-           // this.updatePCB(_ResidentQueue[PCB.pid - 1]);
             this.updatePCB(_ActiveProgram);
-            // update the current PCB display <this is kinda a bug> but want to see it work
-            // not a bug, we just need to come up with a scheme for keeping PID's better.
+            
+            // update the display for the PCB
             _ActiveProgram.setPCBDisplay(_PCBdisplay);
         }
         
