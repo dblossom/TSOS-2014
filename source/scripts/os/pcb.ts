@@ -46,6 +46,7 @@ module TSOS{
             // mark the base and limit
             this.base = base;
             this.limit = limit;
+            // set the current state to be "new"
             this.currentState = State.NEW;
         }
         
@@ -80,7 +81,7 @@ module TSOS{
          }
          
          /**
-          * Will add a new row the the table for display of PCB information
+          * Will add a new row to the table for display of PCB information
           */
          public pcbNewRow(tblElement: HTMLTableElement):void{
              // only seems to work if we create a null first ... (?)
@@ -100,28 +101,37 @@ module TSOS{
              row.insertCell(8).innerHTML = this.Z_flag.toString();
          }
          
+         /**
+          * Given the current PID number will seek out what row the info is in within the table
+          * This is needed because someone could type run 2 then run 1 so processes could be in
+          * any order in the able and not laid out by PID number (as originally designed).
+          */
          private findPCBRow(tblElement: HTMLTableElement):number{
          
+             // the row number we will return
+             // TODO: start with -1 and if no row is found -- add it maybe ?
              var returnRow:number;
              
+             // given all the rows in the table, loop through looking
+             // we start at 1 since 0 is the header, why check it
              for(var i:number = 1; i < tblElement.rows.length; i++){
+                 // grab the current row
                  var row = null;
                  row = tblElement.rows[i];
-                 
+                 // grab the cells in the current row
                  var cellsInRow = null;
                  cellsInRow = row.cells;
                  
+                 // does the first cell match the PID, which is what is stored there...
                  if(this.pidNumber.toString() === cellsInRow[0].innerHTML){
-             
+                     // yep, set the return variable
                      returnRow = i;
-                     
+                     // leave loop
                      break;
                  }
-                 
              }
-             
+             // FINALLY, return the row number.
              return returnRow;
-         
          }
     }
 }
