@@ -366,14 +366,20 @@ module TSOS {
             }
         }
         
-        // date
+        /**
+         * Displays the current date
+         */
         public shellDate(args){
             _StdOut.putText(new Date().toLocaleString());
         }
         
-        // whereami
+        /**
+         * Displays random locations from the movie Shawshank
+         * TODO: Add more places.
+         */
         public shellWhere(args){
         
+            // our array of locations
             var places:string[] = ["Shawshank Prison Libray",
                                    "Roof of the license-plate factory",
                                    "Red's cell# 237",
@@ -384,14 +390,18 @@ module TSOS {
                                    "The Brewer",
                                    "In front of the parole board",
                                    "Buxton"];
-                                   
+            
+            // our "random" location to choose from                       
             var i:number = Math.floor(Math.random() * 10);
             
+            // and that location was ... 
             _StdOut.putText(places[i]);
         
         }
         
-        // beam
+        /**
+         * displays an insulting thing when asking the console to beam you up
+         */
         public shellBeam(args){
             _StdOut.putText("You are now being beamed up to the mothership please stand by...");
             _StdOut.advanceLine();
@@ -400,6 +410,9 @@ module TSOS {
             _StdOut.putText("asses like you are why people like that fucking fraud Theresa Caputo are rich."); 
         }
         
+        /**
+         * Changes the text of the status bar
+         */
         public shellStatus(args){
         
             if(args.length <= 0){
@@ -438,23 +451,28 @@ module TSOS {
          *       Too late tonight to break this.
          */
         public shellLoad(args){
-        
+            
+            // are we loading a "valid" program -- IE everything is valid hex?
             var isValid:boolean = new Shell().validateProgram(_ProgramTextArea.value.trim());
                 
+            // Yep, but do we have free space to load this thing ?
             if(isValid && _MemManager.memoryAvailable()){
-            
+                
                 var textInput:string = _ProgramTextArea.value.trim();
                 
                 //TODO: return the fixed string when validating program...
                 //      make empty string or maybe return an array? IDK yet.
                 textInput = textInput.replace(/ /g,"");
             
+                // where or where will we put this thing ?
                 var activePartition:number = _MemManager.allocate();
             
+                // we are an informative OS -- let the user know we are loading
                 _StdOut.putText("Loading, please wait...");
                 _StdOut.advanceLine(); 
                 _StdOut.putText("PID: " + PCB.pid);
                 
+                // so - let us get the base and limit registers and create a PCB
                 var base:number = _MemManager.memoryRanges[activePartition].base;
                 var limit:number = _MemManager.memoryRanges[activePartition].limit;
                 _ResidentQueue[PCB.pid] = new PCB(base, limit);
@@ -470,13 +488,16 @@ module TSOS {
             }else{
                // let the user know his/her program is shitty and does not work
                _StdOut.putText("Invalid Program...please try again! (or not).");
+               // if no free memory tell them at that time as well.
                if(!_MemManager.memoryAvailable()){
                    _KernelInterruptQueue.enqueue(new Interrupt(OUT_OF_MEM_IRQ, _ProgramTextArea.value));
                }
             }
         }
         
-        // will convert from F to C or C to F.
+        /**
+         * Will convert from F to C or C to F.
+         */
         public shellTempConvert(args){
             
             if( args.length < 2 ||
@@ -508,7 +529,7 @@ module TSOS {
         public shellRun(args){
         
             // Because we are not using a "used queue" and keeping it on the resident queue
-            // we need to know if it is a usable...
+            // we need to know if it is usable...
             var used:boolean = (_ResidentQueue[args[0]].currentState === State.TERMINATED);
             
             // If a program is in execution, we want to ensure we do not just start processing
@@ -560,10 +581,39 @@ module TSOS {
         }
         
         /**
-         * Will clear all memory
+         * Will clear all memory NO Program can be in execution or 
          */
         public shellClearAllMemory(args){
-            _MemManager.clearAllMemory();
+        
+            // A few conditions must be met here ...
+            // 1) do not want to clear active process
+            // 2) do not want to clear a process on ready queue
+            // 3) do not want to clear a process on resident queue waiting to be passed to ready queue
+            
+            // assume we can clear ...
+            var allMemoryClear:boolean = true;
+            
+            // let us do this one by one for right now...
+            if(_ActiveProgram !== null){
+                allMemoryClear = false;
+            }else if(_KernelReadyQueue.getSize > 0){
+                allMemoryClear = false;
+            }else{
+                for(var i:number = 0; i < _ResidentQueue.length; i++){
+                    if(_ResidentQueue[i].currentState !== State.TERMINATED){
+                        allMemoryClear = false;
+                        break
+                    }
+                }
+            }
+            
+            if(allMemoryClear){
+                _StdOut.putText("Clearing memory please wait...");
+                _MemManager.clearAllMemory();
+                _StdOut.putText("Memory is not clear...");
+            }else{
+                _StdOut.putText("Cannot clear memory if active process is running or waiting to run, please run all processes and try again");
+            }
         }
         
         /**
@@ -571,19 +621,24 @@ module TSOS {
          * @params - int the value to provide for the quantum
          */
         public shellChangeQuantum(args){
+            // did we get a value above 0
             if((args[0] > 0)){
+                // yep, set the new quantum
                 _Quantum = args[0];
+                // if we do not set this now, the first round will have the old quantum...
                 _CPU_Schedule.cpuCount = _Quantum;
+                // log the event - also tell the user...
                 var message:string = "Quantum now set to: " + _Quantum;
                 _StdOut.putText(message);
                 Control.hostLog(message, "SCHEDULE EVENT");
+                // have a little fun with values that were passed
                 if(_Quantum > 8){
                     _StdOut.putText(" Why so large?");
                 }
                 if(_Quantum == 1){
                     _StdOut.putText(" Really? Really? Making me work today");
                 }
-            }else{
+            }else{ // whoops something is not correct...
                 _StdOut.putText("Usage: quantum <int> number greater than zero (0)!");
             }
         }
@@ -592,17 +647,19 @@ module TSOS {
          * Run all processes on the resident queue
          */
         public shellRunAll(args){
+            // make sure no params were passed ..
             if(typeof args[0] !== 'undefined'){
                 _StdOut.putText("Usage: Nothing! Just type runall and all processes will run");
-            }else{
-                
+            }else{ // valid command
+                // so, search the resident queue looking for "new" processes
                 for(var i:number = 0; i < _ResidentQueue.length; i++){
+                    // if a new process has been found, add it to the ready queue and update the display
                     if(_ResidentQueue[i].currentState === State.NEW){
                         _KernelReadyQueue.enqueue(_ResidentQueue[i]);
                         _ResidentQueue[i].pcbNewRow(_PCBdisplay);
                     }
                 }
-                
+                // now pass the ready queue to the kernel for execution and scheduling.
                 _KernelInterruptQueue.enqueue(new Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             }
         }
@@ -632,39 +689,38 @@ module TSOS {
         }
         
         /**
-         * Kill an active process (do we only kill "ready_queue" processes??
+         * Kill an active process (do we only kill "ready_queue" processes??)
          */
         public shellKill(args){
             
+            // So, if we pass an argument higher than our PID counter, well that never existed so must be an error
             if(args[0] < PCB.pid){
-            
+                // has the process already terminated -- let them know ... you're too late!
                 if(_ResidentQueue[args[0]].currentState === State.TERMINATED){
                     _StdOut.putText("Process ID: " + args[0] + " is no longer running.");
                     _StdOut.advanceLine();
-                }else{
-                    
+                // otherwise, we need to pass the PCB off to the kernel to be killed
+                }else{ 
+                    // WAIT. give me a second to get this done for ya.
+                    // TODO: bring isExecuting = true; here since we set it to false! not back in kernel...
+                    //       must have been a reason I did that -- have to look into it deeper later.
                     _CPU.isExecuting = false;
-                
+                    // now pass it to the interupt queue for termination...
                     _KernelInterruptQueue.enqueue(new Interrupt(PCB_KILL_IRQ, _ResidentQueue[args]))
                 }
+            // well, well, you gave me a bad process ID...
             }else{
                 _StdOut.putText("Usage: kill <int> must be an active process, or at least on that existed at some point!");
             }
-            
-            
-            
         }
-        
                 
         /**
          * Check if program is valid
          */
         public validateProgram(anyString:string){
+        
+        // TODO: this works so whatever, but needs restructing.
             
-            // SO: something is happening where I cannot create a function to separate
-            //     the validate function... IDK. I debug and see the function, BUT it throws
-            //     a type error "not a function" so ... maybe it is eclipse, doubt it...idk
-            //     for now, this crap stays.
             var isValid:boolean = true;
             
             // first we need to trim <-- actually probably not
@@ -675,6 +731,7 @@ module TSOS {
             // SO - we remove ALL spaces, and process every "2 nibbles"
             textInput = textInput.replace(/ /g,"");
         
+            // are we blank ?
             if(textInput === ""){
                 isValid = false;
             }
@@ -682,7 +739,7 @@ module TSOS {
             // loop over the entire input grabbing every 2 chars and checking them.
             var pointer: number = 0;
             while(pointer < textInput.length && isValid == true){
-            
+                // if we get a bad char, set false
                 if(!textInput.charAt(pointer++).match(/[A-F0-9]/i)){
                     isValid = false;
                 }
@@ -695,10 +752,5 @@ module TSOS {
             }       
             return isValid;
         }
-        
-        public loadMemory(textInput:string){
-        
-        }
-        
     }
 }

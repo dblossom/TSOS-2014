@@ -324,13 +324,19 @@ var TSOS;
             }
         };
 
-        // date
+        /**
+        * Displays the current date
+        */
         Shell.prototype.shellDate = function (args) {
             _StdOut.putText(new Date().toLocaleString());
         };
 
-        // whereami
+        /**
+        * Displays random locations from the movie Shawshank
+        * TODO: Add more places.
+        */
         Shell.prototype.shellWhere = function (args) {
+            // our array of locations
             var places = [
                 "Shawshank Prison Libray",
                 "Roof of the license-plate factory",
@@ -343,12 +349,16 @@ var TSOS;
                 "In front of the parole board",
                 "Buxton"];
 
+            // our "random" location to choose from
             var i = Math.floor(Math.random() * 10);
 
+            // and that location was ...
             _StdOut.putText(places[i]);
         };
 
-        // beam
+        /**
+        * displays an insulting thing when asking the console to beam you up
+        */
         Shell.prototype.shellBeam = function (args) {
             _StdOut.putText("You are now being beamed up to the mothership please stand by...");
             _StdOut.advanceLine();
@@ -357,6 +367,9 @@ var TSOS;
             _StdOut.putText("asses like you are why people like that fucking fraud Theresa Caputo are rich.");
         };
 
+        /**
+        * Changes the text of the status bar
+        */
         Shell.prototype.shellStatus = function (args) {
             if (args.length <= 0) {
                 _StdOut.putText("Usage: status <string>  Please supply a string.");
@@ -396,8 +409,10 @@ var TSOS;
         *       Too late tonight to break this.
         */
         Shell.prototype.shellLoad = function (args) {
+            // are we loading a "valid" program -- IE everything is valid hex?
             var isValid = new Shell().validateProgram(_ProgramTextArea.value.trim());
 
+            // Yep, but do we have free space to load this thing ?
             if (isValid && _MemManager.memoryAvailable()) {
                 var textInput = _ProgramTextArea.value.trim();
 
@@ -405,12 +420,15 @@ var TSOS;
                 //      make empty string or maybe return an array? IDK yet.
                 textInput = textInput.replace(/ /g, "");
 
+                // where or where will we put this thing ?
                 var activePartition = _MemManager.allocate();
 
+                // we are an informative OS -- let the user know we are loading
                 _StdOut.putText("Loading, please wait...");
                 _StdOut.advanceLine();
                 _StdOut.putText("PID: " + TSOS.PCB.pid);
 
+                // so - let us get the base and limit registers and create a PCB
                 var base = _MemManager.memoryRanges[activePartition].base;
                 var limit = _MemManager.memoryRanges[activePartition].limit;
                 _ResidentQueue[TSOS.PCB.pid] = new TSOS.PCB(base, limit);
@@ -425,13 +443,17 @@ var TSOS;
             } else {
                 // let the user know his/her program is shitty and does not work
                 _StdOut.putText("Invalid Program...please try again! (or not).");
+
+                // if no free memory tell them at that time as well.
                 if (!_MemManager.memoryAvailable()) {
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(OUT_OF_MEM_IRQ, _ProgramTextArea.value));
                 }
             }
         };
 
-        // will convert from F to C or C to F.
+        /**
+        * Will convert from F to C or C to F.
+        */
         Shell.prototype.shellTempConvert = function (args) {
             if (args.length < 2 || (args[1].toLowerCase() != "f" && args[1].toLowerCase() != "c")) {
                 _StdOut.putText("Usage: temp <temp number> <F | C>.");
@@ -458,7 +480,7 @@ var TSOS;
         */
         Shell.prototype.shellRun = function (args) {
             // Because we are not using a "used queue" and keeping it on the resident queue
-            // we need to know if it is a usable...
+            // we need to know if it is usable...
             var used = (_ResidentQueue[args[0]].currentState === 2 /* TERMINATED */);
 
             // If a program is in execution, we want to ensure we do not just start processing
@@ -513,10 +535,37 @@ var TSOS;
         };
 
         /**
-        * Will clear all memory
+        * Will clear all memory NO Program can be in execution or
         */
         Shell.prototype.shellClearAllMemory = function (args) {
-            _MemManager.clearAllMemory();
+            // A few conditions must be met here ...
+            // 1) do not want to clear active process
+            // 2) do not want to clear a process on ready queue
+            // 3) do not want to clear a process on resident queue waiting to be passed to ready queue
+            // assume we can clear ...
+            var allMemoryClear = true;
+
+            // let us do this one by one for right now...
+            if (_ActiveProgram !== null) {
+                allMemoryClear = false;
+            } else if (_KernelReadyQueue.getSize > 0) {
+                allMemoryClear = false;
+            } else {
+                for (var i = 0; i < _ResidentQueue.length; i++) {
+                    if (_ResidentQueue[i].currentState !== 2 /* TERMINATED */) {
+                        allMemoryClear = false;
+                        break;
+                    }
+                }
+            }
+
+            if (allMemoryClear) {
+                _StdOut.putText("Clearing memory please wait...");
+                _MemManager.clearAllMemory();
+                _StdOut.putText("Memory is not clear...");
+            } else {
+                _StdOut.putText("Cannot clear memory if active process is running or waiting to run, please run all processes and try again");
+            }
         };
 
         /**
@@ -524,12 +573,20 @@ var TSOS;
         * @params - int the value to provide for the quantum
         */
         Shell.prototype.shellChangeQuantum = function (args) {
+            // did we get a value above 0
             if ((args[0] > 0)) {
+                // yep, set the new quantum
                 _Quantum = args[0];
+
+                // if we do not set this now, the first round will have the old quantum...
                 _CPU_Schedule.cpuCount = _Quantum;
+
+                // log the event - also tell the user...
                 var message = "Quantum now set to: " + _Quantum;
                 _StdOut.putText(message);
                 TSOS.Control.hostLog(message, "SCHEDULE EVENT");
+
+                // have a little fun with values that were passed
                 if (_Quantum > 8) {
                     _StdOut.putText(" Why so large?");
                 }
@@ -545,16 +602,19 @@ var TSOS;
         * Run all processes on the resident queue
         */
         Shell.prototype.shellRunAll = function (args) {
+            // make sure no params were passed ..
             if (typeof args[0] !== 'undefined') {
                 _StdOut.putText("Usage: Nothing! Just type runall and all processes will run");
             } else {
                 for (var i = 0; i < _ResidentQueue.length; i++) {
+                    // if a new process has been found, add it to the ready queue and update the display
                     if (_ResidentQueue[i].currentState === 0 /* NEW */) {
                         _KernelReadyQueue.enqueue(_ResidentQueue[i]);
                         _ResidentQueue[i].pcbNewRow(_PCBdisplay);
                     }
                 }
 
+                // now pass the ready queue to the kernel for execution and scheduling.
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
             }
         };
@@ -582,18 +642,26 @@ var TSOS;
         };
 
         /**
-        * Kill an active process (do we only kill "ready_queue" processes??
+        * Kill an active process (do we only kill "ready_queue" processes??)
         */
         Shell.prototype.shellKill = function (args) {
+            // So, if we pass an argument higher than our PID counter, well that never existed so must be an error
             if (args[0] < TSOS.PCB.pid) {
+                // has the process already terminated -- let them know ... you're too late!
                 if (_ResidentQueue[args[0]].currentState === 2 /* TERMINATED */) {
                     _StdOut.putText("Process ID: " + args[0] + " is no longer running.");
                     _StdOut.advanceLine();
+                    // otherwise, we need to pass the PCB off to the kernel to be killed
                 } else {
+                    // WAIT. give me a second to get this done for ya.
+                    // TODO: bring isExecuting = true; here since we set it to false! not back in kernel...
+                    //       must have been a reason I did that -- have to look into it deeper later.
                     _CPU.isExecuting = false;
 
+                    // now pass it to the interupt queue for termination...
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PCB_KILL_IRQ, _ResidentQueue[args]));
                 }
+                // well, well, you gave me a bad process ID...
             } else {
                 _StdOut.putText("Usage: kill <int> must be an active process, or at least on that existed at some point!");
             }
@@ -603,10 +671,7 @@ var TSOS;
         * Check if program is valid
         */
         Shell.prototype.validateProgram = function (anyString) {
-            // SO: something is happening where I cannot create a function to separate
-            //     the validate function... IDK. I debug and see the function, BUT it throws
-            //     a type error "not a function" so ... maybe it is eclipse, doubt it...idk
-            //     for now, this crap stays.
+            // TODO: this works so whatever, but needs restructing.
             var isValid = true;
 
             // first we need to trim <-- actually probably not
@@ -618,6 +683,7 @@ var TSOS;
             // SO - we remove ALL spaces, and process every "2 nibbles"
             textInput = textInput.replace(/ /g, "");
 
+            // are we blank ?
             if (textInput === "") {
                 isValid = false;
             }
@@ -625,6 +691,7 @@ var TSOS;
             // loop over the entire input grabbing every 2 chars and checking them.
             var pointer = 0;
             while (pointer < textInput.length && isValid == true) {
+                // if we get a bad char, set false
                 if (!textInput.charAt(pointer++).match(/[A-F0-9]/i)) {
                     isValid = false;
                 }
@@ -636,9 +703,6 @@ var TSOS;
                 isValid = false;
             }
             return isValid;
-        };
-
-        Shell.prototype.loadMemory = function (textInput) {
         };
         return Shell;
     })();
