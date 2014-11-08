@@ -562,7 +562,7 @@ var TSOS;
             if (allMemoryClear) {
                 _StdOut.putText("Clearing memory please wait...");
                 _MemManager.clearAllMemory();
-                _StdOut.putText("Memory is not clear...");
+                _StdOut.putText("Memory is now clear...");
             } else {
                 _StdOut.putText("Cannot clear memory if active process is running or waiting to run, please run all processes and try again");
             }
