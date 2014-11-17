@@ -104,8 +104,14 @@ var _CPUdisplay = null;
 //       the ready queue's name since directed related
 var _ResidentQueue = null;
 
-// for pcb display
+// for ready queue display
 var _PCBdisplay = null;
+
+// for hdd display
+var _HDDdisplay = null;
+
+// for hdd driver
+var _krnHDDdriver = null;
 
 // scheduling stuff
 var _Quantum = 6;

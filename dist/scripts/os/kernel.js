@@ -54,6 +54,10 @@ var TSOS;
             // set the default scheduler (round robin)
             _CPU_Schedule = new TSOS.Schedule(0 /* RR */);
 
+            // set the hard drive driver and display
+            _krnHDDdriver = new TSOS.DeviceDriverHDD();
+            _krnHDDdriver.setHDDDisplay(_HDDdisplay);
+
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
             this.krnEnableInterrupts();

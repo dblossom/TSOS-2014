@@ -55,6 +55,10 @@ module TSOS {
             
             // set the default scheduler (round robin)
             _CPU_Schedule = new Schedule(ScheduleRoutine.RR);
+            
+            // set the hard drive driver and display
+            _krnHDDdriver = new DeviceDriverHDD();
+            _krnHDDdriver.setHDDDisplay(_HDDdisplay);
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");

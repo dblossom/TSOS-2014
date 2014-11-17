@@ -109,8 +109,14 @@ var _CPUdisplay: HTMLTableElement = null;
 //       the ready queue's name since directed related
 var _ResidentQueue = null;
 
-// for pcb display
+// for ready queue display
 var _PCBdisplay: HTMLTableElement = null;
+
+// for hdd display
+var _HDDdisplay: HTMLTableElement = null;
+
+// for hdd driver
+var _krnHDDdriver = null;
 
 // scheduling stuff
 var _Quantum:number = 6; // default quantum == 6 (make it high for testing RR)

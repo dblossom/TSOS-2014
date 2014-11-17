@@ -59,8 +59,11 @@ module TSOS {
             // memory display
             _MemoryDisplay = <HTMLTableElement> document.getElementById('memoryTable');
             
-            // pcb display
+            // ready display
             _PCBdisplay = <HTMLTableElement> document.getElementById('PCBTable');
+            
+            // hdd display
+            _HDDdisplay = <HTMLTableElement> document.getElementById('hddTable');
 
             // Check for our testing and enrichment core.
             if (typeof Glados === "function") {
