@@ -17,20 +17,47 @@ var TSOS;
     var DeviceDriverHDD = (function (_super) {
         __extends(DeviceDriverHDD, _super);
         function DeviceDriverHDD() {
-            _super.call(this, 0, 1); // just some BS to compile
+            _super.call(this, this.setDriverEntry(), this.setISR()); // just some BS to compile
         }
+        DeviceDriverHDD.prototype.setDriverEntry = function () {
+            this.status = "loaded";
+        };
+
+        DeviceDriverHDD.prototype.setISR = function () {
+        };
+
         DeviceDriverHDD.prototype.setHDDDisplay = function (tblElement) {
             // only seems to work if we create a null first ... (?)
             var row = null;
 
-            // insert a row "on top" of the others
-            row = tblElement.insertRow(-1);
+            var track = 0;
+            var sector = 0;
+            var block = -1;
 
-            // set the cell with the new state information
-            // the order matters here!
-            row.insertCell(0).innerHTML = "0.0.0";
-            row.insertCell(1).innerHTML = "1";
-            row.insertCell(2).innerHTML = "2";
+            while (true) {
+                row = tblElement.insertRow(-1);
+
+                block++;
+
+                if (block === 8) {
+                    block = 0;
+                    sector++;
+                }
+                if (sector === 8) {
+                    sector = 0;
+                    track++;
+                }
+                if (track === 4) {
+                    break;
+                }
+
+                var temp = "" + track + sector + block;
+
+                row.insertCell(0).innerHTML = temp;
+
+                row.insertCell(1).innerHTML = "0.0.0";
+                row.insertCell(2).innerHTML = "0000000000000000000000000000000000000000000000000000000000000000";
+            }
         };
         return DeviceDriverHDD;
     })(TSOS.DeviceDriver);

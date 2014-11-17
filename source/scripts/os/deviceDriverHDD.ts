@@ -16,24 +16,51 @@ module TSOS {
          
         constructor() {
             
-            super(0,1); // just some BS to compile
+            super(this.setDriverEntry(), this.setISR()); // just some BS to compile
 
         }
         
+        private setDriverEntry():void{
+            this.status = "loaded";
+        }
+        
+        private setISR():void{
+            
+        }
         
         public setHDDDisplay(tblElement: HTMLTableElement):void{
          
             // only seems to work if we create a null first ... (?)
             var row = null;
-            // insert a row "on top" of the others
-            row = tblElement.insertRow(-1);
             
-            // set the cell with the new state information
-            // the order matters here!
-            row.insertCell(0).innerHTML = "0.0.0";
-            row.insertCell(1).innerHTML = "1";
-            row.insertCell(2).innerHTML = "2";
+            var track:number = 0;
+            var sector:number = 0;
+            var block:number = -1;
+            
+            while(true){
+                row = tblElement.insertRow(-1);
 
+                block++;
+
+                if(block === 8){
+                    block = 0;
+                    sector++;
+                }
+                if(sector === 8){
+                    sector = 0;
+                    track++;
+                }
+                if(track === 4){
+                    break;
+                }
+                
+                var temp = "" + track + sector + block;
+                
+                row.insertCell(0).innerHTML = temp;
+                
+                row.insertCell(1).innerHTML = "0.0.0";
+                row.insertCell(2).innerHTML = "0000000000000000000000000000000000000000000000000000000000000000";
+            }
         }
         
     }
