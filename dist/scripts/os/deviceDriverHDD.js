@@ -16,14 +16,44 @@ var TSOS;
     // Extends DeviceDriver
     var DeviceDriverHDD = (function (_super) {
         __extends(DeviceDriverHDD, _super);
+        /**
+        * The constructor for our HDD driver
+        */
         function DeviceDriverHDD() {
             _super.call(this, this.setDriverEntry(), this.setISR()); // just some BS to compile
         }
+        /**
+        * The set driver entry function
+        * Set the track, sector, block, set local storage, stuff like that...
+        */
         DeviceDriverHDD.prototype.setDriverEntry = function () {
-            this.status = "loaded";
+            if (this.supports_html5_storage()) {
+                // init the vars: could not do it above ... why?
+                this.TRACKS = 4;
+                this.SECTORS = 8;
+                this.BLOCKS = 8;
+                this.BYTES_BLOCKS = 64;
+                this.HardDriveArray = window.localStorage;
+
+                this.status = "loaded";
+            } else {
+                //TODO: error
+            }
         };
 
         DeviceDriverHDD.prototype.setISR = function () {
+        };
+
+        /**
+        * A method that will return if the browser supports html5 storage...
+        * Modified from original version: http://diveintohtml5.info/storage.html
+        */
+        DeviceDriverHDD.prototype.supports_html5_storage = function () {
+            try  {
+                return 'localStorage' in window && window['localStorage'] !== null;
+            } catch (e) {
+                return false;
+            }
         };
 
         DeviceDriverHDD.prototype.setHDDDisplay = function (tblElement) {
