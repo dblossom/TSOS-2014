@@ -167,6 +167,12 @@ module TSOS {
                                   "<pid> - The process to kill.");
             this.commandList[this.commandList.length] = sc;
             
+            // format the hdd for use ... 
+            sc = new ShellCommand(this.shellFormat,
+                                  "format",
+                                  "- formats the hard-drive");
+            this.commandList[this.commandList.length] = sc;
+            
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -711,6 +717,17 @@ module TSOS {
             // well, well, you gave me a bad process ID...
             }else{
                 _StdOut.putText("Usage: kill <int> must be an active process, or at least on that existed at some point!");
+            }
+        }
+        
+        /**
+         * Format the hard drive
+         */
+        public shellFormat(args){
+            //TODO: error checking
+            if(!_krnHDDdriver.isFormatted){
+                _krnHDDdriver.format();
+                _StdOut.putText("Hard Drive has been formatted and mounted - and you did not even say sudo");
             }
         }
                 

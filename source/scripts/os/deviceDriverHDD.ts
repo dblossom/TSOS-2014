@@ -82,7 +82,13 @@ module TSOS {
         public write(track:number, sector:number, block:number, data:string){
             var key:string = String(track) + String(sector) + String(block);
             this.HardDriveArray.setItem(key, data);
-            this.updateHDDDisplay(_HDDdisplay, track, sector, block, this.padZeros(data));
+            
+            // for clarity
+            var metaS = data.substring(0, 4);
+            var dataS = data.substring(4);
+            
+            // update the display
+            this.updateHDDDisplay(_HDDdisplay, track, sector, block, this.padZeros(this.stringToHex(dataS)), metaS);
         }
         
         /**
@@ -106,12 +112,18 @@ module TSOS {
                 for(var t:number = 0; t < this.TRACKS; t++){
                     for(var s:number = 0; s < this.SECTORS; s++){
                         for(var b:number = 0; b < this.BLOCKS; b++){
-                            this.write(t, s, b, this.zeros());
+                            this.write(t, s, b, "0000" + this.zeros());
                         }
                     }
                 }
+                this.setHDDDisplay(_HDDdisplay);
+                this.createMBR();
                 return (this.isFormatted = true);
             }
+        }
+        
+        private createMBR(){
+            this.write(0,0,0,"1---MBR_BLOSSOM");
         }
         
         /**
@@ -141,6 +153,19 @@ module TSOS {
         }
         
         /**
+         * A function that will convert strings to hex... cool.
+         */
+        private stringToHex(fromString:string):string{
+            
+            var toHex:string = "";
+            
+            for(var i:number = 0; i < fromString.length; i++){
+                var toHex = toHex + fromString.charCodeAt(i).toString(16);
+            }
+            return toHex;
+        }
+        
+        /**
          * A method that will return if the browser supports html5 storage...
          * Modified from original version: http://diveintohtml5.info/storage.html
          */ 
@@ -152,8 +177,7 @@ module TSOS {
             }
         }
         
-        public updateHDDDisplay(tblElement: HTMLTableElement, t:number, s:number, b:number, data:string):void{
-            
+        public updateHDDDisplay(tblElement: HTMLTableElement, t:number, s:number, b:number, data:string, meta:string):void{
             
             var TSB: string = String(t) + String(s) + String(b);
             
@@ -166,6 +190,7 @@ module TSOS {
                 
                 if(TSB === rowcells[0].innerHTML){
                     
+                    rowcells[1].innerHTML = meta;
                     rowcells[2].innerHTML = data;
                     
                     break;
@@ -203,15 +228,9 @@ module TSOS {
                 
                 row.insertCell(0).innerHTML = temp;
                 
-                row.insertCell(1).innerHTML = "000";
-                row.insertCell(2).innerHTML = "0000000000000000000000000000000000000000000000000000000000000000";
+                row.insertCell(1).innerHTML = "0000";
+                row.insertCell(2).innerHTML = this.zeros();
             }
-            
-            this.write(0,0,1,"hi");
-          //  this.write(0,0,5,"bye");
-            
-            
-        }
-        
+        }     
     }
 }

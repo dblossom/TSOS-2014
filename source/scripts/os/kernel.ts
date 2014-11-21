@@ -58,7 +58,9 @@ module TSOS {
             
             // set the hard drive driver and display
             _krnHDDdriver = new DeviceDriverHDD();
-            _krnHDDdriver.setHDDDisplay(_HDDdisplay);
+            
+            // no need to set the display until drive is formatted, but leave for testing
+            //_krnHDDdriver.setHDDDisplay(_HDDdisplay);
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
