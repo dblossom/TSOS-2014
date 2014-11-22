@@ -28,13 +28,25 @@ module TSOS {
         public HardDriveArray;
         // is the drive formated
         public isFormatted:boolean;
+        // an array of files and the starting location
+        public fileArray;
+        // next file location (names)
+        public currentFileSector:number;
+        public currentFileBlock:number;
+        // next file data location
+        public currentFileDataTrack:number;
+        public currentFileDataSector:number;
+        public currentFileDataBlock:number;
+        // tells us if the drive is full or not
+        public driveFull:boolean;
+        
         
         /**
          * The constructor for our HDD driver
          */
-        constructor() {
+        constructor(){
             
-            super(this.setDriverEntry(), this.setISR()); // just some BS to compile
+            super(this.setDriverEntry(), this.setISR());
 
         }
         
@@ -63,6 +75,7 @@ module TSOS {
                 this.status = "loaded";
                 // hhd starts off unformatted
                 this.isFormatted = false;
+
             }else{
                 //TODO: error
             }
@@ -118,10 +131,86 @@ module TSOS {
                 }
                 this.setHDDDisplay(_HDDdisplay);
                 this.createMBR();
+                // set the file array
+                this.fileArray = new Array<File>();
+                // we do not start full...
+                this.driveFull = false;
+                // we need to set the next TSB
+                this.currentFileBlock = 1;
+                this.currentFileSector = 0;
+                this.currentFileDataTrack = 1;
+                this.currentFileDataSector = 0;
+                this.currentFileDataBlock = 0;
                 return (this.isFormatted = true);
             }
         }
         
+        /**
+         * A function that creates an empty file
+         */
+        public create(name:string):boolean{
+            
+            if(!this.driveFull){
+            
+                this.fileArray.unshift(new File(name, 
+                                             this.currentFileDataTrack, 
+                                             this.currentFileDataSector, 
+                                             this.currentFileDataBlock));
+                
+                var tempmeta = "1" + String(this.currentFileDataTrack) + String(this.currentFileDataSector) + String(this.currentFileDataBlock);
+                
+                this.write(0, this.currentFileSector, this.currentFileBlock, (tempmeta + name));
+                
+                this.setNextDataTSB();
+                this.setNextFileTSB();
+                
+                return true;
+            
+            }else{
+                //TODO: throw an IRQ
+            }
+        
+        }
+        
+        /**
+         * A function that sets the next TSB to write a file
+         */
+        private setNextFileTSB(){
+        
+            this.currentFileBlock++;
+            
+            if(this.currentFileBlock === 8){
+                this.currentFileBlock = 0;
+                this.currentFileSector++;
+            }
+            
+            if(this.currentFileSector === 8){
+                this.driveFull = true;
+            }
+        }
+        
+        private setNextDataTSB(){
+        
+            this.currentFileDataBlock++;
+            
+            if(this.currentFileDataBlock === 8){
+                this.currentFileDataBlock = 0;
+                this.currentFileDataSector++;
+            }
+            
+            if(this.currentFileDataSector === 8){
+                this.currentFileDataSector = 0;
+                this.currentFileDataTrack++;
+            }
+            
+            if(this.currentFileDataTrack === 4){
+                this.driveFull = true;
+            }
+        }
+        
+        /**
+         * A function that creates an MBR
+         */
         private createMBR(){
             this.write(0,0,0,"1---MBR_BLOSSOM");
         }

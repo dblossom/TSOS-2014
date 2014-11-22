@@ -120,6 +120,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellFormat, "format", "- formats the hard-drive");
             this.commandList[this.commandList.length] = sc;
 
+            // creates an empty file and allocates 1 block for it ...
+            sc = new TSOS.ShellCommand(this.shellCreate, "create", "<filename> - requested filename");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -679,6 +683,19 @@ var TSOS;
             if (!_krnHDDdriver.isFormatted) {
                 _krnHDDdriver.format();
                 _StdOut.putText("Hard Drive has been formatted and mounted - and you did not even say sudo");
+            }
+        };
+
+        /**
+        * creates an empty file and allocates 1 block also returns if inserted and name
+        */
+        Shell.prototype.shellCreate = function (args) {
+            var created = _krnHDDdriver.create(args);
+
+            if (created) {
+                _StdOut.putText("The file " + _krnHDDdriver.fileArray[0].name + " has been created.");
+            } else {
+                //TODO: insert error catching.
             }
         };
 

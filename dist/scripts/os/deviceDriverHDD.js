@@ -20,7 +20,7 @@ var TSOS;
         * The constructor for our HDD driver
         */
         function DeviceDriverHDD() {
-            _super.call(this, this.setDriverEntry(), this.setISR()); // just some BS to compile
+            _super.call(this, this.setDriverEntry(), this.setISR());
         }
         /**
         * The set driver entry function
@@ -106,10 +106,80 @@ var TSOS;
                 }
                 this.setHDDDisplay(_HDDdisplay);
                 this.createMBR();
+
+                // set the file array
+                this.fileArray = new Array();
+
+                // we do not start full...
+                this.driveFull = false;
+
+                // we need to set the next TSB
+                this.currentFileBlock = 1;
+                this.currentFileSector = 0;
+                this.currentFileDataTrack = 1;
+                this.currentFileDataSector = 0;
+                this.currentFileDataBlock = 0;
                 return (this.isFormatted = true);
             }
         };
 
+        /**
+        * A function that creates an empty file
+        */
+        DeviceDriverHDD.prototype.create = function (name) {
+            if (!this.driveFull) {
+                this.fileArray.unshift(new TSOS.File(name, this.currentFileDataTrack, this.currentFileDataSector, this.currentFileDataBlock));
+
+                var tempmeta = "1" + String(this.currentFileDataTrack) + String(this.currentFileDataSector) + String(this.currentFileDataBlock);
+
+                this.write(0, this.currentFileSector, this.currentFileBlock, (tempmeta + name));
+
+                this.setNextDataTSB();
+                this.setNextFileTSB();
+
+                return true;
+            } else {
+                //TODO: throw an IRQ
+            }
+        };
+
+        /**
+        * A function that sets the next TSB to write a file
+        */
+        DeviceDriverHDD.prototype.setNextFileTSB = function () {
+            this.currentFileBlock++;
+
+            if (this.currentFileBlock === 8) {
+                this.currentFileBlock = 0;
+                this.currentFileSector++;
+            }
+
+            if (this.currentFileSector === 8) {
+                this.driveFull = true;
+            }
+        };
+
+        DeviceDriverHDD.prototype.setNextDataTSB = function () {
+            this.currentFileDataBlock++;
+
+            if (this.currentFileDataBlock === 8) {
+                this.currentFileDataBlock = 0;
+                this.currentFileDataSector++;
+            }
+
+            if (this.currentFileDataSector === 8) {
+                this.currentFileDataSector = 0;
+                this.currentFileDataTrack++;
+            }
+
+            if (this.currentFileDataTrack === 4) {
+                this.driveFull = true;
+            }
+        };
+
+        /**
+        * A function that creates an MBR
+        */
         DeviceDriverHDD.prototype.createMBR = function () {
             this.write(0, 0, 0, "1---MBR_BLOSSOM");
         };
