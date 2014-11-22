@@ -178,12 +178,30 @@ module TSOS {
             for(var i:number = 0; i < this.fileArray.length; i++){
                 if(this.fileArray[i].name === name){
                     var tsb = this.fileArray[i].tsb;
-                    this.write(tsb, "0"+this.read(tsb).substring(1));
+                    
+                    this.deleteFileChain(this.fileArray[i].tsbData);
+                    
+                    this.write(tsb, "0---"+this.read(tsb).substring(4));
+                    
                     return true;
                 } 
             }
             
             
+        }
+        
+        /**
+         * A function that marks inuse flags - it will keep calling entire chain
+         * TODO: I hate this...
+         */
+        private deleteFileChain(tsb:string){
+            
+            while(this.read(tsb).substring(1,4) !== "---"){
+                var nexttsb = this.read(tsb).substring(1,4);
+                this.write(tsb, "0000" + this.read(tsb).substring(4));
+                tsb = nexttsb;
+            }
+            this.write(tsb, "0000" + this.read(tsb).substring(4));
         }
         
         /**
@@ -195,7 +213,6 @@ module TSOS {
                 for(var s:number = 0; s < this.SECTORS; s++){
                     for(var b:number = 0; b < this.BLOCKS; b++){
                         var tempFile = this.read(this.toStringTSB(t,s,b));
-                        alert(tempFile.charAt(0) === "0");
                         if(tempFile.charAt(0) === "0"){
                             this.driveFull = false;
                             return this.toStringTSB(0,s,b);
