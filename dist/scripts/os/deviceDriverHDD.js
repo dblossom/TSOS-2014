@@ -68,16 +68,15 @@ var TSOS;
         * @param track, sector, block - corresponds to location to write
         *        data is what to write
         */
-        DeviceDriverHDD.prototype.write = function (track, sector, block, data) {
-            var key = String(track) + String(sector) + String(block);
-            this.HardDriveArray.setItem(key, data);
+        DeviceDriverHDD.prototype.write = function (tsb, data) {
+            this.HardDriveArray.setItem(tsb, data);
 
             // for clarity
             var metaS = data.substring(0, 4);
             var dataS = data.substring(4);
 
             // update the display
-            this.updateHDDDisplay(_HDDdisplay, track, sector, block, this.padZeros(this.stringToHex(dataS)), metaS);
+            this.updateHDDDisplay(_HDDdisplay, tsb, this.padZeros(this.stringToHex(dataS)), metaS);
         };
 
         /**
@@ -85,9 +84,8 @@ var TSOS;
         * @param track, sector, block - where to read
         * @return what is there, whether you agree or not.
         */
-        DeviceDriverHDD.prototype.read = function (track, sector, block) {
-            var key = String(track) + String(sector) + String(block);
-            return this.HardDriveArray.getItem(key);
+        DeviceDriverHDD.prototype.read = function (tsb) {
+            return this.HardDriveArray.getItem(tsb);
         };
 
         /**
@@ -100,7 +98,7 @@ var TSOS;
                 for (var t = 0; t < this.TRACKS; t++) {
                     for (var s = 0; s < this.SECTORS; s++) {
                         for (var b = 0; b < this.BLOCKS; b++) {
-                            this.write(t, s, b, "0000" + this.zeros());
+                            this.write(this.toStringTSB(t, s, b), "0000" + this.zeros());
                         }
                     }
                 }
@@ -112,13 +110,6 @@ var TSOS;
 
                 // we do not start full...
                 this.driveFull = false;
-
-                // we need to set the next TSB
-                this.currentFileBlock = 1;
-                this.currentFileSector = 0;
-                this.currentFileDataTrack = 1;
-                this.currentFileDataSector = 0;
-                this.currentFileDataBlock = 0;
                 return (this.isFormatted = true);
             }
         };
@@ -128,35 +119,71 @@ var TSOS;
         */
         DeviceDriverHDD.prototype.create = function (name) {
             if (!this.driveFull) {
-                this.fileArray.unshift(new TSOS.File(name, this.currentFileDataTrack, this.currentFileDataSector, this.currentFileDataBlock));
+                //    this.fileArray.unshift(new File(name,
+                //                                 this.currentFileDataTrack,
+                //                                 this.currentFileDataSector,
+                //                                 this.currentFileDataBlock));
+                var freeData = this.findFreeDataTSB();
 
-                var tempmeta = "1" + String(this.currentFileDataTrack) + String(this.currentFileDataSector) + String(this.currentFileDataBlock);
+                //TODO: check for -1
+                var tempmeta = "1" + freeData;
 
-                this.write(0, this.currentFileSector, this.currentFileBlock, (tempmeta + name));
+                var temptsb = this.findFreeTSB();
 
-                this.setNextDataTSB();
-                this.setNextFileTSB();
+                if (temptsb !== "-1") {
+                    this.write(temptsb, (tempmeta + name));
 
-                return true;
+                    this.fileArray.unshift(new TSOS.File(name, tempmeta.substring(1)));
+
+                    return true;
+                } else {
+                    //TODO:
+                    return false;
+                }
             } else {
                 //TODO: throw an IRQ
             }
         };
 
         /**
-        * A function that sets the next TSB to write a file
+        * A function that looks for a free spot for file name
         */
-        DeviceDriverHDD.prototype.setNextFileTSB = function () {
-            this.currentFileBlock++;
-
-            if (this.currentFileBlock === 8) {
-                this.currentFileBlock = 0;
-                this.currentFileSector++;
+        DeviceDriverHDD.prototype.findFreeTSB = function () {
+            for (var t = 0; t < 1; t++) {
+                for (var s = 0; s < this.SECTORS; s++) {
+                    for (var b = 0; b < this.BLOCKS; b++) {
+                        var tempFile = this.read(this.toStringTSB(t, s, b));
+                        alert(tempFile.charAt(0) === "0");
+                        if (tempFile.charAt(0) === "0") {
+                            this.driveFull = false;
+                            return this.toStringTSB(0, s, b);
+                        }
+                    }
+                }
             }
+            return "-1";
+        };
 
-            if (this.currentFileSector === 8) {
-                this.driveFull = true;
+        /**
+        * A function that looks for a free data spot for files
+        */
+        DeviceDriverHDD.prototype.findFreeDataTSB = function () {
+            for (var t = 1; t < this.TRACKS; t++) {
+                for (var s = 0; s < this.SECTORS; s++) {
+                    for (var b = 0; b < this.BLOCKS; b++) {
+                        var tempFile = this.read(this.toStringTSB(t, s, b));
+                        if (tempFile.charAt(0) === "0")
+                            ;
+                        this.driveFull = false;
+                        return this.toStringTSB(t, s, b);
+                    }
+                }
             }
+            return "-1";
+        };
+
+        DeviceDriverHDD.prototype.toStringTSB = function (t, s, b) {
+            return String(t) + String(s) + String(b);
         };
 
         DeviceDriverHDD.prototype.setNextDataTSB = function () {
@@ -181,7 +208,7 @@ var TSOS;
         * A function that creates an MBR
         */
         DeviceDriverHDD.prototype.createMBR = function () {
-            this.write(0, 0, 0, "1---MBR_BLOSSOM");
+            this.write("000", "1---MBR_BLOSSOM");
         };
 
         /**
@@ -232,16 +259,14 @@ var TSOS;
             }
         };
 
-        DeviceDriverHDD.prototype.updateHDDDisplay = function (tblElement, t, s, b, data, meta) {
-            var TSB = String(t) + String(s) + String(b);
-
+        DeviceDriverHDD.prototype.updateHDDDisplay = function (tblElement, tsb, data, meta) {
             for (var i = 0; i < (tblElement.rows.length - 1); i++) {
                 var row = null;
                 row = tblElement.rows[i];
                 var rowcells = null;
                 rowcells = row.cells;
 
-                if (TSB === rowcells[0].innerHTML) {
+                if (tsb === rowcells[0].innerHTML) {
                     rowcells[1].innerHTML = meta;
                     rowcells[2].innerHTML = data;
 

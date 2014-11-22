@@ -40,7 +40,6 @@ module TSOS {
         // tells us if the drive is full or not
         public driveFull:boolean;
         
-        
         /**
          * The constructor for our HDD driver
          */
@@ -92,16 +91,15 @@ module TSOS {
          * @param track, sector, block - corresponds to location to write
          *        data is what to write
          */
-        public write(track:number, sector:number, block:number, data:string){
-            var key:string = String(track) + String(sector) + String(block);
-            this.HardDriveArray.setItem(key, data);
+        public write(tsb:string, data:string){
+            this.HardDriveArray.setItem(tsb, data);
             
             // for clarity
             var metaS = data.substring(0, 4);
             var dataS = data.substring(4);
             
             // update the display
-            this.updateHDDDisplay(_HDDdisplay, track, sector, block, this.padZeros(this.stringToHex(dataS)), metaS);
+            this.updateHDDDisplay(_HDDdisplay, tsb, this.padZeros(this.stringToHex(dataS)), metaS);
         }
         
         /**
@@ -109,9 +107,8 @@ module TSOS {
          * @param track, sector, block - where to read
          * @return what is there, whether you agree or not.
          */
-        public read(track:number, sector:number, block:number):string{
-            var key:string = String(track) + String(sector) + String(block);
-            return this.HardDriveArray.getItem(key);
+        public read(tsb:string):string{
+            return this.HardDriveArray.getItem(tsb);
         }
         
         /**
@@ -125,7 +122,7 @@ module TSOS {
                 for(var t:number = 0; t < this.TRACKS; t++){
                     for(var s:number = 0; s < this.SECTORS; s++){
                         for(var b:number = 0; b < this.BLOCKS; b++){
-                            this.write(t, s, b, "0000" + this.zeros());
+                            this.write(this.toStringTSB(t,s,b), "0000" + this.zeros());
                         }
                     }
                 }
@@ -135,12 +132,6 @@ module TSOS {
                 this.fileArray = new Array<File>();
                 // we do not start full...
                 this.driveFull = false;
-                // we need to set the next TSB
-                this.currentFileBlock = 1;
-                this.currentFileSector = 0;
-                this.currentFileDataTrack = 1;
-                this.currentFileDataSector = 0;
-                this.currentFileDataBlock = 0;
                 return (this.isFormatted = true);
             }
         }
@@ -152,20 +143,30 @@ module TSOS {
             
             if(!this.driveFull){
             
-                this.fileArray.unshift(new File(name, 
-                                             this.currentFileDataTrack, 
-                                             this.currentFileDataSector, 
-                                             this.currentFileDataBlock));
+            //    this.fileArray.unshift(new File(name, 
+            //                                 this.currentFileDataTrack, 
+            //                                 this.currentFileDataSector, 
+            //                                 this.currentFileDataBlock));
                 
-                var tempmeta = "1" + String(this.currentFileDataTrack) + String(this.currentFileDataSector) + String(this.currentFileDataBlock);
+                var freeData = this.findFreeDataTSB();
                 
-                this.write(0, this.currentFileSector, this.currentFileBlock, (tempmeta + name));
+                //TODO: check for -1
                 
-                this.setNextDataTSB();
-                this.setNextFileTSB();
+                var tempmeta = "1" + freeData;
                 
-                return true;
-            
+                var temptsb = this.findFreeTSB();
+                
+                if(temptsb !== "-1"){
+                
+                    this.write(temptsb, (tempmeta + name));
+                    
+                    this.fileArray.unshift(new File(name, tempmeta.substring(1)));
+                
+                    return true;
+                }else{
+                    //TODO:
+                    return false;
+                }
             }else{
                 //TODO: throw an IRQ
             }
@@ -173,20 +174,45 @@ module TSOS {
         }
         
         /**
-         * A function that sets the next TSB to write a file
+         * A function that looks for a free spot for file name
          */
-        private setNextFileTSB(){
+        private findFreeTSB():string{
+            
+            for(var t:number = 0; t < 1; t++){
+                for(var s:number = 0; s < this.SECTORS; s++){
+                    for(var b:number = 0; b < this.BLOCKS; b++){
+                        var tempFile = this.read(this.toStringTSB(t,s,b));
+                        alert(tempFile.charAt(0) === "0");
+                        if(tempFile.charAt(0) === "0"){
+                            this.driveFull = false;
+                            return this.toStringTSB(0,s,b);
+                        }
+                    }
+                }
+            }
+            return "-1"; // indicate no free TSB found.
+        }
         
-            this.currentFileBlock++;
-            
-            if(this.currentFileBlock === 8){
-                this.currentFileBlock = 0;
-                this.currentFileSector++;
+        /** 
+         * A function that looks for a free data spot for files
+         */
+        private findFreeDataTSB():string{
+        
+            for(var t:number = 1; t < this.TRACKS; t++){
+                for(var s:number = 0; s < this.SECTORS; s++){
+                    for(var b:number = 0; b < this.BLOCKS; b++){
+                        var tempFile = this.read(this.toStringTSB(t,s,b));
+                        if(tempFile.charAt(0) === "0");
+                            this.driveFull = false;
+                            return this.toStringTSB(t,s,b);
+                    }
+                }
             }
-            
-            if(this.currentFileSector === 8){
-                this.driveFull = true;
-            }
+            return "-1"; // indicate no free TSB found.
+        }
+        
+        private toStringTSB(t:number, s:number, b:number):string{
+            return String(t) + String(s) + String(b);
         }
         
         private setNextDataTSB(){
@@ -212,7 +238,7 @@ module TSOS {
          * A function that creates an MBR
          */
         private createMBR(){
-            this.write(0,0,0,"1---MBR_BLOSSOM");
+            this.write("000","1---MBR_BLOSSOM");
         }
         
         /**
@@ -266,10 +292,8 @@ module TSOS {
             }
         }
         
-        public updateHDDDisplay(tblElement: HTMLTableElement, t:number, s:number, b:number, data:string, meta:string):void{
-            
-            var TSB: string = String(t) + String(s) + String(b);
-            
+        public updateHDDDisplay(tblElement: HTMLTableElement, tsb:string, data:string, meta:string):void{
+               
             for(var i:number = 0; i < (tblElement.rows.length - 1); i++){
                 
                 var row = null;
@@ -277,7 +301,7 @@ module TSOS {
                 var rowcells = null;
                 rowcells = row.cells;
                 
-                if(TSB === rowcells[0].innerHTML){
+                if(tsb === rowcells[0].innerHTML){
                     
                     rowcells[1].innerHTML = meta;
                     rowcells[2].innerHTML = data;
