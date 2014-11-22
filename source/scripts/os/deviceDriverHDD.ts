@@ -142,11 +142,6 @@ module TSOS {
         public create(name:string):boolean{
             
             if(!this.driveFull){
-            
-            //    this.fileArray.unshift(new File(name, 
-            //                                 this.currentFileDataTrack, 
-            //                                 this.currentFileDataSector, 
-            //                                 this.currentFileDataBlock));
                 
                 var freeData = this.findFreeDataTSB();
                 
@@ -160,7 +155,9 @@ module TSOS {
                 
                     this.write(temptsb, (tempmeta + name));
                     
-                    this.fileArray.unshift(new File(name, tempmeta.substring(1)));
+                    this.write(tempmeta.substring(1), "1---");
+                    
+                    this.fileArray.unshift(new File(name, temptsb ,tempmeta.substring(1)));
                 
                     return true;
                 }else{
@@ -170,7 +167,23 @@ module TSOS {
             }else{
                 //TODO: throw an IRQ
             }
+        }
         
+        /**
+         * A functioin that deletes a file and all its contents
+         */
+        public deleteFile(name:string):boolean{
+            
+            // first let us just mark the file as no longer inuse
+            for(var i:number = 0; i < this.fileArray.length; i++){
+                if(this.fileArray[i].name === name){
+                    var tsb = this.fileArray[i].tsb;
+                    this.write(tsb, "0"+this.read(tsb).substring(1));
+                    return true;
+                } 
+            }
+            
+            
         }
         
         /**
@@ -202,9 +215,10 @@ module TSOS {
                 for(var s:number = 0; s < this.SECTORS; s++){
                     for(var b:number = 0; b < this.BLOCKS; b++){
                         var tempFile = this.read(this.toStringTSB(t,s,b));
-                        if(tempFile.charAt(0) === "0");
+                        if(tempFile.charAt(0) === "0"){
                             this.driveFull = false;
                             return this.toStringTSB(t,s,b);
+                        }
                     }
                 }
             }

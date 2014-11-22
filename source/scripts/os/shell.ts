@@ -179,6 +179,12 @@ module TSOS {
                                   "<filename> - requested filename");
             this.commandList[this.commandList.length] = sc;
             
+            // deletes a file 
+            sc = new ShellCommand(this.shellDelete,
+                                  "delete",
+                                  "<filename> - requested filename to delete");
+            this.commandList[this.commandList.length] = sc;
+            
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -742,7 +748,7 @@ module TSOS {
          */
         public shellCreate(args){
         
-            var created = _krnHDDdriver.create(args);
+            var created = _krnHDDdriver.create(args[0]);
             
             if(created){
                 _StdOut.putText("The file " +_krnHDDdriver.fileArray[0].name + " has been created.");
@@ -750,6 +756,21 @@ module TSOS {
                 //TODO: insert error catching.
             }
         
+        }
+        
+        /**
+         * Deletes a file
+         */
+        public shellDelete(args){
+            
+            var deleted = _krnHDDdriver.deleteFile(args[0]);
+            
+            if(deleted){
+                _StdOut.putText(args + " has been deleted");
+            }else{
+                //TODO:  error checking.
+            }
+            
         }
                 
         /**
