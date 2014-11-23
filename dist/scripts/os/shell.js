@@ -128,6 +128,18 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellDelete, "delete", "<filename> - requested filename to delete");
             this.commandList[this.commandList.length] = sc;
 
+            // writes a file
+            sc = new TSOS.ShellCommand(this.shellWrite, "write", "<text> - the text to write (with or without quotes) they will be removed.");
+            this.commandList[this.commandList.length] = sc;
+
+            // reads a file
+            sc = new TSOS.ShellCommand(this.shellRead, "read", "<filename> - the file you want to read.");
+            this.commandList[this.commandList.length] = sc;
+
+            // lists all files
+            sc = new TSOS.ShellCommand(this.shellLS, "ls", "- lists all the files.");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -698,15 +710,27 @@ var TSOS;
         * creates an empty file and allocates 1 block also returns if inserted and name
         */
         Shell.prototype.shellCreate = function (args) {
-            if (args[0].charAt(0) === ".") {
+            // first let us make sure the following conditions hold true...
+            // 1) it does not start with a . that is reserved for hidden system files (like swap).
+            // 2) let us make sure only one param is being passed, no spaces in our file names
+            // 3) let us make sure we passed something to call this file - we cannot guess - yet!
+            if (typeof args[0] === 'undefined') {
+                _StdOut.putText("Usage: create <filename> with or without quotes, the will be omitted");
+            } else if (args[0].charAt(0) === ".") {
                 _StdOut.putText("files cannot start with a '.'.");
+            } else if (typeof args[1] !== 'undefined') {
+                _StdOut.putText("Invalid file name, at this time no spaces allowed");
             } else {
+                // did it get created?
                 var created = _krnHDDdriver.create(args[0]);
 
+                // if it did let us tell the user...
                 if (created) {
                     _StdOut.putText("The file " + _krnHDDdriver.fileArray[0].name + " has been created.");
                 } else {
-                    //TODO: insert error catching.
+                    // okay it was not created, why? idk at this point, hopefully we caught the issue in device driver
+                    _StdOut.advanceLine();
+                    _StdOut.putText("The file WAS NOT created.");
                 }
             }
         };
@@ -721,6 +745,36 @@ var TSOS;
                 _StdOut.putText(args + " has been deleted");
             } else {
                 //TODO:  error checking.
+            }
+        };
+
+        /**
+        * Writes text to a file
+        */
+        Shell.prototype.shellWrite = function (args) {
+            _krnHDDdriver.writeFile(args[0], args[1]);
+        };
+
+        /**
+        * Reads a file and prints to screen
+        */
+        Shell.prototype.shellRead = function (args) {
+            _krnHDDdriver.readFile(args[0]);
+        };
+
+        /**
+        * lists all the file on the system
+        */
+        Shell.prototype.shellLS = function (args) {
+            if (typeof args[0] !== 'undefined') {
+                _StdOut.putText("Usage: Nothing! Just type ls to list all files");
+            } else {
+                for (var i = 0; i < _krnHDDdriver.fileArray.length; i++) {
+                    if (_krnHDDdriver.fileArray[i].name.charAt(0) !== ".") {
+                        _StdOut.putText(_krnHDDdriver.fileArray[i].name);
+                        _StdOut.advanceLine();
+                    }
+                }
             }
         };
 

@@ -76,7 +76,7 @@ module TSOS {
                 this.isFormatted = false;
 
             }else{
-                //TODO: error
+                _StdOut.putText("Hard drive not mounted, failed to load, please contact vendor.");
             }
             
         }
@@ -141,34 +141,58 @@ module TSOS {
          */
         public create(name:string):boolean{
         
+            // Be warned, we are swarming in if/else / if / else
+            // it is ugly and gets a bit too deep for my personal likings
+            // with that said ...
+            // TODO: clean up the IF's!
+        
+            // first let us remove any quotes that might have been passed
             name = this.parseQuotes(name);
             
-            if(!this.driveFull){
-                
+            // if the hard drive is not full, it is formatted and a file name does not exist
+            
+            if(!this.isFormatted){
+                _StdOut.putText("The drive is not formatted");
+            }else if(!this.driveFull && (this.lookupFileName(name) === null)){
+                // find some free space for this file name
                 var freeData = this.findFreeDataTSB();
-                
-                //TODO: check for -1
-                
-                var tempmeta = "1" + freeData;
-                
-                var temptsb = this.findFreeTSB();
-                
-                if(temptsb !== "-1"){
-                
-                    this.write(temptsb, (tempmeta + name));
-                    
-                    this.write(tempmeta.substring(1), "1---");
-                    
-                    this.fileArray.unshift(new File(name, temptsb ,tempmeta.substring(1)));
-                
-                    return true;
+                // we should not get here .. but if we do
+                if(freeData === "-1"){
+                    _StdOut.putText("Hard drive is full, no more room for you");
                 }else{
-                    //TODO:
-                    return false;
+                    // let us mark it in use and set the meta to point to its first data point
+                    var tempmeta = "1" + freeData;
+                    // let us find a place to put this file - ugh this is confusing.
+                    var temptsb = this.findFreeTSB();
+                    
+                    // okay there was room for it ...
+                    if(temptsb !== "-1"){
+                        // write to the tsb, the meta then append the name
+                        this.write(temptsb, (tempmeta + name));
+                        // let us mark the data "in use" and no links yet
+                        this.write(tempmeta.substring(1), "1---");
+                        // store the file name, its tsb and its first data tsb for easy lookup
+                        this.fileArray.unshift(new File(name, temptsb ,tempmeta.substring(1)));
+                        // return that it happened            
+                        return true;
+                    }else{
+                        // hard drive is full, return false
+                        _StdOut.putText("Hard drive is full, no more room for you!");
+                        return false;
+                    }
                 }
             }else{
-                //TODO: throw an IRQ
-            }
+                // we are either full, not formatted or file exists - we should not hit that last else LOL ...
+                if(this.driveFull){
+                    _StdOut.putText("Drive Full.");
+                }else if(!this.lookupFileName(name) === null){
+                    _StdOut.putText("Filename exists");
+                }else{
+                    _StdOut.putText("Something went wrong, and I am not sure what...sorry.");
+                }
+                // file was not created!
+                return false;
+            }        
         }
         
         /**
@@ -185,11 +209,64 @@ module TSOS {
                     
                     this.write(tsb, "0---"+this.read(tsb).substring(4));
                     
+                    this.fileArray.splice(i,1);
+                    
                     return true;
                 } 
             }
         }
         
+        /**
+         * A function to write data to a file
+         */
+        public writeFile(name:string, data:string){
+            var fileToWrite:File = this.lookupFileName(name);
+            if(fileToWrite === null){
+                _StdOut.putText("File does not exist.");
+            }else{
+                this.write(fileToWrite.tsbData, "1---" + data);
+            }
+        }
+        
+        /**
+         * A function to read a files contents and display
+         */
+        public readFile(name:string){
+        
+            var fileToRead:File = this.lookupFileName(name);
+            if(fileToRead === null){
+                _StdOut.putText("File not found...oh no!");
+            }else{
+                var readData:string = this.read(fileToRead.tsbData);
+                _StdOut.putText(readData.substring(4));
+            }
+        }
+        
+        /**
+         * A function to convert hex string to regular string
+         */
+        private hexToString(hexString:string):string{
+            
+            var converted:string = "";
+            while(hexString.length > 0){
+                converted = converted + String.fromCharCode(parseInt(hexString.substring(0,2), 16));
+                hexString = hexString.substring(2);
+            }
+            return converted;
+        }
+        
+        /** A function to look up a file name
+         *
+         */
+        private lookupFileName(name:string):File{
+            
+            for(var i:number = 0; i < this.fileArray.length; i++){
+                if(this.fileArray[i].name === name){
+                    return this.fileArray[i];
+                }
+            }
+            return null;
+        }
         
         
         /**
@@ -246,25 +323,6 @@ module TSOS {
         
         private toStringTSB(t:number, s:number, b:number):string{
             return String(t) + String(s) + String(b);
-        }
-        
-        private setNextDataTSB(){
-        
-            this.currentFileDataBlock++;
-            
-            if(this.currentFileDataBlock === 8){
-                this.currentFileDataBlock = 0;
-                this.currentFileDataSector++;
-            }
-            
-            if(this.currentFileDataSector === 8){
-                this.currentFileDataSector = 0;
-                this.currentFileDataTrack++;
-            }
-            
-            if(this.currentFileDataTrack === 4){
-                this.driveFull = true;
-            }
         }
         
         /**
