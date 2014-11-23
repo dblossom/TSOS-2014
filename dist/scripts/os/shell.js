@@ -686,7 +686,7 @@ var TSOS;
             //TODO: error checking
             if (!_krnHDDdriver.isFormatted) {
                 _krnHDDdriver.format();
-                _StdOut.putText("Hard Drive has been formatted and mounted - and you did not even say sudo");
+                _StdOut.putText("Hard Drive has been formatted and mounted.");
             } else if (_krnHDDdriver.isFormatted) {
                 //TODO: still format but make sure nothing is running
                 _krnHDDdriver.format();
@@ -698,12 +698,16 @@ var TSOS;
         * creates an empty file and allocates 1 block also returns if inserted and name
         */
         Shell.prototype.shellCreate = function (args) {
-            var created = _krnHDDdriver.create(args[0]);
-
-            if (created) {
-                _StdOut.putText("The file " + _krnHDDdriver.fileArray[0].name + " has been created.");
+            if (args[0].charAt(0) === ".") {
+                _StdOut.putText("files cannot start with a '.'.");
             } else {
-                //TODO: insert error catching.
+                var created = _krnHDDdriver.create(args[0]);
+
+                if (created) {
+                    _StdOut.putText("The file " + _krnHDDdriver.fileArray[0].name + " has been created.");
+                } else {
+                    //TODO: insert error catching.
+                }
             }
         };
 

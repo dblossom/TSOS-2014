@@ -140,6 +140,8 @@ module TSOS {
          * A function that creates an empty file
          */
         public create(name:string):boolean{
+        
+            name = this.parseQuotes(name);
             
             if(!this.driveFull){
                 
@@ -186,9 +188,9 @@ module TSOS {
                     return true;
                 } 
             }
-            
-            
         }
+        
+        
         
         /**
          * A function that marks inuse flags - it will keep calling entire chain
@@ -309,6 +311,17 @@ module TSOS {
                 var toHex = toHex + fromString.charCodeAt(i).toString(16);
             }
             return toHex;
+        }
+        
+        /**
+         * A function to parse out quotes from an incoming string
+         */
+        private parseQuotes(quotedString:string):string{
+            if(quotedString.charCodeAt(0) === 34){
+                return quotedString.substring(1, quotedString.length-1);
+            }else{
+                return quotedString;
+            }
         }
         
         /**

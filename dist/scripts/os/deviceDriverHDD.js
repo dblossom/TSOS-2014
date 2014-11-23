@@ -118,6 +118,8 @@ var TSOS;
         * A function that creates an empty file
         */
         DeviceDriverHDD.prototype.create = function (name) {
+            name = this.parseQuotes(name);
+
             if (!this.driveFull) {
                 var freeData = this.findFreeDataTSB();
 
@@ -272,6 +274,17 @@ var TSOS;
                 var toHex = toHex + fromString.charCodeAt(i).toString(16);
             }
             return toHex;
+        };
+
+        /**
+        * A function to parse out quotes from an incoming string
+        */
+        DeviceDriverHDD.prototype.parseQuotes = function (quotedString) {
+            if (quotedString.charCodeAt(0) === 34) {
+                return quotedString.substring(1, quotedString.length - 1);
+            } else {
+                return quotedString;
+            }
         };
 
         /**
