@@ -740,6 +740,10 @@ module TSOS {
             if(!_krnHDDdriver.isFormatted){
                 _krnHDDdriver.format();
                 _StdOut.putText("Hard Drive has been formatted and mounted - and you did not even say sudo");
+            }else if(_krnHDDdriver.isFormatted){
+                //TODO: still format but make sure nothing is running
+                _krnHDDdriver.format();
+                _StdOut.putText("Hard Drive has been re-formatted and all data has been erased.");
             }
         }
         

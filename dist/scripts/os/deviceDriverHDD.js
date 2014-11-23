@@ -303,6 +303,9 @@ var TSOS;
         };
 
         DeviceDriverHDD.prototype.setHDDDisplay = function (tblElement) {
+            // first if table exists, delete it
+            this.deleteHDDTable(tblElement);
+
             // only seems to work if we create a null first ... (?)
             var row = null;
 
@@ -333,6 +336,24 @@ var TSOS;
 
                 row.insertCell(1).innerHTML = "0000";
                 row.insertCell(2).innerHTML = this.zeros();
+            }
+        };
+
+        /**
+        * Clear / delete HDD display table.
+        */
+        DeviceDriverHDD.prototype.deleteHDDTable = function (tblElement) {
+            // so get the first row, if null then we do nothing
+            // otherwise we delete all rows in the table. This
+            // check is basically to ensure it is not the first time
+            // the table is being initalized.
+            var row = null;
+            row = tblElement.rows[1];
+
+            if (typeof row !== 'undefined') {
+                for (var i = 0; i < 257; i++) {
+                    tblElement.deleteRow(1);
+                }
             }
         };
         return DeviceDriverHDD;
