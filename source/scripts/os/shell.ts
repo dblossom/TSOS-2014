@@ -215,8 +215,20 @@ module TSOS {
                                   "- gets the current cpu schedule.");
             this.commandList[this.commandList.length] = sc;
             
+            // DELETE ME:
+            // test swapping
+            sc = new ShellCommand(this.testswap,
+                                  "testswap",
+                                  "-");
+            this.commandList[this.commandList.length] = sc;
+            
+            
             // Display the initial prompt.
             this.putPrompt();
+        }
+        
+        public testswap(args){
+            _krnHDDdriver.rollOut(_ResidentQueue[args[0]]);
         }
 
         public putPrompt() {
@@ -523,7 +535,7 @@ module TSOS {
                 // so - let us get the base and limit registers and create a PCB
                 var base:number = _MemManager.memoryRanges[activePartition].base;
                 var limit:number = _MemManager.memoryRanges[activePartition].limit;
-                _ResidentQueue[PCB.pid] = new PCB(base, limit);
+                _ResidentQueue[PCB.pid] = new PCB(base, limit, Location.IN_MEMORY);
                     
                 // point incs by 2 every go, i incs by 1. what, what what ?
                 // point keeps track of the hex bytes (aka 2 nibbles, aka every 2 chars)

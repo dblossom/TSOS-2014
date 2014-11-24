@@ -17,6 +17,11 @@ module TSOS{
             WAITING, // waiting = 3
             READY // ready = 4
     }
+    
+    export enum Location{ 
+            IN_MEMORY, // memory = 0
+            HARD_DISK // harddrive = 1
+    }
 
     export class PCB{
     
@@ -37,7 +42,10 @@ module TSOS{
         public base: number;
         public limit: number;
         
-        constructor(base:number, limit:number){
+        // we need its location
+        public location: Location;
+        
+        constructor(base:number, limit:number, location:Location){
             // increment the pid everytime we create a PCB
             // so we do not want to start at zero but rather
             // whatever the next number will be.
@@ -48,6 +56,7 @@ module TSOS{
             this.limit = limit;
             // set the current state to be "new"
             this.currentState = State.NEW;
+            this.location = location;
         }
         
         /**
@@ -78,6 +87,7 @@ module TSOS{
              cellsInRow[6].innerHTML = this.X_reg.toString();
              cellsInRow[7].innerHTML = this.Y_reg.toString();
              cellsInRow[8].innerHTML = this.Z_flag.toString();
+             cellsInRow[9].innerHTML = Location[this.location].toString();
          }
          
          /**
@@ -99,6 +109,7 @@ module TSOS{
              row.insertCell(6).innerHTML = this.X_reg.toString();
              row.insertCell(7).innerHTML = this.Y_reg.toString();
              row.insertCell(8).innerHTML = this.Z_flag.toString();
+             row.insertCell(9).innerHTML = Location[this.location].toString();
          }
          
          /**

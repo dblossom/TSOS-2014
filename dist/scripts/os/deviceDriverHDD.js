@@ -110,6 +110,9 @@ var TSOS;
 
                 // we do not start full...
                 this.driveFull = false;
+
+                // keep track of swap files
+                this.swapfilecount = 0;
                 return (this.isFormatted = true);
             }
         };
@@ -244,10 +247,10 @@ var TSOS;
 
                 while (true) {
                     // first get the first substring to write
-                    var rest = data.substring(0, 30);
+                    var rest = data.substring(0, 60);
 
                     // set the rest for the next round
-                    data = data.substring(30);
+                    data = data.substring(60);
 
                     // if there is no more data just write the final part and get out of here
                     if (data.length <= 0) {
@@ -313,6 +316,23 @@ var TSOS;
                 // print out the text
                 _StdOut.putText(fullstring);
             }
+        };
+
+        /**
+        * A function that "rolls out" a PCB to disk
+        */
+        DeviceDriverHDD.prototype.rollOut = function (pcb) {
+            if (!this.isFormatted) {
+                _StdOut.putText("Cannot Swap, drive not formatted.");
+                return;
+            }
+            this.swapfilecount++;
+            this.create(".swap" + (this.swapfilecount));
+            var mem_string = "";
+            for (var i = 0; i < MAX_MEM_SPACE; i++) {
+                mem_string = mem_string + _MemManager.read(i, pcb);
+            }
+            this.writeFile(".swap" + this.swapfilecount, mem_string);
         };
 
         /**
@@ -405,9 +425,9 @@ var TSOS;
         *       start to need the meta data
         */
         DeviceDriverHDD.prototype.zeros = function () {
-            var zero = "0";
+            var zero = "00";
             for (var i = 1; i < (this.BYTES_BLOCKS - this.meta); i++) {
-                zero = zero + "0";
+                zero = zero + "00";
             }
             return zero;
         };
@@ -416,8 +436,8 @@ var TSOS;
         * A method to pad the number of zeros at the end of the string
         */
         DeviceDriverHDD.prototype.padZeros = function (toPad) {
-            while (toPad.length < (this.BYTES_BLOCKS - this.meta)) {
-                toPad = toPad + "0";
+            while (toPad.length < ((this.BYTES_BLOCKS - this.meta) * 2)) {
+                toPad = toPad + "00";
             }
 
             return toPad;

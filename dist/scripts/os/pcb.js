@@ -15,8 +15,14 @@ var TSOS;
     })(TSOS.State || (TSOS.State = {}));
     var State = TSOS.State;
 
+    (function (Location) {
+        Location[Location["IN_MEMORY"] = 0] = "IN_MEMORY";
+        Location[Location["HARD_DISK"] = 1] = "HARD_DISK";
+    })(TSOS.Location || (TSOS.Location = {}));
+    var Location = TSOS.Location;
+
     var PCB = (function () {
-        function PCB(base, limit) {
+        function PCB(base, limit, location) {
             // CPU State information
             // kept var names similar to CPU with slight difference for sanity.
             this.progCount = 0;
@@ -35,6 +41,7 @@ var TSOS;
 
             // set the current state to be "new"
             this.currentState = 0 /* NEW */;
+            this.location = location;
         }
         /**
         * Method to initalize PCB display to all zeros
@@ -65,6 +72,7 @@ var TSOS;
             cellsInRow[6].innerHTML = this.X_reg.toString();
             cellsInRow[7].innerHTML = this.Y_reg.toString();
             cellsInRow[8].innerHTML = this.Z_flag.toString();
+            cellsInRow[9].innerHTML = Location[this.location].toString();
         };
 
         /**
@@ -87,6 +95,7 @@ var TSOS;
             row.insertCell(6).innerHTML = this.X_reg.toString();
             row.insertCell(7).innerHTML = this.Y_reg.toString();
             row.insertCell(8).innerHTML = this.Z_flag.toString();
+            row.insertCell(9).innerHTML = Location[this.location].toString();
         };
 
         /**

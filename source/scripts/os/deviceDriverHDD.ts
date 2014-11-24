@@ -40,6 +40,8 @@ module TSOS {
         // tells us if the drive is full or not
         public driveFull:boolean;
         
+        public swapfilecount:number;
+        
         /**
          * The constructor for our HDD driver
          */
@@ -132,6 +134,8 @@ module TSOS {
                 this.fileArray = new Array<File>();
                 // we do not start full...
                 this.driveFull = false;
+                // keep track of swap files
+                this.swapfilecount = 0;
                 return (this.isFormatted = true);
             }
         }
@@ -256,9 +260,9 @@ module TSOS {
                 // now we loop through to write in "chunks"
                 while(true){
                     // first get the first substring to write
-                    var rest:string = data.substring(0, 30);
+                    var rest:string = data.substring(0, 60);
                     // set the rest for the next round
-                    data = data.substring(30);
+                    data = data.substring(60);
                     // if there is no more data just write the final part and get out of here
                     if(data.length <= 0){
                         this.write(meta, "1---" + rest);
@@ -315,6 +319,25 @@ module TSOS {
                 // print out the text
                 _StdOut.putText(fullstring);
             }
+        }
+        
+        /**
+         * A function that "rolls out" a PCB to disk 
+         */
+        public rollOut(pcb:PCB){
+            
+            if(!this.isFormatted){
+                _StdOut.putText("Cannot Swap, drive not formatted.");
+                return;
+            }
+            this.swapfilecount++;
+            this.create(".swap"+(this.swapfilecount));
+            var mem_string:string = "";
+            for(var i:number = 0; i < MAX_MEM_SPACE; i++){
+                mem_string = mem_string + _MemManager.read(i, pcb);
+            }
+            this.writeFile(".swap"+this.swapfilecount, mem_string);
+
         }
         
         /**
@@ -413,9 +436,9 @@ module TSOS {
          *       start to need the meta data
          */
         private zeros():string {
-            var zero:string = "0";
+            var zero:string = "00";
             for(var i:number = 1; i < (this.BYTES_BLOCKS - this.meta); i++){
-                zero = zero + "0";
+                zero = zero + "00";
             }
             return zero;
         }
@@ -425,8 +448,8 @@ module TSOS {
          */
         private padZeros(toPad:string):string{
         
-            while(toPad.length < (this.BYTES_BLOCKS - this.meta)){
-                toPad = toPad + "0";
+            while(toPad.length < ((this.BYTES_BLOCKS - this.meta) * 2)){
+                toPad = toPad + "00";
             }
             
             return toPad;
