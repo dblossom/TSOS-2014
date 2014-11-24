@@ -120,7 +120,8 @@ var _krnHDDdriver = null;
 
 // scheduling stuff
 var _Quantum:number = 6; // default quantum == 6 (make it high for testing RR)
-var _CPU_Schedule: TSOS.Schedule = null; 
+var _CPU_Schedule: TSOS.Schedule = null;
+var _Priorty:number = 0; // seems reasonable I guess... 
 
 // For testing...
 var _GLaDOS: any = null;

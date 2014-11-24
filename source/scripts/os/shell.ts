@@ -203,6 +203,18 @@ module TSOS {
                                   "- lists all the files.");
             this.commandList[this.commandList.length] = sc;
             
+            // sets the cpu schedule
+            sc = new ShellCommand(this.shellSetSchedule,
+                                  "setschedule",
+                                  "<rr, fcfs, priority> - set the cpu schedule.");
+            this.commandList[this.commandList.length] = sc;
+            
+            // gets the cpu schedule 
+            sc = new ShellCommand(this.shellGetSchedule,
+                                  "getschedule",
+                                  "- gets the current cpu schedule.");
+            this.commandList[this.commandList.length] = sc;
+            
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -859,6 +871,65 @@ module TSOS {
                         _StdOut.advanceLine();
                     }
                 }
+            }
+        }
+        
+        /**
+         * Sets the CPU Schedule
+         */
+        public shellSetSchedule(args){
+            if(args.length !== 1){
+                _StdOut.putText("Usage: rr, fcfs, priority");
+                return;
+            }
+            if(args[0] === "rr"){
+                _CPU_Schedule = new Schedule(ScheduleRoutine.RR);
+                Control.hostLog("Round Robin Set");
+                _StdOut.putText("Round Robin Scheduling Set");
+                return;
+            }
+            if(args[0] === "fcfs"){
+                _CPU_Schedule = new Schedule(ScheduleRoutine.FCFS);
+                Control.hostLog("First Come First Serve Set");
+                _StdOut.putText("First Come First Serve Scheduling Set");
+                return;
+            }
+            //if(args[0]) === "priority"){
+            //      _CPU_Schedule = new Schedule(ScheduleRoutine.PRIORITY);
+            //      Control.hostLog("Priority Set");
+            //      _StdOut.putText("Priority Scheduling Set");
+            //      return;
+            //}
+            // how did we get here?'
+            _StdOut.putText("Invalid scheduling algorithm picked");
+        }
+        
+        /**
+         * Gets the current cpu schedule
+         */
+        public shellGetSchedule(args){
+            
+            if(args.length > 0){
+                _StdOut.putText("Usage: NOTHING! just type getschedule");
+                return;
+            }
+            
+            switch(_CPU_Schedule.routine){
+            
+                case ScheduleRoutine.RR:
+                    _StdOut.putText("Round Robin is the current scheduling algorithm");
+                    break;
+                
+                case ScheduleRoutine.FCFS:
+                    _StdOut.putText("First Come First Serve is the current scheduling algorithm");
+                    break;
+                    
+                case ScheduleRoutine.PRIORITY:
+                    _StdOut.putText("Priority is the current scheduling algorithm");
+                    break;
+                    
+                default:
+                    _StdOut.putText("Something is very very wrong... no cpu scheduling set?");
             }
         }
                 

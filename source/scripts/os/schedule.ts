@@ -16,8 +16,8 @@ module TSOS{
      */
     export enum ScheduleRoutine{ 
         RR, //, // round robin = 0
-        FCFS //, // first come first served = 1
-      //  PRIORITY // priority = 2
+        FCFS, // first come first served = 1
+        PRIORITY // priority = 2
     }
     
     /**
@@ -62,6 +62,10 @@ module TSOS{
                 // First come first serve
                 case ScheduleRoutine.FCFS:
                     this.firstCome();
+                    break;
+                    
+                case ScheduleRoutine.PRIORITY:
+                    this.priority();
                     break;
                 
                 // how the freak did we even get here?
@@ -109,6 +113,9 @@ module TSOS{
             // pass a high value into round robin routine to make it
             // seem like FCFS
             this.roundRobin(9999);
-        }   
+        }
+        
+        public priority(){} // empty shell
+           
     }
 }

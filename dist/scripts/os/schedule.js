@@ -13,6 +13,7 @@ var TSOS;
     (function (ScheduleRoutine) {
         ScheduleRoutine[ScheduleRoutine["RR"] = 0] = "RR";
         ScheduleRoutine[ScheduleRoutine["FCFS"] = 1] = "FCFS";
+        ScheduleRoutine[ScheduleRoutine["PRIORITY"] = 2] = "PRIORITY";
     })(TSOS.ScheduleRoutine || (TSOS.ScheduleRoutine = {}));
     var ScheduleRoutine = TSOS.ScheduleRoutine;
 
@@ -45,6 +46,10 @@ var TSOS;
 
                 case 1 /* FCFS */:
                     this.firstCome();
+                    break;
+
+                case 2 /* PRIORITY */:
+                    this.priority();
                     break;
 
                 default:
@@ -87,6 +92,9 @@ var TSOS;
             // pass a high value into round robin routine to make it
             // seem like FCFS
             this.roundRobin(9999);
+        };
+
+        Schedule.prototype.priority = function () {
         };
         return Schedule;
     })();
