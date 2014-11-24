@@ -739,12 +739,17 @@ var TSOS;
         * Deletes a file
         */
         Shell.prototype.shellDelete = function (args) {
+            if (args.length !== 1) {
+                _StdOut.putText("Invalid file name");
+                return;
+            }
+
             var deleted = _krnHDDdriver.deleteFile(args[0]);
 
             if (deleted) {
-                _StdOut.putText(args + " has been deleted");
+                _StdOut.putText(args[0] + " has been deleted");
             } else {
-                //TODO:  error checking.
+                _StdOut.putText(args[0] + " has not been deleted.");
             }
         };
 
@@ -774,6 +779,11 @@ var TSOS;
         * lists all the file on the system
         */
         Shell.prototype.shellLS = function (args) {
+            if (!_krnHDDdriver.isFormatted) {
+                _StdOut.putText("The drive is not formatted, nothing to see here, move along");
+                return;
+            }
+
             if (typeof args[0] !== 'undefined') {
                 _StdOut.putText("Usage: Nothing! Just type ls to list all files");
             } else {

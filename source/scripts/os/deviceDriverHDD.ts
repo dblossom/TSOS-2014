@@ -199,21 +199,32 @@ module TSOS {
          * A functioin that deletes a file and all its contents
          */
         public deleteFile(name:string):boolean{
+        
+            if(!this.isFormatted){
+                _StdOut.putText("The drive is not formatted");
+                return;
+            }
             
-            // first let us just mark the file as no longer inuse
+            // loop through our file name array
             for(var i:number = 0; i < this.fileArray.length; i++){
+                // do we have a match ? awesome!
                 if(this.fileArray[i].name === name){
+                    // where does it reside?
                     var tsb = this.fileArray[i].tsb;
-                    
+                    // delete the chain of data (if exists) 
+                    // really we just change the inuse and next tsb bits to 0000
                     this.deleteFileChain(this.fileArray[i].tsbData);
-                    
+                    // let us change the in use bit of the file name location and 
+                    // for fun leave the old stuff there ... not sure why
                     this.write(tsb, "0---"+this.read(tsb).substring(4));
-                    
+                    // remove the file object from our file array
                     this.fileArray.splice(i,1);
-                    
+                    // return that we did it!
                     return true;
                 } 
             }
+            // if we got here something went wrong
+            return false;
         }
         
         /**
