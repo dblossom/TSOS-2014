@@ -199,11 +199,61 @@ var TSOS;
         * A function to write data to a file
         */
         DeviceDriverHDD.prototype.writeFile = function (name, data) {
+            // Not proud of some of these checks
+            // if the drive is not formated, bail...
+            if (!this.isFormatted) {
+                _StdOut.putText("The drive is not formatted!!");
+                return;
+            }
+
+            // does the file exists?
             var fileToWrite = this.lookupFileName(name);
             if (fileToWrite === null) {
                 _StdOut.putText("File does not exist.");
             } else {
-                this.write(fileToWrite.tsbData, "1---" + data);
+                // first we need to delete the chain of text that might exist
+                this.deleteFileChain(fileToWrite.tsbData);
+
+                // we need to mark the first write point "inuse"
+                this.write(fileToWrite.tsbData, "1---");
+
+                // remove an extra space we bring in from shell command
+                data = data.substring(0, data.length - 1);
+
+                // parse out any quotes if they were passed int
+                data = this.parseQuotes(data);
+
+                // first we need to know the first tsb location
+                var meta = fileToWrite.tsbData;
+
+                while (true) {
+                    // first get the first substring to write
+                    var rest = data.substring(0, 30);
+
+                    // set the rest for the next round
+                    data = data.substring(30);
+
+                    // if there is no more data just write the final part and get out of here
+                    if (data.length <= 0) {
+                        this.write(meta, "1---" + rest);
+                        break;
+                    } else {
+                        // get the next tsb
+                        var next = this.findFreeDataTSB();
+
+                        // write at the data location, in use, nexttsb and data
+                        this.write(meta, "1" + next + rest);
+
+                        // if we do not mark next in use, findFreeDataTSB() will fail us here
+                        this.write(next, "1---");
+
+                        // set meta to now be the next one
+                        meta = next;
+                    }
+                }
+
+                // finally tell the user the file has been written.
+                _StdOut.putText("File has been written");
             }
         };
 
@@ -211,12 +261,41 @@ var TSOS;
         * A function to read a files contents and display
         */
         DeviceDriverHDD.prototype.readFile = function (name) {
+            // is the drive formatted? if not bail
+            if (!this.isFormatted) {
+                _StdOut.putText("The drive is not formatted");
+                return;
+            }
+
+            // does the file exist ?
             var fileToRead = this.lookupFileName(name);
             if (fileToRead === null) {
                 _StdOut.putText("File not found...oh no!");
             } else {
-                var readData = this.read(fileToRead.tsbData);
-                _StdOut.putText(readData.substring(4));
+                // first we need a return string, the starting meta
+                // and a var for the data we read.
+                var fullstring = "";
+                var readData;
+                var nextmeta = fileToRead.tsbData;
+
+                while (true) {
+                    // get the data from the meta location
+                    readData = this.read(nextmeta);
+
+                    // mark --- or the next location to read
+                    nextmeta = readData.substring(1, 4);
+
+                    // build our return string
+                    fullstring = fullstring + readData.substring(4);
+
+                    // if --- we can exit: TODO: move this to while condidtion
+                    if (nextmeta === "---") {
+                        break;
+                    }
+                }
+
+                // print out the text
+                _StdOut.putText(fullstring);
             }
         };
 

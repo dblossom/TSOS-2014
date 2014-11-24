@@ -752,7 +752,15 @@ var TSOS;
         * Writes text to a file
         */
         Shell.prototype.shellWrite = function (args) {
-            _krnHDDdriver.writeFile(args[0], args[1]);
+            if (args.length < 2) {
+                _StdOut.putText("Usage: <filename> <text>");
+            } else {
+                var texttowrite = "";
+                for (var i = 1; i < args.length; i++) {
+                    texttowrite = texttowrite + args[i] + " ";
+                }
+                _krnHDDdriver.writeFile(args[0], texttowrite);
+            }
         };
 
         /**

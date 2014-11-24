@@ -815,7 +815,17 @@ module TSOS {
          * Writes text to a file
          */
         public shellWrite(args){
-            _krnHDDdriver.writeFile(args[0], args[1]);
+        
+            if(args.length < 2){
+                _StdOut.putText("Usage: <filename> <text>");
+            }else{
+                 
+                var texttowrite:string = "";
+                for(var i:number = 1; i < args.length; i++){
+                    texttowrite = texttowrite + args[i] + " ";
+                }
+                _krnHDDdriver.writeFile(args[0], texttowrite);
+            }
         }
         
         /**
