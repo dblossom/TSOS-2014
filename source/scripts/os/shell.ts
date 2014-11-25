@@ -554,7 +554,7 @@ module TSOS {
             
                 // make a temp pcb
                 var tempPCB:PCB = new PCB(-1, -1, Location.HARD_DISK);
-                _ResidentQueue[tempPCB.pidNumber];
+                _ResidentQueue[tempPCB.pidNumber] = tempPCB;
                 _krnHDDdriver.rollOut(tempPCB, textInput); 
                 
                 _StdOut.putText("Loading, please wait...");

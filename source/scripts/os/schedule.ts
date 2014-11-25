@@ -116,6 +116,51 @@ module TSOS{
         }
         
         public priority(){} // empty shell
-           
+        
+        /**
+         * Method to handle swapping
+         */
+        public swap(pcb:PCB){
+            
+            // first where are we ?
+                            
+            // okay great, we are in memory this is easy
+            if(pcb.location === Location.IN_MEMORY){
+                _krnHDDdriver.rollOut(pcb);
+                pcb.setPCBDisplay(_PCBdisplay);
+                return;
+            }
+            // okay we are on the drive drive, no need to panic yet.
+            if(pcb.location === Location.HARD_DISK){
+            
+                // oh there is memory available sweet 
+                if(_MemManager.memoryAvailable()){
+                    _krnHDDdriver.rollIn(pcb);
+                    pcb.setPCBDisplay(_PCBdisplay);
+                    return;
+                }
+                // fuck...
+                if(!_MemManager.memoryAvailable()){
+                    
+                    // let us pick a random memory location for now, maybe
+                    // make something better later ...
+                    // memory location 2 seems random enough LOL
+                    // ... okay find memory location two
+                    for(var i:number = 0; i < _KernelReadyQueue.q.length; i++){
+                        if(_KernelReadyQueue.q[i].base === 512){
+                            _MemManager.deallocate(_KernelReadyQueue.q[i]);
+                            _krnHDDdriver.rollOut(_KernelReadyQueue.q[i]);
+                            _KernelReadyQueue.q[i].setPCBDisplay(_PCBdisplay);
+                            break;
+                        }
+                    }
+                    
+                    // okay now let us roll this guy in
+                    _krnHDDdriver.rollIn(pcb);
+                    pcb.setPCBDisplay(_PCBdisplay);
+                    return;
+                }
+            }
+        }  
     }
 }

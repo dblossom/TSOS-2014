@@ -96,6 +96,46 @@ var TSOS;
 
         Schedule.prototype.priority = function () {
         };
+
+        /**
+        * Method to handle swapping
+        */
+        Schedule.prototype.swap = function (pcb) {
+            // first where are we ?
+            // okay great, we are in memory this is easy
+            if (pcb.location === 0 /* IN_MEMORY */) {
+                _krnHDDdriver.rollOut(pcb);
+                pcb.setPCBDisplay(_PCBdisplay);
+                return;
+            }
+
+            // okay we are on the drive drive, no need to panic yet.
+            if (pcb.location === 1 /* HARD_DISK */) {
+                // oh there is memory available sweet
+                if (_MemManager.memoryAvailable()) {
+                    _krnHDDdriver.rollIn(pcb);
+                    pcb.setPCBDisplay(_PCBdisplay);
+                    return;
+                }
+
+                // fuck...
+                if (!_MemManager.memoryAvailable()) {
+                    for (var i = 0; i < _KernelReadyQueue.q.length; i++) {
+                        if (_KernelReadyQueue.q[i].base === 512) {
+                            _MemManager.deallocate(_KernelReadyQueue.q[i]);
+                            _krnHDDdriver.rollOut(_KernelReadyQueue.q[i]);
+                            _KernelReadyQueue.q[i].setPCBDisplay(_PCBdisplay);
+                            break;
+                        }
+                    }
+
+                    // okay now let us roll this guy in
+                    _krnHDDdriver.rollIn(pcb);
+                    pcb.setPCBDisplay(_PCBdisplay);
+                    return;
+                }
+            }
+        };
         return Schedule;
     })();
     TSOS.Schedule = Schedule;

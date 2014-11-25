@@ -246,6 +246,11 @@ var TSOS;
             var pcb = params.dequeue();
 
             // set our "active pcb pointer"
+            // if the pcb is not in memory, we better make is so.
+            if (pcb.location === 1 /* HARD_DISK */) {
+                _CPU_Schedule.swap(pcb);
+            }
+
             _ActiveProgram = pcb;
 
             // print a trace so we know ... (hmm, this might not work well - or at all - with run all?)
@@ -404,6 +409,11 @@ var TSOS;
 
             // get the next process to run
             _ActiveProgram = _KernelReadyQueue.dequeue();
+
+            // check to make sure the newly active program resides in memory...if not swap
+            if (_ActiveProgram.location === 1 /* HARD_DISK */) {
+                _CPU_Schedule.swap(_ActiveProgram);
+            }
 
             // set the CPU with the new pcb's pc, acc, x & y regs and z flag
             _CPU.PC = _ActiveProgram.progCount;

@@ -486,7 +486,7 @@ var TSOS;
             } else if (isValid && _krnHDDdriver.isFormatted) {
                 // make a temp pcb
                 var tempPCB = new TSOS.PCB(-1, -1, 1 /* HARD_DISK */);
-                _ResidentQueue[tempPCB.pidNumber];
+                _ResidentQueue[tempPCB.pidNumber] = tempPCB;
                 _krnHDDdriver.rollOut(tempPCB, textInput);
 
                 _StdOut.putText("Loading, please wait...");

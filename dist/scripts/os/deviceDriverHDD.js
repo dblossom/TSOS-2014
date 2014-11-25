@@ -339,17 +339,15 @@ var TSOS;
                     // this is not really pretty, but do not want to break anything else
                     // I just want to graduate :)
                     var checkString = _MemManager.read(i, pcb);
-                    if (!isNaN(parseInt(checkString)) && checkString.length < 2 && parseInt(checkString) !== 0) {
+                    if (!isNaN(parseInt(checkString)) && checkString.length < 2) {
                         checkString = "0" + checkString;
                     }
-
                     mem_string = mem_string + checkString;
                 }
             } else {
                 while (program.length < 256) {
                     program = program + "0";
                 }
-
                 mem_string = program;
             }
             this.writeFile(".swap" + this.swapfilecount, mem_string);
@@ -381,7 +379,8 @@ var TSOS;
                     _MemManager.write(i, (data.charAt(point++) + data.charAt(point++)), pcb);
                 }
                 pcb.location = 0 /* IN_MEMORY */;
-                pcb.setPCBDisplay(_PCBdisplay);
+
+                //  pcb.setPCBDisplay(_PCBdisplay);
                 this.deleteFile(pcb.swapname);
             }
         };
