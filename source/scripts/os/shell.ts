@@ -515,15 +515,19 @@ module TSOS {
             
             // are we loading a "valid" program -- IE everything is valid hex?
             var isValid:boolean = new Shell().validateProgram(_ProgramTextArea.value.trim());
+            
+            var textInput:string = _ProgramTextArea.value.trim();
+            
+            textInput = textInput.replace(/ /g,"");
                 
             // Yep, but do we have free space to load this thing ?
             if(isValid && _MemManager.memoryAvailable()){
                 
-                var textInput:string = _ProgramTextArea.value.trim();
+                
                 
                 //TODO: return the fixed string when validating program...
                 //      make empty string or maybe return an array? IDK yet.
-                textInput = textInput.replace(/ /g,"");
+                
             
                 // where or where will we put this thing ?
                 var activePartition:number = _MemManager.allocate();
@@ -545,6 +549,18 @@ module TSOS {
                 for(var i:number = 0; i < (textInput.length / 2); i++){
                     _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)),_ResidentQueue[PCB.pid-1] );
                 }
+            // well no room in memory, but how about swapping it to the hard-drive?
+            }else if(isValid && _krnHDDdriver.isFormatted){
+            
+                // make a temp pcb
+                var tempPCB:PCB = new PCB(-1, -1, Location.HARD_DISK);
+                _ResidentQueue[tempPCB.pidNumber];
+                _krnHDDdriver.rollOut(tempPCB, textInput); 
+                
+                _StdOut.putText("Loading, please wait...");
+                _StdOut.advanceLine(); 
+                _StdOut.putText("PID: " + tempPCB.pidNumber);
+                
 
             }else{
                // let the user know his/her program is shitty and does not work

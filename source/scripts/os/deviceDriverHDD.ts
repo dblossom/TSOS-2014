@@ -326,7 +326,7 @@ module TSOS {
         /**
          * A function that "rolls out" a PCB to disk 
          */
-        public rollOut(pcb:PCB){
+        public rollOut(pcb:PCB, program?){
             
             if(!this.isFormatted){
                 _StdOut.putText("Cannot Swap, drive not formatted.");
@@ -335,26 +335,34 @@ module TSOS {
             this.swapfilecount++;
             this.create(".swap"+(this.swapfilecount));
             var mem_string:string = "";
-            for(var i:number = 0; i < MAX_MEM_SPACE; i++){
+            if(typeof program === 'undefined'){
+                for(var i:number = 0; i < MAX_MEM_SPACE; i++){
                 
-                // so read returns a string BUT since I store as an INT and convert
-                // to a string, 07 gets stored as 7 and read to HD as such, it should
-                // read it as 07 then let rollIn() deal with it
-                // this is not really pretty, but do not want to break anything else
-                // I just want to graduate :)
-                var checkString: string = _MemManager.read(i, pcb);
-                if(!isNaN(parseInt(checkString)) && checkString.length < 2 && parseInt(checkString) !== 0){
-                    checkString = "0" + checkString;
+                    // so read returns a string BUT since I store as an INT and convert
+                    // to a string, 07 gets stored as 7 and read to HD as such, it should
+                    // read it as 07 then let rollIn() deal with it
+                    // this is not really pretty, but do not want to break anything else
+                    // I just want to graduate :)
+                    var checkString: string = _MemManager.read(i, pcb);
+                    if(!isNaN(parseInt(checkString)) && checkString.length < 2 && parseInt(checkString) !== 0){
+                        checkString = "0" + checkString;
+                    }
+                
+                    mem_string = mem_string + checkString;
                 }
-                
-                mem_string = mem_string + checkString;
+            }else{
+                while(program.length < 256){
+                    program = program + "0";
+                }
+            
+                mem_string = program;
             }
             this.writeFile(".swap"+this.swapfilecount, mem_string);
             pcb.location = Location.HARD_DISK;
             pcb.base = -1;
             pcb.limit = -1;
             pcb.swapname = ".swap"+this.swapfilecount;
-            pcb.setPCBDisplay(_PCBdisplay);
+          //  pcb.setPCBDisplay(_PCBdisplay);
         }
         
         /**
