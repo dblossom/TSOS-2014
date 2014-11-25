@@ -45,6 +45,9 @@ module TSOS{
         // we need its location
         public location: Location;
         
+        // if it is swapped or on HD, what is its name
+        public swapname:string;
+        
         constructor(base:number, limit:number, location:Location){
             // increment the pid everytime we create a PCB
             // so we do not want to start at zero but rather

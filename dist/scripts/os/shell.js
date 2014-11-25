@@ -159,6 +159,7 @@ var TSOS;
 
         Shell.prototype.testswap = function (args) {
             _krnHDDdriver.rollOut(_ResidentQueue[args[0]]);
+            _krnHDDdriver.rollIn(_ResidentQueue[args[0]]);
         };
 
         Shell.prototype.putPrompt = function () {
@@ -781,7 +782,12 @@ var TSOS;
                 for (var i = 1; i < args.length; i++) {
                     texttowrite = texttowrite + args[i] + " ";
                 }
-                _krnHDDdriver.writeFile(args[0], texttowrite);
+                var didWrite = _krnHDDdriver.writeFile(args[0], texttowrite);
+                if (didWrite) {
+                    _StdOut.putText("The text has been written");
+                } else {
+                    _StdOut.putText("The text has not been written");
+                }
             }
         };
 
@@ -789,7 +795,8 @@ var TSOS;
         * Reads a file and prints to screen
         */
         Shell.prototype.shellRead = function (args) {
-            _krnHDDdriver.readFile(args[0]);
+            var contents = _krnHDDdriver.readFile(args[0]);
+            _StdOut.putText(contents);
         };
 
         /**

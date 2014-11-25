@@ -234,7 +234,7 @@ module TSOS {
         /**
          * A function to write data to a file
          */
-        public writeFile(name:string, data:string){
+        public writeFile(name:string, data:string):boolean{
         
             // Not proud of some of these checks
             // if the drive is not formated, bail...
@@ -279,14 +279,15 @@ module TSOS {
                     }
                 }
                 // finally tell the user the file has been written.
-                _StdOut.putText("File has been written");
+                // TODO: change this to a boolean and then let the shell deal with it.
+                return true;
             }
         }
         
         /**
          * A function to read a files contents and display
          */
-        public readFile(name:string){
+        public readFile(name:string):string{
             // is the drive formatted? if not bail
             if(!this.isFormatted){
                 _StdOut.putText("The drive is not formatted");
@@ -317,7 +318,8 @@ module TSOS {
                     }
                 }
                 // print out the text
-                _StdOut.putText(fullstring);
+               // _StdOut.putText(fullstring);
+               return fullstring;
             }
         }
         
@@ -334,10 +336,53 @@ module TSOS {
             this.create(".swap"+(this.swapfilecount));
             var mem_string:string = "";
             for(var i:number = 0; i < MAX_MEM_SPACE; i++){
-                mem_string = mem_string + _MemManager.read(i, pcb);
+                
+                // so read returns a string BUT since I store as an INT and convert
+                // to a string, 07 gets stored as 7 and read to HD as such, it should
+                // read it as 07 then let rollIn() deal with it
+                // this is not really pretty, but do not want to break anything else
+                // I just want to graduate :)
+                var checkString: string = _MemManager.read(i, pcb);
+                if(!isNaN(parseInt(checkString)) && checkString.length < 2 && parseInt(checkString) !== 0){
+                    checkString = "0" + checkString;
+                }
+                
+                mem_string = mem_string + checkString;
             }
             this.writeFile(".swap"+this.swapfilecount, mem_string);
-
+            pcb.location = Location.HARD_DISK;
+            pcb.base = -1;
+            pcb.limit = -1;
+            pcb.swapname = ".swap"+this.swapfilecount;
+            pcb.setPCBDisplay(_PCBdisplay);
+        }
+        
+        /**
+         * A function that "rolls in" a PCB from disk
+         */
+        public rollIn(pcb:PCB){
+        
+            // I am sure this could not happen
+            if(!this.isFormatted){
+                _StdOut.putText("Drive not formatted");
+                return;
+            }
+            var part:number = _MemManager.allocate();
+            if(part !== - 1){
+                
+                var s = pcb.swapname;
+                pcb.base = _MemManager.memoryRanges[part].base;
+                pcb.limit = _MemManager.memoryRanges[part].limit;
+                
+                var point:number = 0;
+                var data:string = this.readFile(s);
+                for(var i:number = 0; i < (data.length / 2); i++){
+                    _MemManager.write(i, (data.charAt(point++) + data.charAt(point++)),pcb);
+                }
+                pcb.location = Location.IN_MEMORY;
+                pcb.setPCBDisplay(_PCBdisplay);
+                this.deleteFile(pcb.swapname);
+            }
         }
         
         /**
