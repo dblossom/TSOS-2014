@@ -253,19 +253,24 @@ module TSOS {
             // we are about to create a process ... kernel mode
             _Mode = 0;
             
+            // so the first one does not run if its priority is lower than other guys...
+            // this and the check below for "location" just prove how context switch might
+            // not be doing a good job ... that is where some changes should take place!
             if(_CPU_Schedule.routine === ScheduleRoutine.PRIORITY){
                 _CPU_Schedule.sort();
             }
         
             // get the next Process
             var pcb:PCB = params.dequeue();
-            // set our "active pcb pointer"
             
             // if the pcb is not in memory, we better make is so.
+            // again _ not sure these checks should be handled here ...
+            // BUT they are, for now, or maybe forever ... who knows
             if(pcb.location === Location.HARD_DISK){
                 _CPU_Schedule.swap(pcb);
             }
             
+            // set our global pointer to the new pcb
             _ActiveProgram = pcb;
             
             // print a trace so we know ... (hmm, this might not work well - or at all - with run all?)
@@ -378,7 +383,7 @@ module TSOS {
              //bandaid here until I think of something else:
              //clear partition takes an int of 0, 1, 2 so we will find that from the base
              var partition:number = -1;
-             
+             // TODO: We might be able to get this data more cleanly if we use the MemoryRange class!!
              if(_ActiveProgram.base === 0){
                  partition = 0;
              }else if(_ActiveProgram.base === 256){
@@ -399,7 +404,7 @@ module TSOS {
              _ActiveProgram = null;
              
              // TODO: make a function that checks the need to do a context switch and does it
-             //       other wise this will get missed some place I feel, or not work ask expected...
+             //       other wise this will get missed some place I feel, or not work as expected...
              
              // finally if there is another process on the queue, DO IT! Do not let one bad program
              // spoil all of our fun!
@@ -419,7 +424,7 @@ module TSOS {
              // change the current state from running to ready
              _ActiveProgram.currentState = State.READY;
              
-             // updaet the display
+             // update the display
              _ActiveProgram.setPCBDisplay(_PCBdisplay);
              
              // put the currently running program to the back of the line
@@ -451,7 +456,6 @@ module TSOS {
              
              // done with kernel mode, put it back
              _Mode = 1;
-             
          }
          
          /**
