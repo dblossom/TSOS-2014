@@ -73,6 +73,7 @@ var TSOS;
             cellsInRow[7].innerHTML = this.Y_reg.toString();
             cellsInRow[8].innerHTML = this.Z_flag.toString();
             cellsInRow[9].innerHTML = Location[this.location].toString();
+            cellsInRow[10].innerHTML = this.priority;
         };
 
         /**
@@ -96,6 +97,7 @@ var TSOS;
             row.insertCell(7).innerHTML = this.Y_reg.toString();
             row.insertCell(8).innerHTML = this.Z_flag.toString();
             row.insertCell(9).innerHTML = Location[this.location].toString();
+            row.insertCell(10).innerHTML = this.priority;
         };
 
         /**

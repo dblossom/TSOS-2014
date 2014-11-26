@@ -39,7 +39,7 @@ module TSOS {
         public currentFileDataBlock:number;
         // tells us if the drive is full or not
         public driveFull:boolean;
-        
+        // to make the swap file name unique.
         public swapfilecount:number;
         
         /**
@@ -80,7 +80,6 @@ module TSOS {
             }else{
                 _StdOut.putText("Hard drive not mounted, failed to load, please contact vendor.");
             }
-            
         }
         
         /**

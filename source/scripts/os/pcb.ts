@@ -48,6 +48,9 @@ module TSOS{
         // if it is swapped or on HD, what is its name
         public swapname:string;
         
+        // the priority of this pcb
+        public priority:number;
+        
         constructor(base:number, limit:number, location:Location){
             // increment the pid everytime we create a PCB
             // so we do not want to start at zero but rather
@@ -91,6 +94,7 @@ module TSOS{
              cellsInRow[7].innerHTML = this.Y_reg.toString();
              cellsInRow[8].innerHTML = this.Z_flag.toString();
              cellsInRow[9].innerHTML = Location[this.location].toString();
+             cellsInRow[10].innerHTML = this.priority;
          }
          
          /**
@@ -113,6 +117,7 @@ module TSOS{
              row.insertCell(7).innerHTML = this.Y_reg.toString();
              row.insertCell(8).innerHTML = this.Z_flag.toString();
              row.insertCell(9).innerHTML = Location[this.location].toString();
+             row.insertCell(10).innerHTML = this.priority;
          }
          
          /**

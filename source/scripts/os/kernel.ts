@@ -252,6 +252,10 @@ module TSOS {
         
             // we are about to create a process ... kernel mode
             _Mode = 0;
+            
+            if(_CPU_Schedule.routine === ScheduleRoutine.PRIORITY){
+                _CPU_Schedule.sort();
+            }
         
             // get the next Process
             var pcb:PCB = params.dequeue();

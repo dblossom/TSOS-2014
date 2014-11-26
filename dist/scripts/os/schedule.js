@@ -95,6 +95,11 @@ var TSOS;
         };
 
         Schedule.prototype.priority = function () {
+            // first we need to sort the list.
+            this.sort();
+
+            // now priority is nothing more than FCFS since we are non-preemtive
+            this.firstCome();
         };
 
         /**
@@ -120,8 +125,15 @@ var TSOS;
 
                 // fuck...
                 if (!_MemManager.memoryAvailable()) {
+                    // let us pick a random memory location for now, maybe
+                    // make something better later ...
+                    // memory location 2 seems random enough LOL
+                    // ... okay find memory location two
+                    var part = Math.floor(Math.random() * 3);
+                    part = _MemManager.memoryRanges[part].base;
+
                     for (var i = 0; i < _KernelReadyQueue.q.length; i++) {
-                        if (_KernelReadyQueue.q[i].base === 512) {
+                        if (_KernelReadyQueue.q[i].base === part) {
                             _MemManager.deallocate(_KernelReadyQueue.q[i]);
                             _krnHDDdriver.rollOut(_KernelReadyQueue.q[i]);
                             _KernelReadyQueue.q[i].setPCBDisplay(_PCBdisplay);
@@ -135,6 +147,19 @@ var TSOS;
                     return;
                 }
             }
+        };
+
+        // a function to sort the ready queue by priority
+        Schedule.prototype.sort = function () {
+            _KernelReadyQueue.q.sort(function (pcbA, pcbB) {
+                if (pcbA.priority < pcbB.priority) {
+                    return -1;
+                }
+                if (pcbA.priority > pcbB.priority) {
+                    return 1;
+                }
+                return 0;
+            });
         };
         return Schedule;
     })();

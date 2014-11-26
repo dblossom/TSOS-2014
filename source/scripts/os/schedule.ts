@@ -115,7 +115,15 @@ module TSOS{
             this.roundRobin(9999);
         }
         
-        public priority(){} // empty shell
+        public priority(){
+        
+            // first we need to sort the list.
+            this.sort();
+            
+            // now priority is nothing more than FCFS since we are non-preemtive
+            this.firstCome();
+        
+        }
         
         /**
          * Method to handle swapping
@@ -146,8 +154,13 @@ module TSOS{
                     // make something better later ...
                     // memory location 2 seems random enough LOL
                     // ... okay find memory location two
+                    
+                    var part:number = Math.floor(Math.random() * 3);
+                    part = _MemManager.memoryRanges[part].base;
+                    
                     for(var i:number = 0; i < _KernelReadyQueue.q.length; i++){
-                        if(_KernelReadyQueue.q[i].base === 512){
+                        
+                        if(_KernelReadyQueue.q[i].base === part){
                             _MemManager.deallocate(_KernelReadyQueue.q[i]);
                             _krnHDDdriver.rollOut(_KernelReadyQueue.q[i]);
                             _KernelReadyQueue.q[i].setPCBDisplay(_PCBdisplay);
@@ -161,6 +174,23 @@ module TSOS{
                     return;
                 }
             }
-        }  
+        }
+        
+        // a function to sort the ready queue by priority
+        public sort(){
+            
+            _KernelReadyQueue.q.sort(function(pcbA, pcbB){
+                
+                if(pcbA.priority < pcbB.priority){
+                    return -1;
+                }
+                if(pcbA.priority > pcbB.priority){
+                    return 1;
+                }
+                return 0;
+                
+            });
+            
+        } 
     }
 }

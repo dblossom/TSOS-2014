@@ -116,7 +116,6 @@ var _krnHDDdriver = null;
 // scheduling stuff
 var _Quantum = 6;
 var _CPU_Schedule = null;
-var _Priorty = 0;
 
 // For testing...
 var _GLaDOS = null;

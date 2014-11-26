@@ -451,6 +451,20 @@ var TSOS;
         *       Too late tonight to break this.
         */
         Shell.prototype.shellLoad = function (args) {
+            var pcbPriority = 10;
+
+            if (args.length > 1 && isNaN(parseInt(args[0]))) {
+                _StdOut.putText("Usage: load <priority> - priority paramiter is optional if priority scheduling and no priority default is 10");
+                return;
+            }
+            if (args.length === 1 && !isNaN(parseInt(args[0]))) {
+                pcbPriority = parseInt(args[0]);
+                if (pcbPriority < 0) {
+                    _StdOut.putText("NO NEGITIVE PRIORITY: SETTING TO 0");
+                    pcbPriority = 0;
+                }
+            }
+
             // are we loading a "valid" program -- IE everything is valid hex?
             var isValid = new Shell().validateProgram(_ProgramTextArea.value.trim());
 
@@ -465,27 +479,30 @@ var TSOS;
                 // where or where will we put this thing ?
                 var activePartition = _MemManager.allocate();
 
-                // we are an informative OS -- let the user know we are loading
-                _StdOut.putText("Loading, please wait...");
-                _StdOut.advanceLine();
-                _StdOut.putText("PID: " + TSOS.PCB.pid);
-
                 // so - let us get the base and limit registers and create a PCB
                 var base = _MemManager.memoryRanges[activePartition].base;
                 var limit = _MemManager.memoryRanges[activePartition].limit;
-                _ResidentQueue[TSOS.PCB.pid] = new TSOS.PCB(base, limit, 0 /* IN_MEMORY */);
+                var tempPCB = new TSOS.PCB(base, limit, 0 /* IN_MEMORY */);
+                _ResidentQueue[tempPCB.pidNumber] = tempPCB;
+                tempPCB.priority = pcbPriority;
+
+                // we are an informative OS -- let the user know we are loading
+                _StdOut.putText("Loading, please wait...");
+                _StdOut.advanceLine();
+                _StdOut.putText("PID: " + tempPCB.pidNumber);
 
                 // point incs by 2 every go, i incs by 1. what, what what ?
                 // point keeps track of the hex bytes (aka 2 nibbles, aka every 2 chars)
                 // i keeps track of where we are in the string
                 var point = 0;
                 for (var i = 0; i < (textInput.length / 2); i++) {
-                    _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)), _ResidentQueue[TSOS.PCB.pid - 1]);
+                    _MemManager.write(i, (textInput.charAt(point++) + textInput.charAt(point++)), tempPCB);
                 }
                 // well no room in memory, but how about swapping it to the hard-drive?
             } else if (isValid && _krnHDDdriver.isFormatted) {
                 // make a temp pcb
                 var tempPCB = new TSOS.PCB(-1, -1, 1 /* HARD_DISK */);
+                tempPCB.priority = pcbPriority;
                 _ResidentQueue[tempPCB.pidNumber] = tempPCB;
                 _krnHDDdriver.rollOut(tempPCB, textInput);
 
@@ -727,10 +744,12 @@ var TSOS;
             if (!_krnHDDdriver.isFormatted) {
                 _krnHDDdriver.format();
                 _StdOut.putText("Hard Drive has been formatted and mounted.");
-            } else if (_krnHDDdriver.isFormatted) {
-                //TODO: still format but make sure nothing is running
+                // okay, I will let you wipe the disk ONLY if there is not swapping going on.
+            } else if (_krnHDDdriver.isFormatted && _ActiveProgram === null && _KernelReadyQueue.getSize() === 0) {
                 _krnHDDdriver.format();
                 _StdOut.putText("Hard Drive has been re-formatted and all data has been erased.");
+            } else {
+                _StdOut.putText("Something went wrong _ are there active processes ?");
             }
         };
 
@@ -850,13 +869,13 @@ var TSOS;
                 _StdOut.putText("First Come First Serve Scheduling Set");
                 return;
             }
+            if (args[0] === "priority") {
+                _CPU_Schedule = new TSOS.Schedule(2 /* PRIORITY */);
+                TSOS.Control.hostLog("Priority Set");
+                _StdOut.putText("Priority Scheduling Set");
+                return;
+            }
 
-            //if(args[0]) === "priority"){
-            //      _CPU_Schedule = new Schedule(ScheduleRoutine.PRIORITY);
-            //      Control.hostLog("Priority Set");
-            //      _StdOut.putText("Priority Scheduling Set");
-            //      return;
-            //}
             // how did we get here?'
             _StdOut.putText("Invalid scheduling algorithm picked");
         };
