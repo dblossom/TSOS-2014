@@ -828,11 +828,15 @@ var TSOS;
         * Reads a file and prints to screen
         */
         Shell.prototype.shellRead = function (args) {
-            // TODO: none existant file ?
-            // read file returns the string ...
+            if (args.length !== 1) {
+                _StdOut.putText("Usage: <filename> - the file name to read.");
+                return;
+            }
             var contents = _krnHDDdriver.readFile(args[0]);
-
-            //  show it... this could be one line I suppose.
+            if (typeof contents === 'undefined') {
+                _StdOut.putText("Reading of file " + args[0] + " failed.");
+                return;
+            }
             _StdOut.putText(contents);
         };
 
