@@ -215,21 +215,8 @@ module TSOS {
                                   "- gets the current cpu schedule.");
             this.commandList[this.commandList.length] = sc;
             
-            // DELETE ME:
-            // test swapping
-            sc = new ShellCommand(this.testswap,
-                                  "testswap",
-                                  "-");
-            this.commandList[this.commandList.length] = sc;
-            
-            
             // Display the initial prompt.
             this.putPrompt();
-        }
-        
-        public testswap(args){
-            _krnHDDdriver.rollOut(_ResidentQueue[args[0]]);
-            _krnHDDdriver.rollIn(_ResidentQueue[args[0]]);
         }
 
         public putPrompt() {
@@ -861,15 +848,17 @@ module TSOS {
          */
         public shellDelete(args){
             
+            // no argument, or too many arguments, either way, nope.
             if(args.length !== 1){
                 _StdOut.putText("Invalid file name");
                 return;
             }
-            
+            // was the file deleted?
             var deleted = _krnHDDdriver.deleteFile(args[0]);
-            
+            // say it has been deleted
             if(deleted){
                 _StdOut.putText(args[0] + " has been deleted");
+            // say that it has not been deleted and leave the person to wonder...
             }else{
                 _StdOut.putText(args[0] + " has not been deleted.");
             }
@@ -880,21 +869,26 @@ module TSOS {
          * Writes text to a file
          */
         public shellWrite(args){
-        
+            // so, if we do not have a file name and some text ...
+            // we cannot write anthing.
             if(args.length < 2){
                 _StdOut.putText("Usage: <filename> <text>");
+                return;
+            }
+            // let us loop over the array starting at location 1
+            // appending the text to write 
+            var texttowrite:string = "";
+            for(var i:number = 1; i < args.length; i++){
+                texttowrite = texttowrite + args[i] + " ";
+            }
+            // find out if our long appended string wrote to the disk
+            var didWrite:boolean = _krnHDDdriver.writeFile(args[0], texttowrite);
+            // if it did
+            if(didWrite){
+                _StdOut.putText("The text has been written");
+            //if it did not
             }else{
-                 
-                var texttowrite:string = "";
-                for(var i:number = 1; i < args.length; i++){
-                    texttowrite = texttowrite + args[i] + " ";
-                }
-                var didWrite:boolean = _krnHDDdriver.writeFile(args[0], texttowrite);
-                if(didWrite){
-                    _StdOut.putText("The text has been written");
-                }else{
-                    _StdOut.putText("The text has not been written");
-                }
+                _StdOut.putText("The text has not been written");
             }
         }
         
@@ -902,7 +896,10 @@ module TSOS {
          * Reads a file and prints to screen
          */
         public shellRead(args){
+            // TODO: none existant file ?
+            // read file returns the string ... 
             var contents:string = _krnHDDdriver.readFile(args[0]);
+            //  show it... this could be one line I suppose.
             _StdOut.putText(contents);
         }
         
@@ -910,20 +907,22 @@ module TSOS {
          * lists all the file on the system
          */
         public shellLS(args){
-        
+            // if the HD is not formatted, well (in jedi voice) "there is no ls"
             if(!_krnHDDdriver.isFormatted){
                 _StdOut.putText("The drive is not formatted, nothing to see here, move along");
                 return;
             }
-            
+            // some people never learn how to use commands correctly
             if(typeof args[0] !== 'undefined'){
                 _StdOut.putText("Usage: Nothing! Just type ls to list all files");
-            }else{
-                for(var i:number = 0; i < _krnHDDdriver.fileArray.length; i++){
-                    if(_krnHDDdriver.fileArray[i].name.charAt(0) !== "."){
-                        _StdOut.putText(_krnHDDdriver.fileArray[i].name);
-                        _StdOut.advanceLine();
-                    }
+                return;
+            }
+            // so just loop through our file name array spitting out all the file names
+            for(var i:number = 0; i < _krnHDDdriver.fileArray.length; i++){
+                // wait, wait, not the hidden files or someone might try to delete them...
+                if(_krnHDDdriver.fileArray[i].name.charAt(0) !== "."){
+                    _StdOut.putText(_krnHDDdriver.fileArray[i].name);
+                    _StdOut.advanceLine();
                 }
             }
         }
@@ -932,22 +931,26 @@ module TSOS {
          * Sets the CPU Schedule
          */
         public shellSetSchedule(args){
+            // we should only pass in 1 argument
             if(args.length !== 1){
                 _StdOut.putText("Usage: rr, fcfs, priority");
                 return;
             }
+            // if rr then set round robing and alert user
             if(args[0] === "rr"){
                 _CPU_Schedule = new Schedule(ScheduleRoutine.RR);
                 Control.hostLog("Round Robin Set");
                 _StdOut.putText("Round Robin Scheduling Set");
                 return;
             }
+            // if fcfs set first come first serve and alert user
             if(args[0] === "fcfs"){
                 _CPU_Schedule = new Schedule(ScheduleRoutine.FCFS);
                 Control.hostLog("First Come First Serve Set");
                 _StdOut.putText("First Come First Serve Scheduling Set");
                 return;
             }
+            // if priority set priority and alert user
             if(args[0] === "priority"){
                   _CPU_Schedule = new Schedule(ScheduleRoutine.PRIORITY);
                   Control.hostLog("Priority Set");
@@ -962,26 +965,30 @@ module TSOS {
          * Gets the current cpu schedule
          */
         public shellGetSchedule(args){
-            
+            // so if we passed an arg, that is not correct
             if(args.length > 0){
                 _StdOut.putText("Usage: NOTHING! just type getschedule");
                 return;
             }
-            
+            // depending on which routine ...
             switch(_CPU_Schedule.routine){
-            
+                
+                // are we round robin
                 case ScheduleRoutine.RR:
                     _StdOut.putText("Round Robin is the current scheduling algorithm");
                     break;
                 
+                // are we fcfs
                 case ScheduleRoutine.FCFS:
                     _StdOut.putText("First Come First Serve is the current scheduling algorithm");
                     break;
                     
+                // are we priority
                 case ScheduleRoutine.PRIORITY:
                     _StdOut.putText("Priority is the current scheduling algorithm");
                     break;
-                    
+                
+                // oh boy.
                 default:
                     _StdOut.putText("Something is very very wrong... no cpu scheduling set?");
             }
