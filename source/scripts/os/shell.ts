@@ -853,6 +853,10 @@ module TSOS {
                 _StdOut.putText("Invalid file name");
                 return;
             }
+            if(args[0].charAt(0) === "."){
+                _StdOut.putText("Nice try, cannot delete filenames that start with '.', in fact how do you know they exists??");
+                return;
+            }
             // was the file deleted?
             var deleted = _krnHDDdriver.deleteFile(args[0]);
             // say it has been deleted
