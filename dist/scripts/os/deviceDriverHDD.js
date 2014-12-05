@@ -45,7 +45,7 @@ var TSOS;
                 this.meta = 4;
 
                 // where we will store our stuff.
-                this.HardDriveArray = window.localStorage;
+                this.HardDriveArray = new TSOS.HardDrive();
 
                 // sure why not.
                 this.status = "loaded";
@@ -70,7 +70,7 @@ var TSOS;
         */
         DeviceDriverHDD.prototype.write = function (tsb, data) {
             // this actually puts the item in our key value store...
-            this.HardDriveArray.setItem(tsb, data);
+            this.HardDriveArray.write(tsb, data);
 
             // for clarity
             var metaS = data.substring(0, 4);
@@ -87,7 +87,7 @@ var TSOS;
         */
         DeviceDriverHDD.prototype.read = function (tsb) {
             // give me the key and I shall give you the value.
-            return this.HardDriveArray.getItem(tsb);
+            return this.HardDriveArray.read(tsb);
         };
 
         /**

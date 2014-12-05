@@ -25,7 +25,7 @@ module TSOS {
         // meta-data
         public meta:number;
         // array for hard-drive
-        public HardDriveArray;
+        public HardDriveArray:HardDrive;
         // is the drive formated
         public isFormatted:boolean;
         // an array of files and the starting location
@@ -71,7 +71,7 @@ module TSOS {
                 // meta data -- (in use, t, s, b) === 4
                 this.meta = 4;
                 // where we will store our stuff.
-                this.HardDriveArray = window.localStorage;
+                this.HardDriveArray = new HardDrive();
                 // sure why not.
                 this.status = "loaded";
                 // hhd starts off unformatted
@@ -94,7 +94,7 @@ module TSOS {
          */
         public write(tsb:string, data:string){
             // this actually puts the item in our key value store...
-            this.HardDriveArray.setItem(tsb, data);
+            this.HardDriveArray.write(tsb, data);
             
             // for clarity
             var metaS = data.substring(0, 4);
@@ -111,7 +111,7 @@ module TSOS {
          */
         public read(tsb:string):string{
             // give me the key and I shall give you the value.
-            return this.HardDriveArray.getItem(tsb);
+            return this.HardDriveArray.read(tsb);
         }
         
         /**
