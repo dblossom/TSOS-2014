@@ -42,6 +42,16 @@ var TSOS;
             }
             return retVal;
         };
+
+        Utils.arraySize = function (pcbArray) {
+            var returnNumber = 0;
+            for (var i = 0; i < pcbArray.length; i++) {
+                if (pcbArray[i].currentState !== 2 /* TERMINATED */) {
+                    returnNumber++;
+                }
+            }
+            return returnNumber;
+        };
         return Utils;
     })();
     TSOS.Utils = Utils;

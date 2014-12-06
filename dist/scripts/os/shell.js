@@ -455,6 +455,12 @@ var TSOS;
                 }
             }
 
+            // so, only 23 programs will run successfully at one time or
+            if ((TSOS.Utils.arraySize(_ResidentQueue) > 23 && _ActiveProgram === null) || (TSOS.Utils.arraySize(_ResidentQueue) > 22)) {
+                _StdOut.putText("Only 23 active programs will run successfully! Please wait and run later");
+                return;
+            }
+
             // are we loading a "valid" program -- IE everything is valid hex?
             var isValid = new Shell().validateProgram(_ProgramTextArea.value.trim());
 

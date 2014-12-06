@@ -43,5 +43,15 @@ module TSOS {
             }
             return retVal;
         }
+        
+        public static arraySize(pcbArray:Array<PCB>):number{
+            var returnNumber: number = 0;
+            for(var i:number = 0; i < pcbArray.length; i++){
+                if(pcbArray[i].currentState !== State.TERMINATED){
+                    returnNumber++;
+                }
+            }
+            return returnNumber;
+        }
     }
 }

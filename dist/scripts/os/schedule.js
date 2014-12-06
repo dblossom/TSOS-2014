@@ -125,10 +125,7 @@ var TSOS;
 
                 // fuck...
                 if (!_MemManager.memoryAvailable()) {
-                    // let us pick a random memory location for now, maybe
-                    // make something better later ...
-                    // memory location 2 seems random enough LOL
-                    // ... okay find memory location two
+                    // let us pick a random memory location for now...
                     var part = Math.floor(Math.random() * 3);
                     part = _MemManager.memoryRanges[part].base;
 
