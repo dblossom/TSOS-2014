@@ -509,6 +509,13 @@ var TSOS;
                 // let the user know his/her program is shitty and does not work
                 _StdOut.putText("Invalid Program...please try again! (or not).");
 
+                if (!_krnHDDdriver.isFormatted) {
+                    _StdOut.advanceLine();
+                    _StdOut.advanceLine();
+                    _StdOut.putText("You could format the harddrive...");
+                    _StdOut.advanceLine();
+                }
+
                 // if no free memory tell them at that time as well.
                 if (!_MemManager.memoryAvailable()) {
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(OUT_OF_MEM_IRQ, _ProgramTextArea.value));
@@ -544,14 +551,22 @@ var TSOS;
         * Command to put program on the Ready Queue
         */
         Shell.prototype.shellRun = function (args) {
+            if (parseInt(args[0]) >= _ResidentQueue.length) {
+                _StdOut.putText("Usage: run <pid> active process ID.");
+                return;
+            }
+
             // Because we are not using a "used queue" and keeping it on the resident queue
             // we need to know if it is usable...
-            var used = (_ResidentQueue[args[0]].currentState === 2 /* TERMINATED */);
+            var used = (_ResidentQueue[args[0]].currentState !== 0 /* NEW */);
 
             // If a program is in execution, we want to ensure we do not just start processing
             // So, if there is not a program in execution AND we never used it before, just put
             // the process to the back of the queue and update display - scheduler will take over!
             if (_ActiveProgram !== null && !used) {
+                // update that it is now in the ready queue.
+                _ResidentQueue[args[0]].currentState = 4 /* READY */;
+
                 // gives to scheduler
                 _KernelReadyQueue.enqueue(_ResidentQueue[args[0]]);
 
@@ -571,6 +586,8 @@ var TSOS;
                 // pass an interrupt to kernel saying, do some work you lazy bum!
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
                 // whoops, bad PID
+            } else if (used) {
+                _StdOut.putText("Process is no longer in Resident Queue");
             } else {
                 _StdOut.putText("Usage: run <pid> active process ID.");
             }
@@ -671,16 +688,24 @@ var TSOS;
             if (typeof args[0] !== 'undefined') {
                 _StdOut.putText("Usage: Nothing! Just type runall and all processes will run");
             } else {
+                // so, search the resident queue looking for "new" processes
+                var add = false;
                 for (var i = 0; i < _ResidentQueue.length; i++) {
                     // if a new process has been found, add it to the ready queue and update the display
                     if (_ResidentQueue[i].currentState === 0 /* NEW */) {
+                        _ResidentQueue[i].currentState = 4 /* READY */;
                         _KernelReadyQueue.enqueue(_ResidentQueue[i]);
                         _ResidentQueue[i].pcbNewRow(_PCBdisplay);
+                        add = true;
                     }
                 }
 
                 // now pass the ready queue to the kernel for execution and scheduling.
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
+                if (add && _ActiveProgram === null) {
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(EXEC_PROG_IRQ, _KernelReadyQueue));
+                } else if (!add) {
+                    _StdOut.putText("No new processes added to Ready Queue, Resident Queue empty!");
+                }
             }
         };
 
