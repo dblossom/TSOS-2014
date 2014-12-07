@@ -386,6 +386,11 @@ var TSOS;
                         checkString = "0" + checkString;
                     }
 
+                    // okay, so it is possible to bring in one character...need to pad
+                    if (checkString.length === 1) {
+                        checkString = "0" + checkString;
+                    }
+
                     // finally build the string
                     mem_string = mem_string + checkString;
                 }
